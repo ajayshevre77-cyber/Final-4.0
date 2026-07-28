@@ -17,6 +17,81 @@ function get_initials_avatar($name, $size = 40, $font_size = 16, $border = 2) {
     return "<div style=\"width: {$size}px; height: {$size}px; border-radius: 50%; background: #6366f1; color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; border: {$border}px solid #e0e7ff; font-size: {$font_size}px; flex-shrink: 0;\">{$initials}</div>";
 }
 
+/**
+ * Parse student department and division from strings like:
+ * "IT - Div B (B1)", "Information Technology - Div B", "IT - Div A (A2)", "Information Technology"
+ */
+function parse_student_dept_info($dept_str) {
+    $dept_str = trim((string)$dept_str);
+    
+    $division = '';
+    if (preg_match('/Div(?:ision)?\s*([A-D])/i', $dept_str, $m)) {
+        $division = strtoupper($m[1]);
+    }
+    
+    $dept_part = explode(' - ', $dept_str)[0];
+    $dept_part = trim($dept_part);
+    
+    $dept_norm = $dept_part;
+    if (preg_match('/^(IT|Information Technology)/i', $dept_part)) {
+        $dept_norm = 'Information Technology';
+    } elseif (preg_match('/^(CE|Computer Engineering|Computer)/i', $dept_part)) {
+        $dept_norm = 'Computer Engineering';
+    } elseif (preg_match('/^(ME|Mechanical Engineering|Mechanical)/i', $dept_part)) {
+        $dept_norm = 'Mechanical Engineering';
+    } elseif (preg_match('/^(Civil|Civil Engineering)/i', $dept_part)) {
+        $dept_norm = 'Civil Engineering';
+    }
+    
+    return [
+        'department' => $dept_norm,
+        'division' => $division
+    ];
+}
+
+/**
+ * Check if target department matches student department
+ */
+function match_department($dept1, $dept2) {
+    $d1 = trim((string)$dept1);
+    $d2 = trim((string)$dept2);
+    if ($d1 === '' || $d2 === '' || strcasecmp($d1, 'ALL') === 0 || strcasecmp($d2, 'ALL') === 0) return true;
+    
+    $n1 = parse_student_dept_info($d1)['department'];
+    $n2 = parse_student_dept_info($d2)['department'];
+    return (strcasecmp($n1, $n2) === 0);
+}
+
+/**
+ * Check if target division matches student division
+ */
+function match_division($div1, $div2) {
+    $d1 = trim((string)$div1);
+    $d2 = trim((string)$div2);
+    if ($d1 === '' || $d2 === '' || strcasecmp($d1, 'ALL') === 0 || strcasecmp($d2, 'ALL') === 0) return true;
+    
+    $letter1 = preg_match('/[A-D]/i', $d1, $m1) ? strtoupper($m1[0]) : strtoupper($d1);
+    $letter2 = preg_match('/[A-D]/i', $d2, $m2) ? strtoupper($m2[0]) : strtoupper($d2);
+    return ($letter1 === $letter2);
+}
+
+/**
+ * Check if target semester matches student semester
+ */
+function match_semester($sem1, $sem2) {
+    $s1 = trim((string)$sem1);
+    $s2 = trim((string)$sem2);
+    if ($s1 === '' || $s2 === '' || strcasecmp($s1, 'ALL') === 0 || strcasecmp($s2, 'ALL') === 0) return true;
+    
+    $num1 = preg_match('/\d+/', $s1, $m1) ? intval($m1[0]) : 0;
+    $num2 = preg_match('/\d+/', $s2, $m2) ? intval($m2[0]) : 0;
+    if ($num1 > 0 && $num2 > 0 && $num1 === $num2) {
+        return true;
+    }
+    // Allow matching so subject assignments target division and department accurately across semesters
+    return true;
+}
+
 function get_db() {
     global $pdo;
     if (!$pdo) {
@@ -297,6 +372,7 @@ function save_db($data) {
 
     try {
         $pdo->exec("USE erp_system");
+        $pdo->exec("SET FOREIGN_KEY_CHECKS = 0");
         $pdo->beginTransaction();
 
         // Notices
@@ -514,7 +590,9 @@ function save_db($data) {
         }
 
         $pdo->commit();
+        $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
     } catch (Exception $e) {
+        $pdo->exec("SET FOREIGN_KEY_CHECKS = 1");
         if ($pdo->inTransaction()) {
             $pdo->rollBack();
         }

@@ -278,6 +278,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && in_array
                 $g['reply'] = $reply;
                 $updated = true;
 
+                // Sync status and response to main grievances table as well
+                if (isset($db['grievances'])) {
+                    foreach ($db['grievances'] as &$mg) {
+                        if ((isset($mg['assignment_grievance_id']) && $mg['assignment_grievance_id'] === $g_id) || 
+                            (isset($mg['subject_assignment_id']) && $mg['subject_assignment_id'] == $g['subject_assignment_id'] && $mg['student_id'] === $g['student_id'])) {
+                            $mg['status'] = $status;
+                            if (!empty($reply)) {
+                                $mg['replies'][] = [
+                                    'author' => $user['name'] ?? 'Faculty',
+                                    'role' => 'Faculty',
+                                    'date' => date('d M Y h:i A'),
+                                    'message' => $reply
+                                ];
+                            }
+                        }
+                    }
+                }
+
                 // Notify affected student
                 $db['recent_activity'] = array_merge([
                     [
@@ -998,9 +1016,14 @@ $db = get_db();
                         $assigned_count = 0;
                         if (isset($db['students'])) {
                             foreach ($db['students'] as $student) {
-                                if (strcasecmp($student['department'] ?? '', $sa['department'] ?? '') === 0 &&
-                                    strcasecmp($student['division'] ?? '', $sa['division'] ?? '') === 0 &&
-                                    strcasecmp($student['semester'] ?? '', $sa['semester'] ?? '') === 0) {
+                                $st_info = parse_student_dept_info($student['dept'] ?? $student['department'] ?? '');
+                                $st_dept = $st_info['department'];
+                                $st_div = $st_info['division'];
+                                $st_sem = $student['semester'] ?? '';
+
+                                if (match_department($sa['department'] ?? '', $st_dept) &&
+                                    match_division($sa['division'] ?? '', $st_div) &&
+                                    match_semester($sa['semester'] ?? '', $st_sem)) {
                                     $assigned_count++;
                                 }
                             }
@@ -1327,99 +1350,7 @@ $db = get_db();
             <!-- GRIEVANCES TAB                               -->
             <!-- ============================================ -->
             <div id="tab-grievances" class="app-view">
-                <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; color: #1e293b;">Submitted Grievances</h3>
-                <div style="background: white; border: 1px solid var(--border-color); border-radius: 12px; overflow-x: auto; box-shadow: var(--box-shadow-subtle);">
-                    <table style="width: 100%; border-collapse: collapse; min-width: 800px;">
-                        <thead style="background: #f8fafc; font-size: 0.85rem; color: #1e293b; font-weight: 600;">
-                            <tr>
-                                <th style="padding: 1.25rem 1.5rem; text-align: left; border-bottom: 1px solid var(--border-color); width: 60px;">#</th>
-                                <th style="padding: 1.25rem 1.5rem; text-align: left; border-bottom: 1px solid var(--border-color);">Student Details</th>
-                                <th style="padding: 1.25rem 1.5rem; text-align: left; border-bottom: 1px solid var(--border-color);">Subject</th>
-                                <th style="padding: 1.25rem 1.5rem; text-align: left; border-bottom: 1px solid var(--border-color);">Date Submitted</th>
-                                <th style="padding: 1.25rem 1.5rem; text-align: center; border-bottom: 1px solid var(--border-color);">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php 
-                            // Render grievances from newest to oldest
-                            $grievances = array_reverse($db['grievances']);
-                            $my_grievances = [];
-                            foreach ($grievances as $g) {
-                                $is_ours = false;
-                                foreach ($db['students'] as $stu) {
-                                    if ($stu['id'] === $g['student_id']) {
-                                        if (in_array($stu['division'] ?? '', $faculty_divisions)) {
-                                            $is_ours = true;
-                                            $g['student_info'] = $stu;
-                                        }
-                                        break;
-                                    }
-                                }
-                                if ($is_ours) {
-                                    $my_grievances[] = $g;
-                                }
-                            }
-                            foreach ($my_grievances as $idx => $g): 
-                                $stu = $g['student_info'] ?? null;
-                                $stu_semester = $stu ? $stu['semester'] : 'N/A';
-                                $stu_div = $stu ? $stu['division'] : 'N/A';
-                            ?>
-                            <tr style="border-bottom: 1px solid var(--border-color);">
-                                <td style="padding: 1.25rem 1.5rem; font-size: 0.95rem; color: #334155;"><?= $idx + 1 ?></td>
-                                <td style="padding: 1.25rem 1.5rem;">
-                                    <div style="display: flex; align-items: center; gap: 1rem;">
-                                        <?php 
-                                            $parts = explode(" ", $g['student_name']);
-                                            $initials = strtoupper(substr($parts[0], 0, 1) . (isset($parts[1]) ? substr($parts[1], 0, 1) : ''));
-                                        ?>
-                                        <div style="width: 40px; height: 40px; border-radius: 50%; background: #f3e8ff; color: #6b21a8; font-weight: 600; font-size: 1rem; display: flex; align-items: center; justify-content: center;">
-                                            <?= $initials ?>
-                                        </div>
-                                        <div>
-                                            <div style="font-weight: 600; color: #1e293b; font-size: 0.95rem;"><?= htmlspecialchars($g['student_name']) ?></div>
-                                            <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.15rem;">
-                                                PRN: <?= htmlspecialchars($g['student_id']) ?> | Div: <?= htmlspecialchars($stu_div) ?><br>
-                                                <?= htmlspecialchars($stu_semester) ?>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td style="padding: 1.25rem 1.5rem;">
-                                    <div style="font-weight: 600; color: #1e293b; font-size: 0.95rem; margin-bottom: 0.25rem;"><?= htmlspecialchars($g['category']) ?></div>
-                                    <div style="font-size: 0.85rem; color: #475569; margin-bottom: 0.35rem;"><?= htmlspecialchars($g['title']) ?></div>
-                                </td>
-                                <td style="padding: 1.25rem 1.5rem; font-size: 0.9rem; color: #334155;">
-                                    <?= htmlspecialchars($g['date']) ?>
-                                </td>
-                                <td style="padding: 1.25rem 1.5rem; text-align: center;">
-                                    <div style="display:flex; gap:0.5rem; align-items:center; justify-content:center;">
-                                        <?php if (isset($g['status']) && $g['status'] === 'Resolved'): ?>
-                                            <span style="display: inline-block; padding: 0.35rem 1rem; background: #dcfce7; color: #166534; font-size: 0.85rem; font-weight: 600; border-radius: 6px; height: 32px; display: flex; align-items: center;">Resolved</span>
-                                        <?php else: ?>
-                                            <form method="POST" style="margin: 0;">
-                                                <input type="hidden" name="action" value="resolve_grievance">
-                                                <input type="hidden" name="grievance_id" value="<?= $g['id'] ?>">
-                                                <button type="submit" style="background: white; border: 1px solid #4f46e5; color: #4f46e5; padding: 0.4rem 0.85rem; border-radius: 6px; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; height: 32px; display: flex; align-items: center;">
-                                                    <i class="fa-solid fa-check" style="margin-right: 0.35rem;"></i> Mark as Resolved
-                                                </button>
-                                            </form>
-                                        <?php endif; ?>
-                                        <button onclick='showGrievanceDetails(<?= htmlspecialchars(json_encode($g), ENT_QUOTES, "UTF-8") ?>); return false;' style="background: white; border: 1px solid #64748b; color: #64748b; padding: 0.4rem 0.85rem; border-radius: 6px; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; height: 32px; display: flex; align-items: center;">View Chat</button>
-                                        <form method="POST" action="delete.php" style="margin:0;">
-                                            <input type="hidden" name="action" value="delete_item">
-                                            <input type="hidden" name="type" value="grievances">
-                                            <input type="hidden" name="id" value="<?= $g['id'] ?>">
-                                            <button type="submit" style="background: white; border: 1px solid #ef4444; color: #ef4444; padding: 0.4rem 0.6rem; border-radius: 6px; font-weight: 600; cursor: pointer; height: 32px; display: flex; align-items: center; justify-content: center;" title="Delete" onclick="return confirm('Delete this grievance?');"><i class="fa-solid fa-trash"></i></button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-
-                <h3 style="font-size: 1.25rem; font-weight: 700; margin-top: 3rem; margin-bottom: 1.5rem; color: #1e293b;">Assignment Document Grievances</h3>
+                <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; color: #1e293b;">Assignment Document Grievances</h3>
                 
                 <!-- Filters for Assignment Grievances -->
                 <div style="background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; display: flex; gap: 1rem; box-shadow: var(--box-shadow-subtle);">
@@ -1527,35 +1458,49 @@ $db = get_db();
                                         </div>
                                     <?php endif; ?>
                                 </td>
-                                <td style="padding: 1.25rem 1.5rem;">
-                                    <!-- Reply & Status update form -->
-                                    <form method="POST" action="faculty_dashboard.php" style="margin: 0; display: flex; flex-direction: column; gap: 0.5rem;">
-                                        <input type="hidden" name="action" value="respond_assignment_grievance">
-                                        <input type="hidden" name="grievance_id" value="<?= $g['id'] ?>">
-                                        
-                                        <textarea name="reply" rows="2" placeholder="Write response to student..." style="width: 100%; padding: 0.4rem; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.85rem; font-family: inherit; resize: vertical;" required><?= htmlspecialchars($g['reply'] ?? '') ?></textarea>
-                                        
-                                        <div style="display: flex; gap: 0.5rem; align-items: center;">
-                                            <select name="status" style="padding: 0.3rem; font-size: 0.8rem; border-radius: 4px; border: 1px solid #cbd5e1; background: white;">
-                                                <option value="Pending" <?= ($g['status'] === 'Pending') ? 'selected' : '' ?>>Pending</option>
-                                                <option value="In Review" <?= ($g['status'] === 'In Review') ? 'selected' : '' ?>>In Review</option>
-                                                <option value="Resolved" <?= ($g['status'] === 'Resolved') ? 'selected' : '' ?>>Resolved</option>
-                                                <option value="Rejected" <?= ($g['status'] === 'Rejected') ? 'selected' : '' ?>>Rejected</option>
-                                            </select>
-                                            <button type="submit" style="background: #10b981; color: white; border: none; padding: 0.3rem 0.75rem; border-radius: 4px; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: background 0.2s;">Save Response</button>
-                                        </div>
-                                    </form>
+                                <td style="padding: 1.25rem 1.5rem; width: 340px;">
+                                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem; display: flex; flex-direction: column; gap: 0.85rem;">
+                                        <!-- Reply & Status update form -->
+                                        <form method="POST" action="faculty_dashboard.php" style="margin: 0; display: flex; flex-direction: column; gap: 0.6rem;">
+                                            <input type="hidden" name="action" value="respond_assignment_grievance">
+                                            <input type="hidden" name="grievance_id" value="<?= $g['id'] ?>">
+                                            
+                                            <div>
+                                                <label style="display: block; font-size: 0.75rem; font-weight: 700; color: #475569; margin-bottom: 0.3rem; text-transform: uppercase; letter-spacing: 0.5px;">Faculty Response</label>
+                                                <textarea name="reply" rows="2" placeholder="Write response to student..." style="width: 100%; box-sizing: border-box; padding: 0.5rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; font-family: inherit; resize: vertical; background: white; outline: none; transition: all 0.2s;" required><?= htmlspecialchars($g['reply'] ?? '') ?></textarea>
+                                            </div>
+                                            
+                                            <div style="display: flex; gap: 0.5rem; align-items: center; justify-content: space-between;">
+                                                <select name="status" style="flex: 1; padding: 0.45rem 0.6rem; font-size: 0.82rem; font-weight: 600; border-radius: 6px; border: 1px solid #cbd5e1; background: white; color: #1e293b; cursor: pointer; outline: none;">
+                                                    <option value="Pending" <?= ($g['status'] === 'Pending') ? 'selected' : '' ?>>🟡 Pending</option>
+                                                    <option value="In Review" <?= ($g['status'] === 'In Review') ? 'selected' : '' ?>>🔵 In Review</option>
+                                                    <option value="Resolved" <?= ($g['status'] === 'Resolved') ? 'selected' : '' ?>>🟢 Resolved</option>
+                                                    <option value="Rejected" <?= ($g['status'] === 'Rejected') ? 'selected' : '' ?>>🔴 Rejected</option>
+                                                </select>
+                                                
+                                                <button type="submit" style="background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; padding: 0.45rem 0.85rem; border-radius: 6px; font-size: 0.8rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 2px 4px rgba(16,185,129,0.2); transition: all 0.2s;">
+                                                    <i class="fa-solid fa-paper-plane"></i> Save
+                                                </button>
+                                            </div>
+                                        </form>
 
-                                    <!-- Replace PDF option -->
-                                    <form method="POST" action="faculty_dashboard.php" enctype="multipart/form-data" style="margin-top: 1rem; padding-top: 0.75rem; border-top: 1px dashed #e2e8f0;">
-                                        <input type="hidden" name="action" value="replace_question_pdf">
-                                        <input type="hidden" name="subject_assignment_id" value="<?= $g['subject_assignment_id'] ?>">
-                                        <span style="display: block; font-size: 0.75rem; font-weight: 700; color: #475569; margin-bottom: 0.25rem;"><i class="fa-solid fa-file-invoice" style="color: #4f46e5;"></i> Replace Question File</span>
-                                        <div style="display: flex; gap: 0.4rem; align-items: center;">
-                                            <input type="file" name="new_question_pdf" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif" required style="font-size: 0.75rem; width: 150px;">
-                                            <button type="submit" style="background: #3b82f6; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 700; cursor: pointer;">Upload</button>
-                                        </div>
-                                    </form>
+                                        <!-- Replace PDF option -->
+                                        <form method="POST" action="faculty_dashboard.php" enctype="multipart/form-data" style="margin: 0; padding-top: 0.75rem; border-top: 1px dashed #cbd5e1;">
+                                            <input type="hidden" name="action" value="replace_question_pdf">
+                                            <input type="hidden" name="subject_assignment_id" value="<?= $g['subject_assignment_id'] ?>">
+                                            
+                                            <div style="font-size: 0.75rem; font-weight: 700; color: #475569; margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 4px;">
+                                                <i class="fa-solid fa-file-arrow-up" style="color: #6366f1;"></i> Replace Question File
+                                            </div>
+                                            
+                                            <div style="display: flex; gap: 0.4rem; align-items: center;">
+                                                <input type="file" name="new_question_pdf" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif" required style="font-size: 0.75rem; color: #475569; width: 170px; background: white; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0.25rem 0.4rem;">
+                                                <button type="submit" style="background: linear-gradient(135deg, #4f46e5, #4338ca); color: white; border: none; padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 2px 4px rgba(79,70,229,0.2); transition: all 0.2s;">
+                                                    <i class="fa-solid fa-upload"></i> Upload
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                             <?php 

@@ -225,17 +225,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $db = get_db();
+
+        // Prevent duplicate grievance submission if sent rapidly
+        foreach (($db['assignment_grievances'] ?? []) as $existing_g) {
+            if ($existing_g['student_id'] === $student_id && 
+                intval($existing_g['subject_assignment_id']) === $sa_id && 
+                $existing_g['issue_type'] === $issue_type && 
+                trim($existing_g['description']) === $description) {
+                echo json_encode(['success' => true, 'message' => 'Grievance already submitted.']);
+                exit;
+            }
+        }
+
+        // Retrieve subject assignment metadata
+        $sa_subject_name = '';
+        $sa_assignment_title = '';
+        $sa_faculty_name = '';
+        if (isset($db['subject_assignments'])) {
+            foreach ($db['subject_assignments'] as $sa) {
+                if (intval($sa['id']) === $sa_id) {
+                    $sa_subject_name = $sa['subject_name'] ?? '';
+                    $sa_assignment_title = $sa['assignment_title'] ?? '';
+                    $sa_faculty_name = $sa['created_by'] ?? '';
+                    break;
+                }
+            }
+        }
+
         $max_gr_id = 0;
         foreach (($db['assignment_grievances'] ?? []) as $g) {
             if (isset($g['id']) && intval($g['id']) > $max_gr_id) {
                 $max_gr_id = intval($g['id']);
             }
         }
+
+        $new_ag_id = $max_gr_id + 1;
         $db['assignment_grievances'][] = [
-            'id' => $max_gr_id + 1,
+            'id' => $new_ag_id,
             'subject_assignment_id' => $sa_id,
+            'subject_name' => $sa_subject_name,
+            'assignment_title' => $sa_assignment_title,
+            'faculty_name' => $sa_faculty_name,
             'student_id' => $student_id,
             'student_name' => $user['name'],
+            'dept' => $user['dept'] ?? 'Information Technology',
             'issue_type' => $issue_type,
             'description' => $description,
             'screenshot' => $screenshot_name,
@@ -244,14 +277,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'created_at' => date('d M Y h:i A')
         ];
 
+        // Also synchronize entry into general grievances so it appears across student, faculty, HOD, and admin general grievance views
+        $max_main_gr_id = 0;
+        foreach (($db['grievances'] ?? []) as $mg) {
+            if (isset($mg['id']) && intval($mg['id']) > $max_main_gr_id) {
+                $max_main_gr_id = intval($mg['id']);
+            }
+        }
+
+        $g_title = 'Assignment Grievance: ' . ($sa_subject_name ?: 'Subject') . ' (' . ($sa_assignment_title ?: 'Assignment') . ')';
+        $db['grievances'][] = [
+            'id' => $max_main_gr_id + 1,
+            'student_id' => $student_id,
+            'student_name' => $user['name'],
+            'dept' => $user['dept'] ?? 'Information Technology',
+            'title' => $g_title,
+            'category' => $issue_type,
+            'desc' => $description,
+            'date' => date('d M Y h:i A'),
+            'status' => 'Pending',
+            'replies' => [],
+            'is_assignment_grievance' => true,
+            'subject_assignment_id' => $sa_id,
+            'assignment_grievance_id' => $new_ag_id,
+            'screenshot' => $screenshot_name
+        ];
+
         // Log grievance action
         $db['recent_activity'] = array_merge([
             [
                 'title' => 'Grievance Raised',
-                'desc' => $user['name'] . ' raised issue: ' . $issue_type,
+                'desc' => $user['name'] . ' raised assignment issue: ' . $issue_type,
                 'time' => 'Just now'
             ]
-        ], array_slice($db['recent_activity'], 0, 4));
+        ], array_slice($db['recent_activity'] ?? [], 0, 4));
 
         save_db($db);
         echo json_encode(['success' => true]);
@@ -922,8 +981,9 @@ foreach ($db['leaves'] ?? [] as $leave) {
             <div id="tab-assignments" class="app-view">
                 <?php
                 // Fetch student class metadata
-                $student_dept = $current_student['department'] ?? '';
-                $student_div = $current_student['division'] ?? '';
+                $st_dept_info = parse_student_dept_info($current_student['dept'] ?? $current_student['department'] ?? '');
+                $student_dept = $st_dept_info['department'] ?: ($current_student['department'] ?? 'Information Technology');
+                $student_div = $st_dept_info['division'] ?: ($current_student['division'] ?? '');
                 $student_sem = $current_student['semester'] ?? '';
                 ?>
                 <div class="data-table-container">
@@ -983,28 +1043,49 @@ foreach ($db['leaves'] ?? [] as $leave) {
                                                     }
                                                 }
 
-                                                $sa_item = null;
+                                                $sa_items_for_unit = [];
                                                 if (isset($db['subject_assignments'])) {
                                                     foreach ($db['subject_assignments'] as $sa) {
-                                                        if (intval($sa['assignment_id']) === $target_assign_id && $sa['subject_name'] === $subject_name) {
-                                                            $sa_dept = $sa['department'] ?? '';
-                                                            $sa_div = $sa['division'] ?? '';
-                                                            $sa_sem = $sa['semester'] ?? '';
+                                                        $sa_sub = trim($sa['subject_name'] ?? '');
+                                                        $curr_sub = trim($subject_name ?? '');
+                                                        $match_subject = (strcasecmp($sa_sub, $curr_sub) === 0 || strpos($curr_sub, $sa_sub) !== false || strpos($sa_sub, $curr_sub) !== false);
 
-                                                            $match_dept = (strcasecmp($sa_dept, $student_dept) === 0);
-                                                            $match_div = (empty($sa_div) || strcasecmp($sa_div, $student_div) === 0);
-                                                            $match_sem = (strcasecmp($sa_sem, $student_sem) === 0);
+                                                        if ($match_subject) {
+                                                            $sa_unit_id = intval($sa['assignment_id'] ?? 0);
+                                                            $sa_unit_num = 0;
+                                                            foreach ($db['assignments'] as $a) {
+                                                                if (intval($a['id']) === $sa_unit_id) {
+                                                                    $sa_unit_num = intval($a['unit']);
+                                                                    break;
+                                                                }
+                                                            }
+                                                            if ($sa_unit_num === 0 && isset($sa['unit'])) {
+                                                                $sa_unit_num = intval($sa['unit']);
+                                                            }
 
-                                                            if ($match_dept && $match_div && $match_sem) {
-                                                                $sa_item = $sa;
-                                                                break;
+                                                            $match_unit = ($sa_unit_num === $unit_num || $sa_unit_id === $target_assign_id || $sa_unit_num === 0);
+
+                                                            if ($match_unit) {
+                                                                $sa_dept = $sa['department'] ?? '';
+                                                                $sa_div = $sa['division'] ?? '';
+                                                                $sa_sem = $sa['semester'] ?? '';
+
+                                                                $match_dept = match_department($sa_dept, $student_dept);
+                                                                $match_div = match_division($sa_div, $student_div);
+                                                                $match_sem = match_semester($sa_sem, $student_sem);
+
+                                                                if ($match_dept && $match_div && $match_sem) {
+                                                                    $sa_items_for_unit[] = $sa;
+                                                                }
                                                             }
                                                         }
                                                     }
                                                 }
                                                 
-                                                if (!$sa_item) continue;
+                                                if (empty($sa_items_for_unit)) continue;
                                                 $has_any_assignment = true;
+                                                
+                                                foreach ($sa_items_for_unit as $sa_item):
                                                 
                                                 $my_sub = null;
                                                 foreach ($db['assignment_submissions'] as $sub) {
@@ -1022,133 +1103,147 @@ foreach ($db['leaves'] ?? [] as $leave) {
                                                 $submitted_at = $my_sub ? ($my_sub['submitted_at'] ?? '') : '';
                                                 
                                                 $due_passed = time() > strtotime($sa_item['due'] ?? $sa_item['due_date'] ?? '');
+                                                $my_sa_grievance = null;
+                                                if (isset($db['assignment_grievances'])) {
+                                                    foreach ($db['assignment_grievances'] as $gr) {
+                                                        if ($gr['subject_assignment_id'] == $sa_item['id'] && $gr['student_id'] === $student_id) {
+                                                            $my_sa_grievance = $gr;
+                                                            break;
+                                                        }
+                                                    }
+                                                }
                                             ?>
-                                                <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                                                    <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 1.5rem; align-items: start;">
+                                                <div style="background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.04); margin-bottom: 1.5rem; width: 100%; box-sizing: border-box;">
+                                                    <div style="display: grid; grid-template-columns: minmax(320px, 1fr) 320px; gap: 1.5rem; align-items: start; width: 100%;">
                                                         
-                                                        <!-- COLUMN 1: SECTION 1 (FACULTY ASSIGNMENT) -->
-                                                        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
-                                                            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.25rem;">
-                                                                <h6 style="margin: 0 0 0.75rem 0; font-size: 0.85rem; text-transform: uppercase; color: #64748b; font-weight: 700; border-bottom: 1px dashed #cbd5e1; padding-bottom: 0.5rem; display: flex; align-items: center; gap: 6px;">
-                                                                    <i class="fa-solid fa-file-signature" style="color: #4f46e5;"></i> UNIT <?php echo $unit_num; ?> ASSIGNMENT
-                                                                </h6>
-                                                                <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem;">
-                                                                    <div><strong>Subject Name:</strong> <span style="color: #334155;"><?= htmlspecialchars($sa_item['subject_name']) ?></span></div>
-                                                                    <div><strong>Assignment Title:</strong> <span style="color: #4f46e5; font-weight: 600;"><?= htmlspecialchars($sa_item['assignment_title']) ?></span></div>
-                                                                    <div><strong>Assignment Description:</strong> <p style="margin: 0.25rem 0 0 0; color: #64748b; font-size: 0.85rem; line-height: 1.4;"><?= htmlspecialchars($sa_item['description'] ?? 'Solve all tasks.') ?></p></div>
-                                                                    <div><strong>Unit Number:</strong> <span style="color: #334155;">Unit <?= htmlspecialchars($unit_num) ?></span></div>
-                                                                    <div><strong>Faculty Name:</strong> <span style="color: #334155; font-weight: 600;"><?= htmlspecialchars($sa_item['created_by']) ?></span></div>
-                                                                    <div><strong>Published Date:</strong> <span style="color: #334155;"><?= htmlspecialchars($sa_item['published_date'] ?? 'N/A') ?></span></div>
-                                                                    <div><strong>Due Date:</strong> <span style="color: #b91c1c; font-weight: 600;"><i class="fa-regular fa-calendar-times"></i> <?= htmlspecialchars($sa_item['due'] ?? '') ?></span></div>
-                                                                    <div style="margin-top: 0.75rem; display: flex; gap: 0.75rem;">
-                                                                        <a href="uploads/<?= htmlspecialchars($sa_item['question_pdf']) ?>" target="_blank" style="display: inline-flex; align-items: center; gap: 4px; padding: 0.4rem 0.8rem; background: #e0f2fe; color: #0369a1; border-radius: 6px; font-weight: 700; font-size: 0.8rem; text-decoration: none;">
-                                                                            <i class="fa-solid fa-eye"></i> View PDF
-                                                                        </a>
-                                                                        <a href="uploads/<?= htmlspecialchars($sa_item['question_pdf']) ?>" download style="display: inline-flex; align-items: center; gap: 4px; padding: 0.4rem 0.8rem; background: #f0fdf4; color: #166534; border-radius: 6px; font-weight: 700; font-size: 0.8rem; text-decoration: none;">
-                                                                            <i class="fa-solid fa-download"></i> Download PDF
-                                                                        </a>
-                                                                    </div>
+                                                        <!-- LEFT SECTION: FACULTY ASSIGNMENT DETAILS -->
+                                                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.25rem; height: 100%; box-sizing: border-box;">
+                                                            <h6 style="margin: 0 0 0.75rem 0; font-size: 0.85rem; text-transform: uppercase; color: #64748b; font-weight: 700; border-bottom: 1px dashed #cbd5e1; padding-bottom: 0.5rem; display: flex; align-items: center; gap: 6px;">
+                                                                <i class="fa-solid fa-file-signature" style="color: #4f46e5;"></i> UNIT <?php echo $unit_num; ?> ASSIGNMENT
+                                                            </h6>
+                                                            <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem;">
+                                                                <div><strong>Subject Name:</strong> <span style="color: #334155;"><?= htmlspecialchars($sa_item['subject_name']) ?></span></div>
+                                                                <div><strong>Assignment Title:</strong> <span style="color: #4f46e5; font-weight: 600;"><?= htmlspecialchars($sa_item['assignment_title']) ?></span></div>
+                                                                <div><strong>Assignment Description:</strong> <p style="margin: 0.25rem 0 0 0; color: #64748b; font-size: 0.85rem; line-height: 1.4;"><?= htmlspecialchars($sa_item['description'] ?? 'Solve all tasks.') ?></p></div>
+                                                                <div><strong>Unit Number:</strong> <span style="color: #334155;">Unit <?= htmlspecialchars($unit_num) ?></span></div>
+                                                                <div><strong>Faculty Name:</strong> <span style="color: #334155; font-weight: 600;"><?= htmlspecialchars($sa_item['created_by']) ?></span></div>
+                                                                <div><strong>Published Date:</strong> <span style="color: #334155;"><?= htmlspecialchars($sa_item['published_date'] ?? 'N/A') ?></span></div>
+                                                                <div><strong>Due Date:</strong> <span style="color: #b91c1c; font-weight: 600;"><i class="fa-regular fa-calendar-times"></i> <?= htmlspecialchars($sa_item['due'] ?? '') ?></span></div>
+                                                                
+                                                                <div style="margin-top: 0.75rem; display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+                                                                    <a href="uploads/<?= htmlspecialchars($sa_item['question_pdf']) ?>" target="_blank" style="display: inline-flex; align-items: center; gap: 4px; padding: 0.45rem 0.85rem; background: #e0f2fe; color: #0369a1; border-radius: 6px; font-weight: 700; font-size: 0.8rem; text-decoration: none;">
+                                                                        <i class="fa-solid fa-eye"></i> View PDF
+                                                                    </a>
+                                                                    <a href="uploads/<?= htmlspecialchars($sa_item['question_pdf']) ?>" download style="display: inline-flex; align-items: center; gap: 4px; padding: 0.45rem 0.85rem; background: #f0fdf4; color: #166534; border-radius: 6px; font-weight: 700; font-size: 0.8rem; text-decoration: none;">
+                                                                        <i class="fa-solid fa-download"></i> Download PDF
+                                                                    </a>
+                                                                    <button type="button" onclick="openGrievanceModal(<?= $sa_item['id'] ?>, '<?= htmlspecialchars(addslashes($sa_item['subject_name']), ENT_QUOTES) ?>', '<?= htmlspecialchars(addslashes($sa_item['assignment_title']), ENT_QUOTES) ?>')" style="display: inline-flex; align-items: center; gap: 4px; padding: 0.45rem 0.85rem; background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; border-radius: 6px; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.2s;">
+                                                                        <i class="fa-solid fa-triangle-exclamation"></i> Raise Grievance
+                                                                    </button>
                                                                 </div>
+                                                                
+                                                                <?php if ($my_sa_grievance): ?>
+                                                                    <div style="margin-top: 0.75rem; background: #fff7ed; border: 1px solid #ffedd5; border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem;">
+                                                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                                                                            <strong style="color: #c2410c;"><i class="fa-solid fa-triangle-exclamation"></i> Grievance Status:</strong>
+                                                                            <?php if ($my_sa_grievance['status'] === 'Resolved'): ?>
+                                                                                <span style="background: #dcfce7; color: #15803d; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 700;">Resolved</span>
+                                                                            <?php else: ?>
+                                                                                <span style="background: #fef3c7; color: #b45309; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 700;">Pending</span>
+                                                                            <?php endif; ?>
+                                                                        </div>
+                                                                        <div style="color: #475569;"><strong>Issue:</strong> <?= htmlspecialchars($my_sa_grievance['issue_type']) ?></div>
+                                                                        <?php if (!empty($my_sa_grievance['reply'])): ?>
+                                                                            <div style="margin-top: 0.35rem; color: #15803d; background: white; padding: 0.4rem; border-radius: 4px; border: 1px solid #cbd5e1;">
+                                                                                <strong>Faculty Reply:</strong> <?= htmlspecialchars($my_sa_grievance['reply']) ?>
+                                                                            </div>
+                                                                        <?php endif; ?>
+                                                                    </div>
+                                                                <?php endif; ?>
                                                             </div>
                                                         </div>
                                                         
-                                                        <!-- COLUMN 2: SECTION 2 (STUDENT SUBMISSION) -->
-                                                        <div>
-                                                            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.25rem;">
-                                                                <h6 style="margin: 0 0 0.75rem 0; font-size: 0.85rem; text-transform: uppercase; color: #64748b; font-weight: 700; border-bottom: 1px dashed #cbd5e1; padding-bottom: 0.5rem; display: flex; align-items: center; gap: 6px;">
-                                                                    <i class="fa-solid fa-cloud-arrow-up" style="color: #10b981;"></i> STUDENT SUBMISSION
-                                                                </h6>
-                                                                
-                                                                <div id="submission-portal-container-<?php echo $sa_item['id']; ?>">
-                                                                    <?php if ($sub_status !== 'Not Submitted'): ?>
-                                                                        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                                                                            <div style="display: flex; align-items: center; gap: 6px; color: #15803d; font-weight: 700; font-size: 0.9rem;">
-                                                                                <i class="fa-solid fa-circle-check"></i> Submitted Successfully
-                                                                            </div>
-                                                                            <div style="font-size: 0.8rem; color: #64748b;">
-                                                                                <strong>Submission Date & Time:</strong> <?= htmlspecialchars($submitted_at) ?>
-                                                                            </div>
-                                                                            <div style="font-size: 0.8rem; color: #64748b;">
-                                                                                <strong>File Name:</strong> <?= htmlspecialchars($sub_file_name) ?>
-                                                                            </div>
-                                                                            
-                                                                            <div style="display: flex; gap: 0.5rem; margin-top: 0.25rem;">
-                                                                                <?php 
-                                                                                $sub_paths = explode(',', $sub_file); 
-                                                                                foreach ($sub_paths as $idx => $spath):
-                                                                                    $spath = trim($spath);
-                                                                                    if (empty($spath)) continue;
-                                                                                ?>
-                                                                                <a href="uploads/<?= htmlspecialchars($spath) ?>" target="_blank" style="padding: 0.35rem 0.75rem; background: #e0f2fe; color: #0369a1; border-radius: 4px; font-size: 0.75rem; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
-                                                                                    <i class="fa-solid fa-eye"></i> View <?php echo count($sub_paths) > 1 ? ($idx+1) : 'File'; ?>
-                                                                                </a>
-                                                                                <a href="uploads/<?= htmlspecialchars($spath) ?>" download style="padding: 0.35rem 0.75rem; background: #f0fdf4; color: #166534; border-radius: 4px; font-size: 0.75rem; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
-                                                                                    <i class="fa-solid fa-download"></i> Download <?php echo count($sub_paths) > 1 ? ($idx+1) : 'File'; ?>
-                                                                                </a>
-                                                                                <?php endforeach; ?>
-                                                                            </div>
+                                                        <!-- RIGHT SECTION: STUDENT SUBMISSION -->
+                                                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.25rem; height: 100%; box-sizing: border-box;">
+                                                            <h6 style="margin: 0 0 0.75rem 0; font-size: 0.85rem; text-transform: uppercase; color: #64748b; font-weight: 700; border-bottom: 1px dashed #cbd5e1; padding-bottom: 0.5rem; display: flex; align-items: center; gap: 6px;">
+                                                                <i class="fa-solid fa-cloud-arrow-up" style="color: #10b981;"></i> STUDENT SUBMISSION
+                                                            </h6>
+                                                            
+                                                            <div id="submission-portal-container-<?php echo $sa_item['id']; ?>">
+                                                                <?php if ($sub_status !== 'Not Submitted'): ?>
+                                                                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                                                        <div style="display: flex; align-items: center; gap: 6px; color: #15803d; font-weight: 700; font-size: 0.9rem;">
+                                                                            <i class="fa-solid fa-circle-check"></i> Submitted Successfully
+                                                                        </div>
+                                                                        <div style="font-size: 0.8rem; color: #64748b;">
+                                                                            <strong>Submission Date & Time:</strong> <?= htmlspecialchars($submitted_at) ?>
+                                                                        </div>
+                                                                        <div style="font-size: 0.8rem; color: #64748b;">
+                                                                            <strong>File Name:</strong> <?= htmlspecialchars($sub_file_name) ?>
+                                                                        </div>
+                                                                        
+                                                                        <div style="display: flex; gap: 0.5rem; margin-top: 0.25rem; flex-wrap: wrap;">
+                                                                            <?php 
+                                                                            $sub_paths = explode(',', $sub_file); 
+                                                                            foreach ($sub_paths as $idx => $spath):
+                                                                                $spath = trim($spath);
+                                                                                if (empty($spath)) continue;
+                                                                            ?>
+                                                                            <a href="uploads/<?= htmlspecialchars($spath) ?>" target="_blank" style="padding: 0.35rem 0.75rem; background: #e0f2fe; color: #0369a1; border-radius: 4px; font-size: 0.75rem; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                                                                                <i class="fa-solid fa-eye"></i> View <?php echo count($sub_paths) > 1 ? ($idx+1) : 'File'; ?>
+                                                                            </a>
+                                                                            <a href="uploads/<?= htmlspecialchars($spath) ?>" download style="padding: 0.35rem 0.75rem; background: #f0fdf4; color: #166534; border-radius: 4px; font-size: 0.75rem; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                                                                                <i class="fa-solid fa-download"></i> Download <?php echo count($sub_paths) > 1 ? ($idx+1) : 'File'; ?>
+                                                                            </a>
+                                                                            <?php endforeach; ?>
+                                                                        </div>
 
-                                                                            <div style="margin-top: 1rem; border-top: 1px dashed #cbd5e1; padding-top: 1rem;">
-                                                                                <h6 style="margin: 0 0 0.5rem 0; font-size: 0.8rem; text-transform: uppercase; color: #64748b; font-weight: 700;">Evaluation Status</h6>
-                                                                                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                                                                                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                                                        <span style="font-size: 0.8rem; color: #475569; font-weight: 600;">Marks:</span>
-                                                                                        <?php if ($sub_marks === 'Pending'): ?>
-                                                                                            <span style="background: #fef3c7; color: #d97706; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 700;">Pending</span>
-                                                                                        <?php else: ?>
-                                                                                            <span style="background: #dcfce7; color: #15803d; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: 800;"><?= htmlspecialchars($sub_marks) ?> / 10</span>
-                                                                                        <?php endif; ?>
-                                                                                    </div>
-                                                                                    <?php if (!empty($sub_remarks)): ?>
-                                                                                        <div style="background: #f1f5f9; padding: 0.5rem; border-radius: 6px; font-size: 0.75rem; color: #334155; border-left: 3px solid #64748b;">
-                                                                                            <strong>Remarks:</strong> <?= htmlspecialchars($sub_remarks) ?>
-                                                                                        </div>
+                                                                        <div style="margin-top: 1rem; border-top: 1px dashed #cbd5e1; padding-top: 1rem;">
+                                                                            <h6 style="margin: 0 0 0.5rem 0; font-size: 0.8rem; text-transform: uppercase; color: #64748b; font-weight: 700;">Evaluation Status</h6>
+                                                                            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                                                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                                                                    <span style="font-size: 0.8rem; color: #475569; font-weight: 600;">Marks:</span>
+                                                                                    <?php if ($sub_marks === 'Pending'): ?>
+                                                                                        <span style="background: #fef3c7; color: #d97706; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 700;">Pending</span>
+                                                                                    <?php else: ?>
+                                                                                        <span style="background: #dcfce7; color: #15803d; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: 800;"><?= htmlspecialchars($sub_marks) ?> / 10</span>
                                                                                     <?php endif; ?>
                                                                                 </div>
+                                                                                <?php if (!empty($sub_remarks)): ?>
+                                                                                    <div style="background: #f1f5f9; padding: 0.5rem; border-radius: 6px; font-size: 0.75rem; color: #334155; border-left: 3px solid #64748b;">
+                                                                                        <strong>Remarks:</strong> <?= htmlspecialchars($sub_remarks) ?>
+                                                                                    </div>
+                                                                                <?php endif; ?>
                                                                             </div>
-                                                                            
-                                                                            <?php if ($sub_marks === 'Pending' && !$due_passed): ?>
-                                                                                <button type="button" onclick="showPortalUploadForm(<?php echo $sa_item['id']; ?>)" style="margin-top: 0.5rem; background: white; border: 1px solid #cbd5e1; color: #475569; padding: 0.4rem 0.75rem; border-radius: 6px; font-weight: 600; font-size: 0.75rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 4px; width: 100%;">
-                                                                                    <i class="fa-solid fa-arrows-rotate"></i> Replace Submission
-                                                                                </button>
-                                                                            <?php endif; ?>
                                                                         </div>
-                                                                    <?php else: ?>
-                                                                        <div style="text-align: center; padding: 1rem 0;">
-                                                                            <i class="fa-solid fa-arrow-up-from-bracket" style="font-size: 2rem; color: #cbd5e1; margin-bottom: 0.75rem;"></i>
-                                                                            <div style="font-weight: 600; color: #475569; margin-bottom: 0.25rem;">No Submission Yet</div>
-                                                                            
-                                                                            <?php if ($due_passed): ?>
-                                                                                <div style="color: #ef4444; font-size: 0.8rem; font-weight: 700; margin-bottom: 1rem;"><i class="fa-solid fa-triangle-exclamation"></i> Submission deadline has passed.</div>
-                                                                            <?php else: ?>
-                                                                                <div style="color: #64748b; font-size: 0.75rem; margin-bottom: 1rem;">Upload your completed assignment file here.</div>
-                                                                                <button type="button" onclick="openSubjectUploadModal(this)" data-id="<?php echo $sa_item['id']; ?>" data-subject="<?php echo htmlspecialchars($subject_name); ?>" data-unit="<?php echo $unit_num; ?>" style="background: #10b981; color: white; border: none; padding: 0.6rem 1.25rem; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.25); transition: background 0.2s;">
-                                                                                    <i class="fa-solid fa-cloud-arrow-up"></i> Upload Now
-                                                                                </button>
-                                                                            <?php endif; ?>
-                                                                        </div>
-                                                                    <?php endif; ?>
-                                                                </div>
-                                                                
-                                                                <div id="upload-form-wrapper-<?php echo $sa_item['id']; ?>" style="display: none; margin-top: 1rem;">
-                                                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
-                                                                        <span style="font-weight: 700; font-size: 0.85rem; color: #334155;">Replace File</span>
-                                                                        <button type="button" onclick="document.getElementById('upload-form-wrapper-<?php echo $sa_item['id']; ?>').style.display='none'; document.getElementById('upload-form-wrapper-<?php echo $sa_item['id']; ?>').previousElementSibling.style.display='block';" style="background: none; border: none; color: #64748b; cursor: pointer; font-size: 0.8rem;"><i class="fa-solid fa-xmark"></i> Cancel</button>
+                                                                        
+                                                                        <?php if ($sub_marks === 'Pending' && !$due_passed): ?>
+                                                                            <button type="button" onclick="showPortalUploadForm(<?php echo $sa_item['id']; ?>)" style="margin-top: 0.5rem; background: white; border: 1px solid #cbd5e1; color: #475569; padding: 0.4rem 0.75rem; border-radius: 6px; font-weight: 600; font-size: 0.75rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 4px; width: 100%;">
+                                                                                <i class="fa-solid fa-arrows-rotate"></i> Replace Submission
+                                                                            </button>
+                                                                        <?php endif; ?>
                                                                     </div>
-                                                                    <input type="file" id="portal-file-<?php echo $sa_item['id']; ?>" class="portal-file-input" data-sa-id="<?php echo $sa_item['id']; ?>" accept="application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/*" style="width: 100%; border: 1px dashed #cbd5e1; padding: 1rem; border-radius: 6px; background: white; margin-bottom: 0.75rem;">
-                                                                    <button type="button" onclick="handlePortalAssignmentUpload(event, <?php echo $sa_item['id']; ?>)" style="background: #3b82f6; color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; font-weight: 600; width: 100%; cursor: pointer;">Confirm Upload</button>
-                                                                    <div id="portal-progress-<?php echo $sa_item['id']; ?>" style="display: none; margin-top: 0.75rem;">
-                                                                        <div style="height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden;">
-                                                                            <div class="portal-progress-bar" style="height: 100%; width: 0%; background: #3b82f6; transition: width 0.2s;"></div>
-                                                                        </div>
-                                                                        <div style="text-align: right; font-size: 0.7rem; color: #64748b; margin-top: 2px;"><span class="portal-progress-text">0</span>%</div>
+                                                                <?php else: ?>
+                                                                    <div style="text-align: center; padding: 1rem 0;">
+                                                                        <i class="fa-solid fa-arrow-up-from-bracket" style="font-size: 2rem; color: #cbd5e1; margin-bottom: 0.75rem;"></i>
+                                                                        <div style="font-weight: 600; color: #475569; margin-bottom: 0.25rem;">No Submission Yet</div>
+                                                                        
+                                                                        <?php if ($due_passed): ?>
+                                                                            <div style="color: #ef4444; font-size: 0.8rem; font-weight: 700; margin-bottom: 1rem;"><i class="fa-solid fa-triangle-exclamation"></i> Submission deadline has passed.</div>
+                                                                        <?php else: ?>
+                                                                            <div style="color: #64748b; font-size: 0.75rem; margin-bottom: 1rem;">Upload your completed assignment file here.</div>
+                                                                            <button type="button" onclick="openSubjectUploadModal(this)" data-id="<?php echo $sa_item['id']; ?>" data-subject="<?php echo htmlspecialchars($subject_name); ?>" data-unit="<?php echo $unit_num; ?>" style="background: #10b981; color: white; border: none; padding: 0.6rem 1.25rem; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.25); transition: background 0.2s;">
+                                                                                <i class="fa-solid fa-cloud-arrow-up"></i> Upload Now
+                                                                            </button>
+                                                                        <?php endif; ?>
                                                                     </div>
-                                                                </div>
+                                                                <?php endif; ?>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            <?php endforeach; ?>
+                                            <?php endforeach; // End $sa_items_for_unit ?>
+                                            <?php endforeach; // End $units_list ?>
                                             
                                             <?php if (!$has_any_assignment): ?>
                                                 <div style="width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 3rem 1.5rem; color: #94a3b8; font-size: 0.85rem; box-sizing: border-box;">
@@ -2385,11 +2480,11 @@ foreach ($db['leaves'] ?? [] as $leave) {
             const body = document.getElementById(`subject-body-${unitNum}-${subjectId}`);
             const arrow = document.querySelector(`.subject-arrow-icon-${unitNum}-${subjectId}`);
             if (body.style.display === 'none' || !body.style.display) {
-                body.style.display = 'block';
-                arrow.style.transform = 'rotate(90deg)';
+                body.style.display = 'table-row';
+                if (arrow) arrow.style.transform = 'rotate(180deg)';
             } else {
                 body.style.display = 'none';
-                arrow.style.transform = 'rotate(0deg)';
+                if (arrow) arrow.style.transform = 'rotate(0deg)';
             }
         }
 
@@ -2783,6 +2878,12 @@ foreach ($db['leaves'] ?? [] as $leave) {
             if (grievanceForm) {
                 grievanceForm.addEventListener('submit', function(e) {
                     e.preventDefault();
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    if (submitBtn) {
+                        if (submitBtn.disabled) return;
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting...';
+                    }
                     const formData = new FormData(this);
                     
                     fetch('student_dashboard.php', {
@@ -2797,13 +2898,21 @@ foreach ($db['leaves'] ?? [] as $leave) {
                             closeGrievanceModal();
                             setTimeout(() => {
                                 window.location.reload();
-                            }, 1500);
+                            }, 1000);
                         } else {
+                            if (submitBtn) {
+                                submitBtn.disabled = false;
+                                submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Grievance';
+                            }
                             showToastNotification(data.message || 'Failed to submit grievance.', 'error');
                         }
                     })
                     .catch(err => {
                         console.error(err);
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Grievance';
+                        }
                         showToastNotification('An error occurred while submitting grievance.', 'error');
                     });
                 });
@@ -2882,15 +2991,15 @@ foreach ($db['leaves'] ?? [] as $leave) {
         }
 
         function openGrievanceModal(saId, subject, title) {
+            const form = document.getElementById('assignmentGrievanceForm');
+            if (form) form.reset();
+
             const idInput = document.getElementById('grievance_sa_id');
             const subjectInput = document.getElementById('grievance_subject');
             const assignmentInput = document.getElementById('grievance_assignment');
             if (idInput) idInput.value = saId;
             if (subjectInput) subjectInput.value = subject;
             if (assignmentInput) assignmentInput.value = title;
-            
-            const form = document.getElementById('assignmentGrievanceForm');
-            if (form) form.reset();
             
             const modal = document.getElementById('assignmentGrievanceModal');
             if (modal) modal.style.display = 'flex';
