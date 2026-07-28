@@ -1018,6 +1018,12 @@ if (isset($db['departments'])) {
                     System Configuration
                 </a>
             </li>
+            <li class="nav-item">
+                <a onclick="switchTab('student-marks')" class="nav-link" id="nav-student-marks">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    Student Marks
+                </a>
+            </li>
         </ul>
 
         <div class="logout-container">
@@ -1883,6 +1889,267 @@ if (isset($db['departments'])) {
                 </div>
             </div>
         </div>
+        <!-- ============================================ -->
+        <!-- 6. STUDENT MARKS VIEW                        -->
+        <!-- ============================================ -->
+        <div id="view-student-marks" class="app-view">
+            <style>
+                .marks-filters { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem; }
+                .marks-filter-row { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+                .marks-search-bar { flex-grow: 1; min-width: 250px; display: flex; align-items: center; background: white; padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+                .marks-search-bar input { border: none; outline: none; background: transparent; width: 100%; margin-left: 0.5rem; font-size: 0.95rem; }
+                
+                .marks-tab-group { display: flex; gap: 0.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
+                .marks-tab { padding: 0.5rem 1rem; cursor: pointer; color: var(--text-muted); font-weight: 600; font-size: 0.95rem; border-bottom: 2px solid transparent; transition: all 0.2s; }
+                .marks-tab:hover { color: var(--primary-color); }
+                .marks-tab.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+
+                .marks-pill-group { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+                .marks-pill { padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; border: 1px solid var(--border-color); background: white; color: var(--text-color); font-size: 0.9rem; font-weight: 500; transition: all 0.2s; }
+                .marks-pill:hover { background: #f8fafc; }
+                .marks-pill.active { background: #e0e7ff; color: #4338ca; border-color: #c7d2fe; }
+
+                .marks-pill-div { padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; background: #f1f5f9; color: var(--text-color); font-size: 0.9rem; font-weight: 500; transition: all 0.2s; border: none; }
+                .marks-pill-div:hover { background: #e2e8f0; }
+                .marks-pill-div.active { background: #3b82f6; color: white; }
+
+                .marks-table-container { background: white; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); overflow: hidden; margin-top: 1rem; }
+                .marks-empty-state { padding: 4rem 2rem; text-align: center; color: var(--text-muted); }
+                .marks-empty-state i { font-size: 3rem; color: #cbd5e1; margin-bottom: 1rem; }
+            </style>
+            
+            <div class="marks-filters">
+                <div class="marks-filter-row">
+                    <select id="marks-dept-select" class="form-control" style="width: auto; min-width: 200px; padding: 0.5rem;" onchange="updateMarksFilters()">
+                        <option value="ALL">All Departments</option>
+                        <?php foreach($db['departments'] ?? [] as $d): ?>
+                            <option value="<?php echo htmlspecialchars($d['name']); ?>"><?php echo htmlspecialchars($d['name']); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    
+                    <div class="marks-search-bar">
+                        <i class="fa-solid fa-magnifying-glass" style="color: #94a3b8;"></i>
+                        <input type="text" id="marks-search-input" placeholder="Search by ZPRN, username, or email..." oninput="updateMarksFilters()">
+                    </div>
+                </div>
+
+                <div class="marks-tab-group" id="marks-year-tabs">
+                    <div class="marks-tab active" data-year="1" onclick="setMarksFilter('year', 1)">Year 1</div>
+                    <div class="marks-tab" data-year="2" onclick="setMarksFilter('year', 2)">Year 2</div>
+                    <div class="marks-tab" data-year="3" onclick="setMarksFilter('year', 3)">Year 3</div>
+                    <div class="marks-tab" data-year="4" onclick="setMarksFilter('year', 4)">Year 4</div>
+                </div>
+
+                <div class="marks-pill-group" id="marks-sem-pills">
+                    <div class="marks-pill active" data-sem="1" onclick="setMarksFilter('sem', 1)">Semester 1</div>
+                    <div class="marks-pill" data-sem="2" onclick="setMarksFilter('sem', 2)">Semester 2</div>
+                </div>
+
+                <div class="marks-pill-group" id="marks-div-pills">
+                    <div class="marks-pill-div active" data-div="A" onclick="setMarksFilter('div', 'A')">Div A</div>
+                    <div class="marks-pill-div" data-div="B" onclick="setMarksFilter('div', 'B')">Div B</div>
+                    <div class="marks-pill-div" data-div="C" onclick="setMarksFilter('div', 'C')">Div C</div>
+                    <div class="marks-pill-div" data-div="D" onclick="setMarksFilter('div', 'D')">Div D</div>
+                </div>
+            </div>
+
+            <div id="marks-results-area">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <script>
+            let currentMarksFilters = {
+                dept: 'ALL',
+                year: 1,
+                sem: 1, // Relative to year (1 or 2). Absolute sem is (year-1)*2 + sem
+                div: 'A',
+                search: ''
+            };
+
+            const studentsData = <?php echo json_encode($db['students'] ?? []); ?>;
+            const subsData = <?php echo json_encode($db['assignment_submissions'] ?? []); ?>;
+            const subjectsData = <?php echo json_encode($db['subjects'] ?? []); ?>;
+            const assignmentsData = <?php echo json_encode($db['subject_assignments'] ?? []); ?>;
+
+            function setMarksFilter(type, value) {
+                currentMarksFilters[type] = value;
+                
+                // Update UI active states
+                if (type === 'year') {
+                    document.querySelectorAll('#marks-year-tabs .marks-tab').forEach(el => el.classList.remove('active'));
+                    document.querySelector(`#marks-year-tabs .marks-tab[data-year="${value}"]`).classList.add('active');
+                } else if (type === 'sem') {
+                    document.querySelectorAll('#marks-sem-pills .marks-pill').forEach(el => el.classList.remove('active'));
+                    document.querySelector(`#marks-sem-pills .marks-pill[data-sem="${value}"]`).classList.add('active');
+                } else if (type === 'div') {
+                    document.querySelectorAll('#marks-div-pills .marks-pill-div').forEach(el => el.classList.remove('active'));
+                    document.querySelector(`#marks-div-pills .marks-pill-div[data-div="${value}"]`).classList.add('active');
+                }
+                
+                renderStudentMarks();
+            }
+
+            function updateMarksFilters() {
+                currentMarksFilters.dept = document.getElementById('marks-dept-select').value;
+                currentMarksFilters.search = document.getElementById('marks-search-input').value.trim().toLowerCase();
+                renderStudentMarks();
+            }
+
+            function getAbsoluteSem(semesterStr) {
+                if (!semesterStr) return 1;
+                const str = String(semesterStr).toLowerCase();
+                
+                // Check for "X Year Y Semester" format e.g. "3rd Year Semester 1"
+                const yearMatch = str.match(/(\d+)(?:st|nd|rd|th)?\s+year/);
+                const semMatch = str.match(/semester\s+(\d+)/);
+                if (yearMatch && semMatch) {
+                    const y = parseInt(yearMatch[1]);
+                    const s = parseInt(semMatch[1]);
+                    return (y - 1) * 2 + s;
+                }
+                
+                // Check for "Xth Semester" format e.g. "5th Semester"
+                const singleSemMatch = str.match(/(\d+)(?:st|nd|rd|th)?\s+semester/);
+                if (singleSemMatch) {
+                    return parseInt(singleSemMatch[1]);
+                }
+                
+                // Fallback: just try to parse the first integer
+                return parseInt(str) || 1;
+            }
+
+            function renderStudentMarks() {
+                const resultsArea = document.getElementById('marks-results-area');
+                let html = '';
+                
+                // Calculate absolute semester (1-8)
+                const absoluteSem = (currentMarksFilters.year - 1) * 2 + currentMarksFilters.sem;
+                const isSearching = currentMarksFilters.search.length > 0;
+
+                // 1. Filter students
+                let filteredStudents = studentsData.filter(s => {
+                    if (isSearching) {
+                        const q = currentMarksFilters.search;
+                        return (s.prn && s.prn.toLowerCase().includes(q)) || 
+                               (s.id && String(s.id).toLowerCase().includes(q)) || 
+                               (s.username && s.username.toLowerCase().includes(q)) ||
+                               (s.email && s.email.toLowerCase().includes(q)) ||
+                               (s.name && s.name.toLowerCase().includes(q));
+                    } else {
+                        const sSem = getAbsoluteSem(s.semester);
+                        const matchSem = sSem === absoluteSem;
+                        const sDivMatch = (s.division || 'A').toUpperCase() === currentMarksFilters.div;
+                        
+                        let matchDept = true;
+                        if (currentMarksFilters.dept !== 'ALL') {
+                            matchDept = (s.department && s.department.toLowerCase() === currentMarksFilters.dept.toLowerCase()) ||
+                                        (s.dept && s.dept.toLowerCase().includes(currentMarksFilters.dept.toLowerCase()));
+                        }
+                        return matchSem && sDivMatch && matchDept;
+                    }
+                });
+
+                if (filteredStudents.length === 0) {
+                    let emptyMsg = isSearching ? `No students found matching "${currentMarksFilters.search}"` 
+                                             : `No assignments published for Year ${currentMarksFilters.year}, Semester ${currentMarksFilters.sem}, Division ${currentMarksFilters.div}`;
+                    resultsArea.innerHTML = `
+                        <div class="marks-empty-state">
+                            <i class="fa-solid fa-inbox"></i>
+                            <h3>No Data Available</h3>
+                            <p>${emptyMsg}</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Create a table of students and their recent submissions
+                html += `
+                <div class="marks-table-container">
+                    <table class="data-table" style="width: 100%; border-collapse: collapse;">
+                        <thead style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                            <tr>
+                                <th style="padding: 1rem; text-align: left; font-weight: 600; color: #475569;">Student</th>
+                                <th style="padding: 1rem; text-align: left; font-weight: 600; color: #475569;">ZPRN / ID</th>
+                                <th style="padding: 1rem; text-align: left; font-weight: 600; color: #475569;">Department</th>
+                                <th style="padding: 1rem; text-align: left; font-weight: 600; color: #475569;">Subject Assignments</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                filteredStudents.forEach(student => {
+                    const studentId = student.id || student.username || student.prn;
+                    const studentSubs = subsData.filter(sub => sub.student_id == studentId || sub.student_name === student.name);
+                    
+                    html += `
+                        <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                            <td style="padding: 1rem;">
+                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <img src="${student.avatar || 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=150&auto=format&fit=crop'}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+                                    <div>
+                                        <div style="font-weight: 600; color: #1e293b;">${student.name}</div>
+                                        <div style="font-size: 0.8rem; color: #64748b;">${student.email || 'No email'}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td style="padding: 1rem; color: #475569; font-weight: 500;">
+                                ${student.prn || studentId}
+                            </td>
+                            <td style="padding: 1rem; color: #475569;">
+                                <div>${student.department || student.dept || 'IT'}</div>
+                                <div style="font-size: 0.8rem; color: #94a3b8;">Sem ${student.semester || 1} • Div ${student.division || 'A'}</div>
+                            </td>
+                            <td style="padding: 1rem;">
+                                <div style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 120px; overflow-y: auto; padding-right: 0.5rem;">
+                    `;
+
+                    if (studentSubs.length === 0) {
+                        html += `<div style="font-size: 0.85rem; color: #94a3b8; font-style: italic;">No submissions found.</div>`;
+                    } else {
+                        studentSubs.forEach(sub => {
+                            // find subject assignment name
+                            const sa = assignmentsData.find(a => a.id == sub.subject_assignment_id);
+                            const subjName = sa ? sa.subject_name : 'Unknown Subject';
+                            let marksColor = '#ef4444'; // red for low or pending
+                            if (sub.marks !== 'Pending') {
+                                const m = parseInt(sub.marks);
+                                if (!isNaN(m) && m >= 8) marksColor = '#10b981'; // green for good
+                                else if (!isNaN(m) && m >= 5) marksColor = '#f59e0b'; // yellow for avg
+                            } else {
+                                marksColor = '#64748b';
+                            }
+
+                            html += `
+                                <div style="display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 0.4rem 0.75rem; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 0.85rem;">
+                                    <span style="font-weight: 500; color: #334155; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;" title="${subjName}">
+                                        ${subjName}
+                                    </span>
+                                    <span style="font-weight: 700; color: ${marksColor}; background: ${marksColor}15; padding: 0.1rem 0.5rem; border-radius: 4px;">
+                                        ${sub.marks}
+                                    </span>
+                                </div>
+                            `;
+                        });
+                    }
+
+                    html += `
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                html += `
+                        </tbody>
+                    </table>
+                </div>
+                `;
+                
+                resultsArea.innerHTML = html;
+            }
+        </script>
+
         <div id="view-system-configuration" class="app-view">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
                 <div>
@@ -2308,6 +2575,10 @@ if (isset($db['departments'])) {
             } else if (tabId === 'system-configuration') {
                 title.innerText = 'System Configuration';
                 desc.innerText = 'Manage global settings, security preferences, and system behavior.';
+            } else if (tabId === 'student-marks') {
+                title.innerText = 'Student Marks';
+                desc.innerText = 'View and search student assignment marks by department, year, semester, and division.';
+                if (typeof renderStudentMarks === 'function') renderStudentMarks();
             }
         }
 
