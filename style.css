@@ -18,6 +18,12 @@
     --primary-light: #eff6ff;
     --primary-gradient: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
     --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+    --primary-light: rgba(37, 99, 235, 0.15) !important;
+    --success-light: rgba(16, 185, 129, 0.15) !important;
+    --warning-light: rgba(245, 158, 11, 0.15) !important;
+    --danger-light: rgba(239, 68, 68, 0.15) !important;
+    --purple-light: rgba(139, 92, 246, 0.15) !important;
+
     --accent-glow: rgba(59, 130, 246, 0.15);
     --text-main: #1f2937;
     --text-muted: #6b7280;
@@ -36,6 +42,12 @@ body.theme-student {
     --primary-light: #eff6ff;
     --primary-gradient: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
     --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+    --primary-light: rgba(37, 99, 235, 0.15) !important;
+    --success-light: rgba(16, 185, 129, 0.15) !important;
+    --warning-light: rgba(245, 158, 11, 0.15) !important;
+    --danger-light: rgba(239, 68, 68, 0.15) !important;
+    --purple-light: rgba(139, 92, 246, 0.15) !important;
+
     --accent-glow: rgba(59, 130, 246, 0.15);
 }
 
@@ -45,6 +57,12 @@ body.theme-faculty {
     --primary-light: #ecfdf5;
     --primary-gradient: linear-gradient(135deg, #34d399 0%, #059669 100%);
     --bg-gradient: linear-gradient(135deg, #fafafa 0%, #d1fae5 100%);
+    --primary-light: rgba(37, 99, 235, 0.15) !important;
+    --success-light: rgba(16, 185, 129, 0.15) !important;
+    --warning-light: rgba(245, 158, 11, 0.15) !important;
+    --danger-light: rgba(239, 68, 68, 0.15) !important;
+    --purple-light: rgba(139, 92, 246, 0.15) !important;
+
     --accent-glow: rgba(16, 185, 129, 0.15);
 }
 
@@ -54,6 +72,12 @@ body.theme-hod {
     --primary-light: #f5f3ff;
     --primary-gradient: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
     --bg-gradient: linear-gradient(135deg, #fafafa 0%, #ede9fe 100%);
+    --primary-light: rgba(37, 99, 235, 0.15) !important;
+    --success-light: rgba(16, 185, 129, 0.15) !important;
+    --warning-light: rgba(245, 158, 11, 0.15) !important;
+    --danger-light: rgba(239, 68, 68, 0.15) !important;
+    --purple-light: rgba(139, 92, 246, 0.15) !important;
+
     --accent-glow: rgba(139, 92, 246, 0.15);
 }
 
@@ -63,6 +87,12 @@ body.theme-admin {
     --primary-light: #fff7ed;
     --primary-gradient: linear-gradient(135deg, #fb923c 0%, #ea580c 100%);
     --bg-gradient: linear-gradient(135deg, #fafafa 0%, #ffedd5 100%);
+    --primary-light: rgba(37, 99, 235, 0.15) !important;
+    --success-light: rgba(16, 185, 129, 0.15) !important;
+    --warning-light: rgba(245, 158, 11, 0.15) !important;
+    --danger-light: rgba(239, 68, 68, 0.15) !important;
+    --purple-light: rgba(139, 92, 246, 0.15) !important;
+
     --accent-glow: rgba(249, 115, 22, 0.15);
 }
 
@@ -821,7 +851,7 @@ body {
 .user-details .name {
     font-weight: 600;
     font-size: 0.95rem;
-    color: #1f2937;
+    color: var(--text-primary);
 }
 
 .user-details .role {
@@ -923,7 +953,7 @@ body {
 .data-table td {
     padding: 1.25rem 1.5rem;
     border-bottom: 1px solid #f1f5f9;
-    color: #374151;
+    color: var(--text-primary);
     vertical-align: middle;
 }
 
@@ -937,7 +967,7 @@ body {
 
 .notice-title {
     font-weight: 600;
-    color: #1f2937;
+    color: var(--text-primary);
     font-size: 0.975rem;
 }
 
@@ -954,7 +984,7 @@ body {
 
 .publisher-cell .pub-name {
     font-weight: 500;
-    color: #374151;
+    color: var(--text-primary);
 }
 
 .publisher-cell .pub-role {
@@ -1175,7 +1205,7 @@ body {
 
 .drag-drop-zone p {
     font-size: 0.95rem;
-    color: #374151;
+    color: var(--text-primary);
     font-weight: 500;
     margin-bottom: 0.35rem;
 }
@@ -1200,7 +1230,7 @@ body {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    color: #374151;
+    color: var(--text-primary);
     font-weight: 500;
     font-size: 0.9rem;
 }
@@ -1712,7 +1742,7 @@ body {
 
 .chat-message {
     font-size: 0.95rem;
-    color: #374151;
+    color: var(--text-primary);
 }
 
 .chat-reply-box {
@@ -1782,6 +1812,12 @@ body {
 /* =================================================== */
 body.dark-mode {
     --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+    --primary-light: rgba(37, 99, 235, 0.15) !important;
+    --success-light: rgba(16, 185, 129, 0.15) !important;
+    --warning-light: rgba(245, 158, 11, 0.15) !important;
+    --danger-light: rgba(239, 68, 68, 0.15) !important;
+    --purple-light: rgba(139, 92, 246, 0.15) !important;
+
     --text-main: #f8fafc !important;
     --text-muted: #94a3b8 !important;
     --border-color: var(--border-color); !important;
