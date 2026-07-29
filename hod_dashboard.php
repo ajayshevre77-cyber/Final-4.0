@@ -281,14 +281,14 @@ $pending_approvals = $pending_leaves + $unresolved_grievances;
                             <?php endif; ?>
                         </div>
                         
-                        <div class="notification-dropdown" id="notificationDropdown" style="display: none; position: absolute; top: 120%; right: 0; width: 320px; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid var(--border-color); z-index: 100; overflow: hidden; cursor: default;">
-                            <div style="padding: 1rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: #f8fafc;">
-                                <h4 style="margin: 0; font-size: 1rem; color: #1e293b;">Notifications</h4>
-                                <span style="font-size: 0.75rem; color: var(--primary-color); cursor: pointer; font-weight: 600;" onclick="fetch(window.location.href, {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: 'action=clear_notifications'}).then(() => { this.parentElement.nextElementSibling.innerHTML='<div style=\'padding: 2rem 1rem; text-align: center; color: #64748b; font-size: 0.9rem;\'><i class=\'fa-regular fa-bell-slash\' style=\'font-size: 1.5rem; margin-bottom: 0.5rem; color: #cbd5e1;\'></i><br>No new notifications</div>'; let b = document.querySelector('#notificationToggle .badge'); if(b) b.style.display='none'; });">Mark all as read</span>
+                        <div class="notification-dropdown" id="notificationDropdown" style="display: none; position: absolute; top: 120%; right: 0; width: 320px; background: var(--bg-card); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid var(--border-color); z-index: 100; overflow: hidden; cursor: default;">
+                            <div style="padding: 1rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--bg-page);">
+                                <h4 style="margin: 0; font-size: 1rem; color: var(--text-primary);">Notifications</h4>
+                                <span style="font-size: 0.75rem; color: var(--primary-color); cursor: pointer; font-weight: 600;" onclick="fetch(window.location.href, {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: 'action=clear_notifications'}).then(() => { this.parentElement.nextElementSibling.innerHTML='<div style=\'padding: 2rem 1rem; text-align: center; color: var(--text-secondary); font-size: 0.9rem;\'><i class=\'fa-regular fa-bell-slash\' style=\'font-size: 1.5rem; margin-bottom: 0.5rem; color: #cbd5e1;\'></i><br>No new notifications</div>'; let b = document.querySelector('#notificationToggle .badge'); if(b) b.style.display='none'; });">Mark all as read</span>
                             </div>
                             <div style="max-height: 350px; overflow-y: auto; text-align: left;">
                                 <?php if (empty($db['recent_activity'])): ?>
-                                    <div style="padding: 2rem 1rem; text-align: center; color: #64748b; font-size: 0.9rem;">
+                                    <div style="padding: 2rem 1rem; text-align: center; color: var(--text-secondary); font-size: 0.9rem;">
                                         <i class="fa-regular fa-bell-slash" style="font-size: 1.5rem; margin-bottom: 0.5rem; color: #cbd5e1;"></i><br>
                                         No new notifications
                                     </div>
@@ -302,15 +302,15 @@ $pending_approvals = $pending_leaves + $unresolved_grievances;
                                     elseif (strpos($t, 'assignment') !== false) $targetTab = 'assignments';
                                     elseif (strpos($t, 'notice') !== false) $targetTab = 'notices';
                                     ?>
-                                    <div onclick="triggerTab('<?php echo $targetTab; ?>')" style="padding: 1rem; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: background 0.2s; <?php echo $idx === 0 ? 'background: #f0f9ff;' : ''; ?>" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='<?php echo $idx === 0 ? '#f0f9ff' : 'transparent'; ?>'">
+                                    <div onclick="triggerTab('<?php echo $targetTab; ?>')" style="padding: 1rem; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s; <?php echo $idx === 0 ? 'background: #f0f9ff;' : ''; ?>" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='<?php echo $idx === 0 ? '#f0f9ff' : 'transparent'; ?>'">
                                         <div style="display: flex; gap: 0.75rem;">
-                                            <div style="width: 36px; height: 36px; border-radius: 50%; background: #e0f2fe; color: #0284c7; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                            <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--bg-alt); color: #0284c7; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                                                 <i class="fa-solid fa-bolt"></i>
                                             </div>
                                             <div>
-                                                <div style="font-weight: 600; font-size: 0.9rem; color: #334155; margin-bottom: 0.15rem;"><?php echo htmlspecialchars($activity['title'] ?? 'Notification'); ?></div>
-                                                <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.25rem;"><?php echo htmlspecialchars($activity['desc'] ?? ''); ?></div>
-                                                <div style="font-size: 0.7rem; color: #94a3b8;"><i class="fa-regular fa-clock" style="margin-right: 3px;"></i> <?php echo htmlspecialchars($activity['time'] ?? 'Just now'); ?></div>
+                                                <div style="font-weight: 600; font-size: 0.9rem; color: var(--text-primary); margin-bottom: 0.15rem;"><?php echo htmlspecialchars($activity['title'] ?? 'Notification'); ?></div>
+                                                <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.25rem;"><?php echo htmlspecialchars($activity['desc'] ?? ''); ?></div>
+                                                <div style="font-size: 0.7rem; color: var(--text-muted);"><i class="fa-regular fa-clock" style="margin-right: 3px;"></i> <?php echo htmlspecialchars($activity['time'] ?? 'Just now'); ?></div>
                                             </div>
                                         </div>
                                     </div>
@@ -400,77 +400,77 @@ $pending_approvals = $pending_leaves + $unresolved_grievances;
 
             <!-- Dashboard View -->
             <div id="view-dashboard" class="app-view active">
-                <h3 style="margin-bottom: 1.5rem; color: #1e293b;">Department Summary</h3>
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;">
+                <h3 style="margin-bottom: 1.5rem; color: var(--text-primary);">Department Summary</h3>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;">
                     
                     <!-- Leave Summary Card -->
-                    <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; flex-direction: column;">
+                    <div style="background: var(--bg-card); border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; flex-direction: column;">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
                             <div>
-                                <div style="font-size: 0.85rem; color: #64748b; font-weight: 600; margin-bottom: 0.25rem;">Pending Leaves</div>
-                                <div style="font-size: 2rem; font-weight: 800; color: #0f172a; line-height: 1;"><?= $pending_leaves ?></div>
+                                <div style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 600; margin-bottom: 0.25rem;">Pending Leaves</div>
+                                <div style="font-size: 2rem; font-weight: 800; color: var(--text-primary); line-height: 1;"><?= $pending_leaves ?></div>
                             </div>
                             <div style="width: 48px; height: 48px; border-radius: 12px; background: #dcfce7; color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
                                 <i class="fa-regular fa-calendar-check"></i>
                             </div>
                         </div>
-                        <button onclick="switchTab('leaves')" style="width: 100%; background: transparent; border: 1px solid #e2e8f0; color: #64748b; padding: 0.6rem; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; justify-content: center; align-items: center; gap: 0.5rem; font-size: 0.85rem;" onmouseover="this.style.background='#f8fafc'; this.style.color='#0f172a';" onmouseout="this.style.background='transparent'; this.style.color='#64748b';">Review Requests <i class="fa-solid fa-arrow-right"></i></button>
+                        <button onclick="switchTab('leaves')" style="width: 100%; background: transparent; border: 1px solid var(--border-color); color: var(--text-secondary); padding: 0.6rem; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; justify-content: center; align-items: center; gap: 0.5rem; font-size: 0.85rem;" onmouseover="this.style.background='#f8fafc'; this.style.color='#0f172a';" onmouseout="this.style.background='transparent'; this.style.color='#64748b';">Review Requests <i class="fa-solid fa-arrow-right"></i></button>
                     </div>
 
                     <!-- Grievance Summary Card -->
-                    <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; flex-direction: column;">
+                    <div style="background: var(--bg-card); border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; flex-direction: column;">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
                             <div>
-                                <div style="font-size: 0.85rem; color: #64748b; font-weight: 600; margin-bottom: 0.25rem;">Open Grievances</div>
-                                <div style="font-size: 2rem; font-weight: 800; color: #0f172a; line-height: 1;"><?= $unresolved_grievances ?></div>
+                                <div style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 600; margin-bottom: 0.25rem;">Open Grievances</div>
+                                <div style="font-size: 2rem; font-weight: 800; color: var(--text-primary); line-height: 1;"><?= $unresolved_grievances ?></div>
                             </div>
                             <div style="width: 48px; height: 48px; border-radius: 12px; background: #ffedd5; color: #f97316; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
                                 <i class="fa-regular fa-comments"></i>
                             </div>
                         </div>
-                        <button onclick="switchTab('grievances')" style="width: 100%; background: transparent; border: 1px solid #e2e8f0; color: #64748b; padding: 0.6rem; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; justify-content: center; align-items: center; gap: 0.5rem; font-size: 0.85rem;" onmouseover="this.style.background='#f8fafc'; this.style.color='#0f172a';" onmouseout="this.style.background='transparent'; this.style.color='#64748b';">View Grievances <i class="fa-solid fa-arrow-right"></i></button>
+                        <button onclick="switchTab('grievances')" style="width: 100%; background: transparent; border: 1px solid var(--border-color); color: var(--text-secondary); padding: 0.6rem; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; justify-content: center; align-items: center; gap: 0.5rem; font-size: 0.85rem;" onmouseover="this.style.background='#f8fafc'; this.style.color='#0f172a';" onmouseout="this.style.background='transparent'; this.style.color='#64748b';">View Grievances <i class="fa-solid fa-arrow-right"></i></button>
                     </div>
 
                     <!-- Notice Summary Card -->
-                    <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; flex-direction: column;">
+                    <div style="background: var(--bg-card); border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; flex-direction: column;">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
                             <div>
-                                <div style="font-size: 0.85rem; color: #64748b; font-weight: 600; margin-bottom: 0.25rem;">Total Notices</div>
-                                <div style="font-size: 2rem; font-weight: 800; color: #0f172a; line-height: 1;"><?= $total_notices ?></div>
+                                <div style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 600; margin-bottom: 0.25rem;">Total Notices</div>
+                                <div style="font-size: 2rem; font-weight: 800; color: var(--text-primary); line-height: 1;"><?= $total_notices ?></div>
                             </div>
                             <div style="width: 48px; height: 48px; border-radius: 12px; background: #dbeafe; color: #3b82f6; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
                                 <i class="fa-regular fa-bell"></i>
                             </div>
                         </div>
-                        <button onclick="switchTab('notices')" style="width: 100%; background: transparent; border: 1px solid #e2e8f0; color: #64748b; padding: 0.6rem; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; justify-content: center; align-items: center; gap: 0.5rem; font-size: 0.85rem;" onmouseover="this.style.background='#f8fafc'; this.style.color='#0f172a';" onmouseout="this.style.background='transparent'; this.style.color='#64748b';">Manage Notices <i class="fa-solid fa-arrow-right"></i></button>
+                        <button onclick="switchTab('notices')" style="width: 100%; background: transparent; border: 1px solid var(--border-color); color: var(--text-secondary); padding: 0.6rem; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; justify-content: center; align-items: center; gap: 0.5rem; font-size: 0.85rem;" onmouseover="this.style.background='#f8fafc'; this.style.color='#0f172a';" onmouseout="this.style.background='transparent'; this.style.color='#64748b';">Manage Notices <i class="fa-solid fa-arrow-right"></i></button>
                     </div>
 
                     <!-- Students Summary Card -->
-                    <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; flex-direction: column;">
+                    <div style="background: var(--bg-card); border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; flex-direction: column;">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
                             <div>
-                                <div style="font-size: 0.85rem; color: #64748b; font-weight: 600; margin-bottom: 0.25rem;">Total Students</div>
-                                <div style="font-size: 2rem; font-weight: 800; color: #0f172a; line-height: 1;"><?= $total_students ?></div>
+                                <div style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 600; margin-bottom: 0.25rem;">Total Students</div>
+                                <div style="font-size: 2rem; font-weight: 800; color: var(--text-primary); line-height: 1;"><?= $total_students ?></div>
                             </div>
                             <div style="width: 48px; height: 48px; border-radius: 12px; background: #ccfbf1; color: #0d9488; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
                                 <i class="fa-solid fa-users"></i>
                             </div>
                         </div>
-                        <button onclick="switchTab('students')" style="width: 100%; background: transparent; border: 1px solid #e2e8f0; color: #64748b; padding: 0.6rem; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; justify-content: center; align-items: center; gap: 0.5rem; font-size: 0.85rem;" onmouseover="this.style.background='#f8fafc'; this.style.color='#0f172a';" onmouseout="this.style.background='transparent'; this.style.color='#64748b';">View Students <i class="fa-solid fa-arrow-right"></i></button>
+                        <button onclick="switchTab('students')" style="width: 100%; background: transparent; border: 1px solid var(--border-color); color: var(--text-secondary); padding: 0.6rem; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; justify-content: center; align-items: center; gap: 0.5rem; font-size: 0.85rem;" onmouseover="this.style.background='#f8fafc'; this.style.color='#0f172a';" onmouseout="this.style.background='transparent'; this.style.color='#64748b';">View Students <i class="fa-solid fa-arrow-right"></i></button>
                     </div>
 
                     <!-- Faculty Summary Card -->
-                    <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; flex-direction: column;">
+                    <div style="background: var(--bg-card); border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; flex-direction: column;">
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
                             <div>
-                                <div style="font-size: 0.85rem; color: #64748b; font-weight: 600; margin-bottom: 0.25rem;">Total Faculty</div>
-                                <div style="font-size: 2rem; font-weight: 800; color: #0f172a; line-height: 1;"><?= $total_faculty ?></div>
+                                <div style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 600; margin-bottom: 0.25rem;">Total Faculty</div>
+                                <div style="font-size: 2rem; font-weight: 800; color: var(--text-primary); line-height: 1;"><?= $total_faculty ?></div>
                             </div>
                             <div style="width: 48px; height: 48px; border-radius: 12px; background: #e0e7ff; color: #4338ca; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
                                 <i class="fa-solid fa-user-tie"></i>
                             </div>
                         </div>
-                        <button onclick="switchTab('faculty')" style="width: 100%; background: transparent; border: 1px solid #e2e8f0; color: #64748b; padding: 0.6rem; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; justify-content: center; align-items: center; gap: 0.5rem; font-size: 0.85rem;" onmouseover="this.style.background='#f8fafc'; this.style.color='#0f172a';" onmouseout="this.style.background='transparent'; this.style.color='#64748b';">View Faculty <i class="fa-solid fa-arrow-right"></i></button>
+                        <button onclick="switchTab('faculty')" style="width: 100%; background: transparent; border: 1px solid var(--border-color); color: var(--text-secondary); padding: 0.6rem; border-radius: 6px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; justify-content: center; align-items: center; gap: 0.5rem; font-size: 0.85rem;" onmouseover="this.style.background='#f8fafc'; this.style.color='#0f172a';" onmouseout="this.style.background='transparent'; this.style.color='#64748b';">View Faculty <i class="fa-solid fa-arrow-right"></i></button>
                     </div>
 
                 </div>
@@ -649,7 +649,7 @@ $pending_approvals = $pending_leaves + $unresolved_grievances;
                                 </td>
                                 <td>
                                     <div style="font-weight:600; color:#b91c1c; font-size: 0.85rem;"><?= htmlspecialchars($g['issue_type']) ?></div>
-                                    <div style="font-size:0.8rem; color:#475569; margin-top:4px; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="<?= htmlspecialchars($g['description']) ?>">
+                                    <div style="font-size:0.8rem; color: var(--text-secondary); margin-top:4px; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="<?= htmlspecialchars($g['description']) ?>">
                                         <?= htmlspecialchars($g['description']) ?>
                                     </div>
                                 </td>
@@ -795,23 +795,23 @@ $pending_approvals = $pending_leaves + $unresolved_grievances;
                             $last_initial = count($names) > 1 ? strtoupper(substr(end($names), 0, 1)) : '';
                             $initials = $first_initial . $last_initial;
                         ?>
-                        <div onclick="openFacultyModal('<?= htmlspecialchars(addslashes($f['name'])) ?>', '<?= htmlspecialchars(addslashes($f['designation'])) ?>', '<?= $fac_att ?>', '<?= htmlspecialchars(addslashes($f['workload'] ?? '16 Hours/Wk')) ?>', '<?= $portion ?>', '<?= $student_att ?>', '<?= htmlspecialchars(addslashes($f['subjects'] ?? '')) ?>', '<?= htmlspecialchars(addslashes($f['email'] ?? '')) ?>')" style="background: white; border-radius: 12px; padding: 1rem 1.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; display: flex; align-items: center; gap: 1.5rem; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#8b5cf6'; this.style.boxShadow='0 4px 12px rgba(139, 92, 246, 0.15)';" onmouseout="this.style.borderColor='#f1f5f9'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.02)';">
+                        <div onclick="openFacultyModal('<?= htmlspecialchars(addslashes($f['name'])) ?>', '<?= htmlspecialchars(addslashes($f['designation'])) ?>', '<?= $fac_att ?>', '<?= htmlspecialchars(addslashes($f['workload'] ?? '16 Hours/Wk')) ?>', '<?= $portion ?>', '<?= $student_att ?>', '<?= htmlspecialchars(addslashes($f['subjects'] ?? '')) ?>', '<?= htmlspecialchars(addslashes($f['email'] ?? '')) ?>')" style="background: var(--bg-card); border-radius: 12px; padding: 1rem 1.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; display: flex; align-items: center; gap: 2rem; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#8b5cf6'; this.style.boxShadow='0 4px 12px rgba(139, 92, 246, 0.15)';" onmouseout="this.style.borderColor='#f1f5f9'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.02)';">
                             <div style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #a855f7); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.1rem; flex-shrink: 0;">
                                 <?= $initials ?>
                             </div>
                             <div style="min-width: 220px;">
-                                <h4 style="margin: 0 0 0.25rem 0; color: #0f172a; font-size: 1.05rem;"><?= htmlspecialchars($f['name']) ?></h4>
-                                <div style="color: #64748b; font-size: 0.85rem;"><?= htmlspecialchars($f['designation']) ?></div>
+                                <h4 style="margin: 0 0 0.25rem 0; color: var(--text-primary); font-size: 1.05rem;"><?= htmlspecialchars($f['name']) ?></h4>
+                                <div style="color: var(--text-secondary); font-size: 0.85rem;"><?= htmlspecialchars($f['designation']) ?></div>
                             </div>
                             <div style="flex-grow: 1; padding: 0 1rem; overflow: hidden;">
-                                <div style="font-size: 0.85rem; color: #64748b; font-weight: 500; display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="<?= htmlspecialchars($f['subjects'] ?? '') ?>">
-                                    <i class="fa-solid fa-book-open" style="color: #94a3b8; flex-shrink: 0;"></i> 
+                                <div style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500; display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="<?= htmlspecialchars($f['subjects'] ?? '') ?>">
+                                    <i class="fa-solid fa-book-open" style="color: var(--text-muted); flex-shrink: 0;"></i> 
                                     <span style="overflow: hidden; text-overflow: ellipsis;"><?= htmlspecialchars($f['subjects'] ?? '') ?></span>
                                 </div>
                             </div>
                             <div style="text-align: right; padding-right: 1rem;">
                                 <div style="font-size: 1.1rem; font-weight: 700; color: #8b5cf6;"><?= $portion ?>%</div>
-                                <div style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase;">Portion</div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Portion</div>
                             </div>
                             <i class="fa-solid fa-chevron-right" style="color: #cbd5e1; font-size: 1.2rem;"></i>
                         </div>
@@ -820,28 +820,28 @@ $pending_approvals = $pending_leaves + $unresolved_grievances;
 
                     <!-- Faculty Details Modal -->
                     <div id="facultyModal" class="modal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
-                        <div style="background: white; border-radius: 20px; width: 95%; max-width: 750px; overflow: hidden; box-shadow: 0 25px 30px -5px rgba(0,0,0,0.15), 0 15px 15px -5px rgba(0,0,0,0.08); transform: scale(0.95); opacity: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);" id="facultyModalContent">
-                            <div style="padding: 2.5rem; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: flex-start; background: linear-gradient(to right, #f8fafc, #ffffff);">
+                        <div style="background: var(--bg-card); border-radius: 20px; width: 95%; max-width: 750px; overflow: hidden; box-shadow: 0 25px 30px -5px rgba(0,0,0,0.15), 0 15px 15px -5px rgba(0,0,0,0.08); transform: scale(0.95); opacity: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);" id="facultyModalContent">
+                            <div style="padding: 2.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: flex-start; background: linear-gradient(to right, #f8fafc, #ffffff);">
                                 <div>
-                                    <h3 id="modalFacName" style="margin: 0 0 0.5rem 0; color: #0f172a; font-size: 1.75rem;">Prof. Name</h3>
-                                    <div id="modalFacDesig" style="color: #64748b; font-size: 1.1rem;">Designation</div>
+                                    <h3 id="modalFacName" style="margin: 0 0 0.5rem 0; color: var(--text-primary); font-size: 1.75rem;">Prof. Name</h3>
+                                    <div id="modalFacDesig" style="color: var(--text-secondary); font-size: 1.1rem;">Designation</div>
                                 </div>
-                                <button onclick="closeFacultyModal()" style="background: transparent; border: none; font-size: 1.5rem; color: #94a3b8; cursor: pointer; padding: 0.25rem; line-height: 1;"><i class="fa-solid fa-xmark"></i></button>
+                                <button onclick="closeFacultyModal()" style="background: transparent; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; padding: 0.25rem; line-height: 1;"><i class="fa-solid fa-xmark"></i></button>
                             </div>
                             <div style="padding: 2.5rem; display: flex; flex-direction: column; gap: 2rem;">
                                 <!-- Stats Grid -->
                                 <div style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
-                                    <div style="background: #f8fafc; padding: 1rem; border-radius: 8px;">
-                                        <div style="font-size: 0.75rem; color: #64748b; font-weight: 600; text-transform: uppercase; margin-bottom: 0.25rem;">Workload</div>
-                                        <div id="modalFacWorkload" style="font-size: 1.1rem; font-weight: 700; color: #475569;">16 Hours/Wk</div>
+                                    <div style="background: var(--bg-page); padding: 1rem; border-radius: 8px;">
+                                        <div style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; margin-bottom: 0.25rem;">Workload</div>
+                                        <div id="modalFacWorkload" style="font-size: 1.1rem; font-weight: 700; color: var(--text-secondary);">16 Hours/Wk</div>
                                     </div>
                                 </div>
 
                                 <!-- Progress Bars -->
-                                <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+                                <div style="display: flex; flex-direction: column; gap: 2rem;">
                                     <div>
                                         <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 600;">
-                                            <span style="color: #475569;">Portion Completed</span>
+                                            <span style="color: var(--text-secondary);">Portion Completed</span>
                                             <span id="modalFacPortion" style="color: #8b5cf6;">68%</span>
                                         </div>
                                         <div style="width: 100%; height: 8px; background: #f3e8ff; border-radius: 4px; overflow: hidden;">
@@ -853,12 +853,12 @@ $pending_approvals = $pending_leaves + $unresolved_grievances;
                                 <!-- Additional Info -->
                                 <div style="border-top: 1px solid #f1f5f9; padding-top: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem;">
                                     <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
-                                        <i class="fa-solid fa-book-open" style="color: #94a3b8; margin-top: 0.2rem;"></i>
-                                        <div style="font-size: 0.85rem; color: #475569; line-height: 1.4;" id="modalFacSubjects">Subjects</div>
+                                        <i class="fa-solid fa-book-open" style="color: var(--text-muted); margin-top: 0.2rem;"></i>
+                                        <div style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.4;" id="modalFacSubjects">Subjects</div>
                                     </div>
                                     <div style="display: flex; gap: 0.75rem; align-items: center;">
-                                        <i class="fa-solid fa-envelope" style="color: #94a3b8;"></i>
-                                        <div style="font-size: 0.85rem; color: #475569;" id="modalFacEmail">Email</div>
+                                        <i class="fa-solid fa-envelope" style="color: var(--text-muted);"></i>
+                                        <div style="font-size: 0.85rem; color: var(--text-secondary);" id="modalFacEmail">Email</div>
                                     </div>
                                 </div>
                             </div>
@@ -926,17 +926,17 @@ $pending_approvals = $pending_leaves + $unresolved_grievances;
                         ];
                         foreach ($admin_reports as $r):
                         ?>
-                        <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-                            <div style="display: flex; gap: 1.5rem; align-items: center;">
+                        <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.5rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                            <div style="display: flex; gap: 2rem; align-items: center;">
                                 <div style="width: 48px; height: 48px; border-radius: 12px; background: <?= $r['bg'] ?>; color: <?= $r['color'] ?>; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
                                     <i class="fa-solid <?= $r['icon'] ?>"></i>
                                 </div>
                                 <div>
-                                    <h4 style="margin: 0 0 0.4rem 0; font-size: 1.1rem; color: #0f172a;"><?= htmlspecialchars($r['title']) ?></h4>
-                                    <div style="font-size: 0.85rem; color: #64748b;">Generated on: <?= $r['date'] ?> by System Admin</div>
+                                    <h4 style="margin: 0 0 0.4rem 0; font-size: 1.1rem; color: var(--text-primary);"><?= htmlspecialchars($r['title']) ?></h4>
+                                    <div style="font-size: 0.85rem; color: var(--text-secondary);">Generated on: <?= $r['date'] ?> by System Admin</div>
                                 </div>
                             </div>
-                            <button onclick="window.open('download_report.php?report=<?= urlencode(str_replace(' ', '_', $r['title'])) ?>', '_blank')" style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.6rem 1.2rem; border-radius: 6px; cursor: pointer; color: #475569; font-weight: 600; font-size: 0.9rem; transition: all 0.2s;" onmouseover="this.style.background='#f1f5f9';" onmouseout="this.style.background='#f8fafc';"><i class="fa-solid fa-eye" style="margin-right: 0.5rem;"></i> View Report</button>
+                            <button onclick="window.open('download_report.php?report=<?= urlencode(str_replace(' ', '_', $r['title'])) ?>', '_blank')" style="background: var(--bg-page); border: 1px solid var(--border-color); padding: 0.6rem 1.2rem; border-radius: 6px; cursor: pointer; color: var(--text-secondary); font-weight: 600; font-size: 0.9rem; transition: all 0.2s;" onmouseover="this.style.background='#f1f5f9';" onmouseout="this.style.background='#f8fafc';"><i class="fa-solid fa-eye" style="margin-right: 0.5rem;"></i> View Report</button>
                         </div>
                         <?php endforeach; ?>
                     </div>
@@ -1042,29 +1042,29 @@ $pending_approvals = $pending_leaves + $unresolved_grievances;
                         </h3>
                         <button class="btn-close-modal" onclick="document.getElementById('modal-publish-notice').classList.remove('active');" style="color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.1); border-radius: 8px; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'; this.style.color='white';" onmouseout="this.style.background='rgba(255,255,255,0.1)'; this.style.color='rgba(255,255,255,0.8)';"><i class="fa-solid fa-xmark"></i></button>
                     </div>
-                    <form method="POST" enctype="multipart/form-data" style="background: #f8fafc;">
+                    <form method="POST" enctype="multipart/form-data" style="background: var(--bg-page);">
                         <input type="hidden" name="action" value="publish_notice">
                         <div class="modal-body" style="padding: 2rem;">
                             
                             <div class="form-group-col" style="margin-bottom: 1.5rem;">
-                                <label style="font-weight: 600; color: #334155; margin-bottom: 0.5rem; display: block;"><i class="fa-solid fa-heading" style="color: #64748b; margin-right: 0.5rem;"></i> Notice Title</label>
-                                <input type="text" name="title" required placeholder="e.g. Mid-term Exam Schedule" style="width: 100%; padding: 0.75rem 1rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; background: white; transition: all 0.2s; outline: none; box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);" onfocus="this.style.borderColor='#7c3aed'; this.style.boxShadow='0 0 0 3px rgba(124,58,237,0.1)';" onblur="this.style.borderColor='#cbd5e1'; this.style.boxShadow='inset 0 1px 2px rgba(0,0,0,0.02)';">
+                                <label style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem; display: block;"><i class="fa-solid fa-heading" style="color: var(--text-secondary); margin-right: 0.5rem;"></i> Notice Title</label>
+                                <input type="text" name="title" required placeholder="e.g. Mid-term Exam Schedule" style="width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.95rem; background: var(--bg-card); transition: all 0.2s; outline: none; box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);" onfocus="this.style.borderColor='#7c3aed'; this.style.boxShadow='0 0 0 3px rgba(124,58,237,0.1)';" onblur="this.style.borderColor='#cbd5e1'; this.style.boxShadow='inset 0 1px 2px rgba(0,0,0,0.02)';">
                             </div>
                             
                             <div class="form-group-col" style="margin-bottom: 1.5rem;">
-                                <label style="font-weight: 600; color: #334155; margin-bottom: 0.5rem; display: block;"><i class="fa-solid fa-align-left" style="color: #64748b; margin-right: 0.5rem;"></i> Detailed Description</label>
-                                <textarea name="desc" rows="5" required placeholder="Enter all the necessary details here..." style="width: 100%; padding: 0.75rem 1rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; background: white; transition: all 0.2s; outline: none; resize: vertical; box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);" onfocus="this.style.borderColor='#7c3aed'; this.style.boxShadow='0 0 0 3px rgba(124,58,237,0.1)';" onblur="this.style.borderColor='#cbd5e1'; this.style.boxShadow='inset 0 1px 2px rgba(0,0,0,0.02)';"></textarea>
+                                <label style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem; display: block;"><i class="fa-solid fa-align-left" style="color: var(--text-secondary); margin-right: 0.5rem;"></i> Detailed Description</label>
+                                <textarea name="desc" rows="5" required placeholder="Enter all the necessary details here..." style="width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.95rem; background: var(--bg-card); transition: all 0.2s; outline: none; resize: vertical; box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);" onfocus="this.style.borderColor='#7c3aed'; this.style.boxShadow='0 0 0 3px rgba(124,58,237,0.1)';" onblur="this.style.borderColor='#cbd5e1'; this.style.boxShadow='inset 0 1px 2px rgba(0,0,0,0.02)';"></textarea>
                             </div>
                             
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
                                 <div class="form-group-col">
-                                    <label style="font-weight: 600; color: #334155; margin-bottom: 0.5rem; display: block;"><i class="fa-solid fa-calendar-xmark" style="color: #64748b; margin-right: 0.5rem;"></i> Expiry Date</label>
-                                    <input type="date" name="expiry" min="<?= date('Y-m-d') ?>" style="width: 100%; padding: 0.75rem 1rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; background: white; transition: all 0.2s; outline: none;" onfocus="this.style.borderColor='#7c3aed'; this.style.boxShadow='0 0 0 3px rgba(124,58,237,0.1)';" onblur="this.style.borderColor='#cbd5e1'; this.style.boxShadow='none';">
+                                    <label style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem; display: block;"><i class="fa-solid fa-calendar-xmark" style="color: var(--text-secondary); margin-right: 0.5rem;"></i> Expiry Date</label>
+                                    <input type="date" name="expiry" min="<?= date('Y-m-d') ?>" style="width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.95rem; background: var(--bg-card); transition: all 0.2s; outline: none;" onfocus="this.style.borderColor='#7c3aed'; this.style.boxShadow='0 0 0 3px rgba(124,58,237,0.1)';" onblur="this.style.borderColor='#cbd5e1'; this.style.boxShadow='none';">
                                 </div>
                                 <div class="form-group-col">
-                                    <label style="font-weight: 600; color: #334155; margin-bottom: 0.5rem; display: block;"><i class="fa-solid fa-paperclip" style="color: #64748b; margin-right: 0.5rem;"></i> Attachment <span style="color: #94a3b8; font-weight: 400; font-size: 0.8rem;">(Optional)</span></label>
+                                    <label style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem; display: block;"><i class="fa-solid fa-paperclip" style="color: var(--text-secondary); margin-right: 0.5rem;"></i> Attachment <span style="color: var(--text-muted); font-weight: 400; font-size: 0.8rem;">(Optional)</span></label>
                                     <div style="position: relative; overflow: hidden; display: inline-block; width: 100%;">
-                                        <button type="button" style="width: 100%; background: white; border: 1px dashed #94a3b8; padding: 0.75rem 1rem; border-radius: 8px; color: #475569; font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.5rem;" onmouseover="this.style.borderColor='#7c3aed'; this.style.color='#7c3aed'; this.style.background='#f3f4f6';" onmouseout="this.style.borderColor='#94a3b8'; this.style.color='#475569'; this.style.background='white';">
+                                        <button type="button" style="width: 100%; background: var(--bg-card); border: 1px dashed #94a3b8; padding: 0.75rem 1rem; border-radius: 8px; color: var(--text-secondary); font-weight: 500; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.5rem;" onmouseover="this.style.borderColor='#7c3aed'; this.style.color='#7c3aed'; this.style.background='#f3f4f6';" onmouseout="this.style.borderColor='#94a3b8'; this.style.color='#475569'; this.style.background='white';">
                                             <i class="fa-solid fa-cloud-arrow-up"></i> Select File
                                         </button>
                                         <input type="file" name="attachment" style="position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%; width: 100%;">
@@ -1072,7 +1072,7 @@ $pending_approvals = $pending_leaves + $unresolved_grievances;
                                 </div>
                             </div>
 
-                            <div style="display:flex; justify-content:flex-end; gap:1rem; margin-top: 1rem; padding-top: 1.5rem; border-top: 1px solid #e2e8f0;">
+                            <div style="display:flex; justify-content:flex-end; gap:1rem; margin-top: 1rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
                                 <button type="button" class="btn-secondary" onclick="document.getElementById('modal-publish-notice').classList.remove('active');" style="padding: 0.6rem 1.5rem; border-radius: 8px; font-weight: 600;">Cancel</button>
                                 <button type="submit" class="btn-hod-action" style="background: linear-gradient(to right, #7c3aed, #6d28d9); color: white; padding: 0.6rem 1.5rem; border-radius: 8px; font-weight: 600; border: none; box-shadow: 0 4px 6px -1px rgba(124, 58, 237, 0.3); transition: all 0.2s; display: flex; align-items: center; gap: 0.5rem;" onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 8px -1px rgba(124, 58, 237, 0.4)';" onmouseout="this.style.transform='none'; this.style.boxShadow='0 4px 6px -1px rgba(124, 58, 237, 0.3)';">
                                     <i class="fa-solid fa-paper-plane"></i> Publish Now

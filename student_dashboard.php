@@ -692,14 +692,14 @@ foreach ($db['leaves'] ?? [] as $leave) {
                             <?php endif; ?>
                         </div>
                         
-                        <div class="notification-dropdown" id="notificationDropdown" style="display: none; position: absolute; top: 120%; right: 0; width: 320px; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid var(--border-color); z-index: 100; overflow: hidden; cursor: default;">
-                            <div style="padding: 1rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: #f8fafc;">
-                                <h4 style="margin: 0; font-size: 1rem; color: #1e293b;">Notifications</h4>
-                                <span style="font-size: 0.75rem; color: var(--primary-color); cursor: pointer; font-weight: 600;" onclick="fetch(window.location.href, {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: 'action=clear_notifications'}).then(() => { this.parentElement.nextElementSibling.innerHTML='<div style=\'padding: 2rem 1rem; text-align: center; color: #64748b; font-size: 0.9rem;\'><i class=\'fa-regular fa-bell-slash\' style=\'font-size: 1.5rem; margin-bottom: 0.5rem; color: #cbd5e1;\'></i><br>No new notifications</div>'; let b = document.querySelector('#notificationToggle .badge'); if(b) b.style.display='none'; });">Mark all as read</span>
+                        <div class="notification-dropdown" id="notificationDropdown" style="display: none; position: absolute; top: 120%; right: 0; width: 320px; background: var(--bg-card); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid var(--border-color); z-index: 100; overflow: hidden; cursor: default;">
+                            <div style="padding: 1rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--bg-page);">
+                                <h4 style="margin: 0; font-size: 1rem; color: var(--text-primary);">Notifications</h4>
+                                <span style="font-size: 0.75rem; color: var(--primary-color); cursor: pointer; font-weight: 600;" onclick="fetch(window.location.href, {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: 'action=clear_notifications'}).then(() => { this.parentElement.nextElementSibling.innerHTML='<div style=\'padding: 2rem 1rem; text-align: center; color: var(--text-secondary); font-size: 0.9rem;\'><i class=\'fa-regular fa-bell-slash\' style=\'font-size: 1.5rem; margin-bottom: 0.5rem; color: #cbd5e1;\'></i><br>No new notifications</div>'; let b = document.querySelector('#notificationToggle .badge'); if(b) b.style.display='none'; });">Mark all as read</span>
                             </div>
                             <div style="max-height: 350px; overflow-y: auto; text-align: left;">
                                 <?php if (empty($db['recent_activity'])): ?>
-                                    <div style="padding: 2rem 1rem; text-align: center; color: #64748b; font-size: 0.9rem;">
+                                    <div style="padding: 2rem 1rem; text-align: center; color: var(--text-secondary); font-size: 0.9rem;">
                                         <i class="fa-regular fa-bell-slash" style="font-size: 1.5rem; margin-bottom: 0.5rem; color: #cbd5e1;"></i><br>
                                         No new notifications
                                     </div>
@@ -713,15 +713,15 @@ foreach ($db['leaves'] ?? [] as $leave) {
                                     elseif (strpos($t, 'assignment') !== false) $targetTab = 'assignments';
                                     elseif (strpos($t, 'notice') !== false) $targetTab = 'notices';
                                     ?>
-                                    <div onclick="triggerTab('<?php echo $targetTab; ?>')" style="padding: 1rem; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: background 0.2s; <?php echo $idx === 0 ? 'background: #f0f9ff;' : ''; ?>" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='<?php echo $idx === 0 ? '#f0f9ff' : 'transparent'; ?>'">
+                                    <div onclick="triggerTab('<?php echo $targetTab; ?>')" style="padding: 1rem; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s; <?php echo $idx === 0 ? 'background: #f0f9ff;' : ''; ?>" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='<?php echo $idx === 0 ? '#f0f9ff' : 'transparent'; ?>'">
                                         <div style="display: flex; gap: 0.75rem;">
-                                            <div style="width: 36px; height: 36px; border-radius: 50%; background: #e0f2fe; color: #0284c7; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                            <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--bg-alt); color: #0284c7; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                                                 <i class="fa-solid fa-bolt"></i>
                                             </div>
                                             <div>
-                                                <div style="font-weight: 600; font-size: 0.9rem; color: #334155; margin-bottom: 0.15rem;"><?php echo htmlspecialchars($activity['title'] ?? 'Notification'); ?></div>
-                                                <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.25rem;"><?php echo htmlspecialchars($activity['desc'] ?? ''); ?></div>
-                                                <div style="font-size: 0.7rem; color: #94a3b8;"><i class="fa-regular fa-clock" style="margin-right: 3px;"></i> <?php echo htmlspecialchars($activity['time'] ?? 'Just now'); ?></div>
+                                                <div style="font-weight: 600; font-size: 0.9rem; color: var(--text-primary); margin-bottom: 0.15rem;"><?php echo htmlspecialchars($activity['title'] ?? 'Notification'); ?></div>
+                                                <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.25rem;"><?php echo htmlspecialchars($activity['desc'] ?? ''); ?></div>
+                                                <div style="font-size: 0.7rem; color: var(--text-muted);"><i class="fa-regular fa-clock" style="margin-right: 3px;"></i> <?php echo htmlspecialchars($activity['time'] ?? 'Just now'); ?></div>
                                             </div>
                                         </div>
                                     </div>
@@ -813,13 +813,35 @@ foreach ($db['leaves'] ?? [] as $leave) {
             <!-- 0. DASHBOARD PAGE                            -->
             <!-- ============================================ -->
             <div id="tab-dashboard" class="app-view active">
-                <h3 style="margin-bottom: 1.5rem; color: #1e293b;">Portal Summary</h3>
+                <h3 style="margin-bottom: 1.5rem; color: var(--text-primary);">Portal Summary</h3>
                 <?php
                 // Calculate summaries
                 $student_name = $user['name'] ?? 'Prasad Kulkarni';
                 
+                // Fetch student class metadata
+                $st_dept_info = parse_student_dept_info($current_student['dept'] ?? $current_student['department'] ?? '');
+                $student_dept_summary = $st_dept_info['department'] ?: ($current_student['department'] ?? 'Information Technology');
+                $student_div_summary = $st_dept_info['division'] ?: ($current_student['division'] ?? '');
+                $student_sem_summary = $current_student['semester'] ?? '';
+
                 // Assignments
-                $total_assignments = count($db['assignments'] ?? []);
+                $total_assignments = 0;
+                if (isset($db['subject_assignments'])) {
+                    foreach ($db['subject_assignments'] as $sa) {
+                        $sa_dept = $sa['department'] ?? '';
+                        $sa_div = $sa['division'] ?? '';
+                        $sa_sem = $sa['semester'] ?? '';
+
+                        $match_dept = match_department($sa_dept, $student_dept_summary);
+                        $match_div = match_division($sa_div, $student_div_summary);
+                        $match_sem = match_semester($sa_sem, $student_sem_summary);
+
+                        if ($match_dept && $match_div && $match_sem) {
+                            $total_assignments++;
+                        }
+                    }
+                }
+                
                 $submitted_assignments = 0;
                 foreach ($db['assignment_submissions'] ?? [] as $sub) {
                     if (($sub['student_name'] ?? '') === $student_name) {
@@ -851,46 +873,46 @@ foreach ($db['leaves'] ?? [] as $leave) {
                 // Notices
                 $total_notices = count($db['notices'] ?? []);
                 ?>
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem;">
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem;">
 
                     <!-- Assignments Summary Card -->
-                    <div style="background: white; border-radius: 12px; padding: 1.75rem 1.25rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 15px -3px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px -1px rgba(0,0,0,0.05)';" onclick="switchTab('assignments', document.querySelector('.sidebar-nav-item[onclick*=\'assignments\']'))">
+                    <div style="background: var(--bg-card); border-radius: 12px; padding: 1.75rem 1.25rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 15px -3px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px -1px rgba(0,0,0,0.05)';" onclick="switchTab('assignments', document.querySelector('.sidebar-nav-item[onclick*=\'assignments\']'))">
                         <div style="width: 58px; height: 58px; border-radius: 50%; background: #f3e8ff; color: #8b5cf6; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; margin-bottom: 1.15rem;">
                             <i class="fa-solid fa-clipboard-list"></i>
                         </div>
-                        <h4 style="color: #64748b; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Pending Assignments</h4>
+                        <h4 style="color: var(--text-secondary); font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Pending Assignments</h4>
                         <div style="color: #6366f1; font-size: 2.2rem; font-weight: 800; margin-bottom: 0.35rem;"><?= $pending_assignments ?></div>
-                        <p style="color: #94a3b8; font-size: 0.8rem; margin-bottom: 0;">Out of <?= $total_assignments ?> total</p>
+                        <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0;">Out of <?= $total_assignments ?> total</p>
                     </div>
 
                     <!-- Leaves Summary Card -->
-                    <div style="background: white; border-radius: 12px; padding: 1.75rem 1.25rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 15px -3px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px -1px rgba(0,0,0,0.05)';" onclick="switchTab('leaves', document.querySelector('.sidebar-nav-item[onclick*=\'leaves\']'))">
+                    <div style="background: var(--bg-card); border-radius: 12px; padding: 1.75rem 1.25rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 15px -3px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px -1px rgba(0,0,0,0.05)';" onclick="switchTab('leaves', document.querySelector('.sidebar-nav-item[onclick*=\'leaves\']'))">
                         <div style="width: 58px; height: 58px; border-radius: 50%; background: #dcfce7; color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; margin-bottom: 1.15rem;">
                             <i class="fa-regular fa-calendar-check"></i>
                         </div>
-                        <h4 style="color: #64748b; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Leaves Pending</h4>
+                        <h4 style="color: var(--text-secondary); font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Leaves Pending</h4>
                         <div style="color: #10b981; font-size: 2.2rem; font-weight: 800; margin-bottom: 0.35rem;"><?= $pending_leaves ?></div>
-                        <p style="color: #94a3b8; font-size: 0.8rem; margin-bottom: 0;">Total Applied: <?= $my_leaves ?></p>
+                        <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0;">Total Applied: <?= $my_leaves ?></p>
                     </div>
 
                     <!-- Grievance Summary Card -->
-                    <div style="display: none !important; background: white; border-radius: 12px; padding: 1.75rem 1.25rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 15px -3px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px -1px rgba(0,0,0,0.05)';" onclick="switchTab('grievance', document.querySelector('.sidebar-nav-item[onclick*=\'grievance\']'))">
+                    <div style="display: none !important; background: var(--bg-card); border-radius: 12px; padding: 1.75rem 1.25rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 15px -3px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px -1px rgba(0,0,0,0.05)';" onclick="switchTab('grievance', document.querySelector('.sidebar-nav-item[onclick*=\'grievance\']'))">
                         <div style="width: 58px; height: 58px; border-radius: 50%; background: #ffedd5; color: #f97316; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; margin-bottom: 1.15rem;">
                             <i class="fa-regular fa-comments"></i>
                         </div>
-                        <h4 style="color: #64748b; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Active Grievances</h4>
+                        <h4 style="color: var(--text-secondary); font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Active Grievances</h4>
                         <div style="color: #f97316; font-size: 2.2rem; font-weight: 800; margin-bottom: 0.35rem;"><?= $active_grievances ?></div>
-                        <p style="color: #94a3b8; font-size: 0.8rem; margin-bottom: 0;">Requires resolution</p>
+                        <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0;">Requires resolution</p>
                     </div>
 
                     <!-- Notice Summary Card -->
-                    <div style="background: white; border-radius: 12px; padding: 1.75rem 1.25rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 15px -3px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px -1px rgba(0,0,0,0.05)';" onclick="switchTab('notices', document.querySelector('.sidebar-nav-item[onclick*=\'notices\']'))">
+                    <div style="background: var(--bg-card); border-radius: 12px; padding: 1.75rem 1.25rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 15px -3px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px -1px rgba(0,0,0,0.05)';" onclick="switchTab('notices', document.querySelector('.sidebar-nav-item[onclick*=\'notices\']'))">
                         <div style="width: 58px; height: 58px; border-radius: 50%; background: #dbeafe; color: #3b82f6; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; margin-bottom: 1.15rem;">
                             <i class="fa-regular fa-bell"></i>
                         </div>
-                        <h4 style="color: #64748b; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Active Notices</h4>
+                        <h4 style="color: var(--text-secondary); font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Active Notices</h4>
                         <div style="color: #3b82f6; font-size: 2.2rem; font-weight: 800; margin-bottom: 0.35rem;"><?= $total_notices ?></div>
-                        <p style="color: #94a3b8; font-size: 0.8rem; margin-bottom: 0;">Recent updates</p>
+                        <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0;">Recent updates</p>
                     </div>
 
                 </div>
@@ -1002,7 +1024,7 @@ foreach ($db['leaves'] ?? [] as $leave) {
                             if (empty($all_subjects)):
                             ?>
                                 <tr>
-                                    <td colspan="2" style="padding: 1.5rem; text-align: center; color: #64748b; font-weight: 500;">
+                                    <td colspan="2" style="padding: 1.5rem; text-align: center; color: var(--text-secondary); font-weight: 500;">
                                         No subjects are assigned to your department/semester.
                                     </td>
                                 </tr>
@@ -1012,26 +1034,26 @@ foreach ($db['leaves'] ?? [] as $leave) {
                                     $subject_name = $subject['name'];
                             ?>
                                 <tr class="assignment-unit-row" data-unit="<?php echo $subject['id']; ?>" style="cursor: pointer;" onclick="toggleSubjectDetails(<?php echo $subject['id']; ?>, 0)">
-                                    <td style="font-weight: 500; padding: 1.5rem; text-align: center; color: #4b5563;"><?php echo $subject_idx++; ?></td>
+                                    <td style="font-weight: 500; padding: 1.5rem; text-align: center; color: var(--text-secondary);"><?php echo $subject_idx++; ?></td>
                                     <td style="padding: 1.5rem;">
                                         <div style="display: flex; gap: 1rem; align-items: center; justify-content: space-between; width: 100%;">
                                             <div style="display: flex; gap: 1rem; align-items: center;">
-                                                <div style="width: 44px; height: 44px; background: #e0f2fe; color: #0284c7; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0;">
+                                                <div style="width: 44px; height: 44px; background: var(--bg-alt); color: #0284c7; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0;">
                                                     <i class="fa-solid fa-book"></i>
                                                 </div>
                                                 <div>
-                                                    <div style="font-weight: 700; color: #1e293b; font-size: 1rem;"><?php echo htmlspecialchars($subject_name); ?></div>
+                                                    <div style="font-weight: 700; color: var(--text-primary); font-size: 1rem;"><?php echo htmlspecialchars($subject_name); ?></div>
                                                 </div>
                                             </div>
-                                            <div class="accordion-arrow" style="font-size: 1rem; color: #64748b; transition: transform 0.3s ease; padding: 0.5rem; cursor: pointer;">
+                                            <div class="accordion-arrow" style="font-size: 1rem; color: var(--text-secondary); transition: transform 0.3s ease; padding: 0.5rem; cursor: pointer;">
                                                 <i class="fa-solid fa-chevron-down subject-arrow-icon-<?php echo $subject['id']; ?>-0"></i>
                                             </div>
                                         </div>
                                     </td>
                                 </tr>
-                                <tr class="assignment-details-row" id="subject-body-<?php echo $subject['id']; ?>-0" style="display: none; background: #f8fafc;">
+                                <tr class="assignment-details-row" id="subject-body-<?php echo $subject['id']; ?>-0" style="display: none; background: var(--bg-page);">
                                     <td colspan="2" style="padding: 1.5rem 2rem;">
-                                        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                                        <div style="display: flex; flex-direction: column; gap: 2rem;">
                                             <?php 
                                             $has_any_assignment = false;
                                             foreach ($units_list as $unit_num): 
@@ -1113,25 +1135,25 @@ foreach ($db['leaves'] ?? [] as $leave) {
                                                     }
                                                 }
                                             ?>
-                                                <div style="background: white; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.04); margin-bottom: 1.5rem; width: 100%; box-sizing: border-box;">
-                                                    <div style="display: grid; grid-template-columns: minmax(320px, 1fr) 320px; gap: 1.5rem; align-items: start; width: 100%;">
+                                                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 1.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.04); margin-bottom: 1.5rem; width: 100%; box-sizing: border-box;">
+                                                    <div style="display: grid; grid-template-columns: minmax(320px, 1fr) 320px; gap: 2rem; align-items: start; width: 100%;">
                                                         
                                                         <!-- LEFT SECTION: FACULTY ASSIGNMENT DETAILS -->
-                                                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.25rem; height: 100%; box-sizing: border-box;">
-                                                            <h6 style="margin: 0 0 0.75rem 0; font-size: 0.85rem; text-transform: uppercase; color: #64748b; font-weight: 700; border-bottom: 1px dashed #cbd5e1; padding-bottom: 0.5rem; display: flex; align-items: center; gap: 6px;">
+                                                        <div style="background: var(--bg-page); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.25rem; height: 100%; box-sizing: border-box;">
+                                                            <h6 style="margin: 0 0 0.75rem 0; font-size: 0.85rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 700; border-bottom: 1px dashed #cbd5e1; padding-bottom: 0.5rem; display: flex; align-items: center; gap: 6px;">
                                                                 <i class="fa-solid fa-file-signature" style="color: #4f46e5;"></i> UNIT <?php echo $unit_num; ?> ASSIGNMENT
                                                             </h6>
                                                             <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem;">
-                                                                <div><strong>Subject Name:</strong> <span style="color: #334155;"><?= htmlspecialchars($sa_item['subject_name']) ?></span></div>
+                                                                <div><strong>Subject Name:</strong> <span style="color: var(--text-primary);"><?= htmlspecialchars($sa_item['subject_name']) ?></span></div>
                                                                 <div><strong>Assignment Title:</strong> <span style="color: #4f46e5; font-weight: 600;"><?= htmlspecialchars($sa_item['assignment_title']) ?></span></div>
-                                                                <div><strong>Assignment Description:</strong> <p style="margin: 0.25rem 0 0 0; color: #64748b; font-size: 0.85rem; line-height: 1.4;"><?= htmlspecialchars($sa_item['description'] ?? 'Solve all tasks.') ?></p></div>
-                                                                <div><strong>Unit Number:</strong> <span style="color: #334155;">Unit <?= htmlspecialchars($unit_num) ?></span></div>
-                                                                <div><strong>Faculty Name:</strong> <span style="color: #334155; font-weight: 600;"><?= htmlspecialchars($sa_item['created_by']) ?></span></div>
-                                                                <div><strong>Published Date:</strong> <span style="color: #334155;"><?= htmlspecialchars($sa_item['published_date'] ?? 'N/A') ?></span></div>
+                                                                <div><strong>Assignment Description:</strong> <p style="margin: 0.25rem 0 0 0; color: var(--text-secondary); font-size: 0.85rem; line-height: 1.4;"><?= htmlspecialchars($sa_item['description'] ?? 'Solve all tasks.') ?></p></div>
+                                                                <div><strong>Unit Number:</strong> <span style="color: var(--text-primary);">Unit <?= htmlspecialchars($unit_num) ?></span></div>
+                                                                <div><strong>Faculty Name:</strong> <span style="color: var(--text-primary); font-weight: 600;"><?= htmlspecialchars($sa_item['created_by']) ?></span></div>
+                                                                <div><strong>Published Date:</strong> <span style="color: var(--text-primary);"><?= htmlspecialchars($sa_item['published_date'] ?? 'N/A') ?></span></div>
                                                                 <div><strong>Due Date:</strong> <span style="color: #b91c1c; font-weight: 600;"><i class="fa-regular fa-calendar-times"></i> <?= htmlspecialchars($sa_item['due'] ?? '') ?></span></div>
                                                                 
                                                                 <div style="margin-top: 0.75rem; display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
-                                                                    <a href="uploads/<?= htmlspecialchars($sa_item['question_pdf']) ?>" target="_blank" style="display: inline-flex; align-items: center; gap: 4px; padding: 0.45rem 0.85rem; background: #e0f2fe; color: #0369a1; border-radius: 6px; font-weight: 700; font-size: 0.8rem; text-decoration: none;">
+                                                                    <a href="uploads/<?= htmlspecialchars($sa_item['question_pdf']) ?>" target="_blank" style="display: inline-flex; align-items: center; gap: 4px; padding: 0.45rem 0.85rem; background: var(--bg-alt); color: #0369a1; border-radius: 6px; font-weight: 700; font-size: 0.8rem; text-decoration: none;">
                                                                         <i class="fa-solid fa-eye"></i> View PDF
                                                                     </a>
                                                                     <a href="uploads/<?= htmlspecialchars($sa_item['question_pdf']) ?>" download style="display: inline-flex; align-items: center; gap: 4px; padding: 0.45rem 0.85rem; background: #f0fdf4; color: #166534; border-radius: 6px; font-weight: 700; font-size: 0.8rem; text-decoration: none;">
@@ -1143,7 +1165,7 @@ foreach ($db['leaves'] ?? [] as $leave) {
                                                                 </div>
                                                                 
                                                                 <?php if ($my_sa_grievance): ?>
-                                                                    <div style="margin-top: 0.75rem; background: #fff7ed; border: 1px solid #ffedd5; border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem;">
+                                                                    <div style="margin-top: 0.75rem; background: var(--bg-card);7ed; border: 1px solid #ffedd5; border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem;">
                                                                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
                                                                             <strong style="color: #c2410c;"><i class="fa-solid fa-triangle-exclamation"></i> Grievance Status:</strong>
                                                                             <?php if ($my_sa_grievance['status'] === 'Resolved'): ?>
@@ -1152,9 +1174,9 @@ foreach ($db['leaves'] ?? [] as $leave) {
                                                                                 <span style="background: #fef3c7; color: #b45309; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 700;">Pending</span>
                                                                             <?php endif; ?>
                                                                         </div>
-                                                                        <div style="color: #475569;"><strong>Issue:</strong> <?= htmlspecialchars($my_sa_grievance['issue_type']) ?></div>
+                                                                        <div style="color: var(--text-secondary);"><strong>Issue:</strong> <?= htmlspecialchars($my_sa_grievance['issue_type']) ?></div>
                                                                         <?php if (!empty($my_sa_grievance['reply'])): ?>
-                                                                            <div style="margin-top: 0.35rem; color: #15803d; background: white; padding: 0.4rem; border-radius: 4px; border: 1px solid #cbd5e1;">
+                                                                            <div style="margin-top: 0.35rem; color: #15803d; background: var(--bg-card); padding: 0.4rem; border-radius: 4px; border: 1px solid var(--border-color);">
                                                                                 <strong>Faculty Reply:</strong> <?= htmlspecialchars($my_sa_grievance['reply']) ?>
                                                                             </div>
                                                                         <?php endif; ?>
@@ -1164,8 +1186,8 @@ foreach ($db['leaves'] ?? [] as $leave) {
                                                         </div>
                                                         
                                                         <!-- RIGHT SECTION: STUDENT SUBMISSION -->
-                                                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1.25rem; height: 100%; box-sizing: border-box;">
-                                                            <h6 style="margin: 0 0 0.75rem 0; font-size: 0.85rem; text-transform: uppercase; color: #64748b; font-weight: 700; border-bottom: 1px dashed #cbd5e1; padding-bottom: 0.5rem; display: flex; align-items: center; gap: 6px;">
+                                                        <div style="background: var(--bg-page); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.25rem; height: 100%; box-sizing: border-box;">
+                                                            <h6 style="margin: 0 0 0.75rem 0; font-size: 0.85rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 700; border-bottom: 1px dashed #cbd5e1; padding-bottom: 0.5rem; display: flex; align-items: center; gap: 6px;">
                                                                 <i class="fa-solid fa-cloud-arrow-up" style="color: #10b981;"></i> STUDENT SUBMISSION
                                                             </h6>
                                                             
@@ -1175,10 +1197,10 @@ foreach ($db['leaves'] ?? [] as $leave) {
                                                                         <div style="display: flex; align-items: center; gap: 6px; color: #15803d; font-weight: 700; font-size: 0.9rem;">
                                                                             <i class="fa-solid fa-circle-check"></i> Submitted Successfully
                                                                         </div>
-                                                                        <div style="font-size: 0.8rem; color: #64748b;">
+                                                                        <div style="font-size: 0.8rem; color: var(--text-secondary);">
                                                                             <strong>Submission Date & Time:</strong> <?= htmlspecialchars($submitted_at) ?>
                                                                         </div>
-                                                                        <div style="font-size: 0.8rem; color: #64748b;">
+                                                                        <div style="font-size: 0.8rem; color: var(--text-secondary);">
                                                                             <strong>File Name:</strong> <?= htmlspecialchars($sub_file_name) ?>
                                                                         </div>
                                                                         
@@ -1189,7 +1211,7 @@ foreach ($db['leaves'] ?? [] as $leave) {
                                                                                 $spath = trim($spath);
                                                                                 if (empty($spath)) continue;
                                                                             ?>
-                                                                            <a href="uploads/<?= htmlspecialchars($spath) ?>" target="_blank" style="padding: 0.35rem 0.75rem; background: #e0f2fe; color: #0369a1; border-radius: 4px; font-size: 0.75rem; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                                                                            <a href="uploads/<?= htmlspecialchars($spath) ?>" target="_blank" style="padding: 0.35rem 0.75rem; background: var(--bg-alt); color: #0369a1; border-radius: 4px; font-size: 0.75rem; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
                                                                                 <i class="fa-solid fa-eye"></i> View <?php echo count($sub_paths) > 1 ? ($idx+1) : 'File'; ?>
                                                                             </a>
                                                                             <a href="uploads/<?= htmlspecialchars($spath) ?>" download style="padding: 0.35rem 0.75rem; background: #f0fdf4; color: #166534; border-radius: 4px; font-size: 0.75rem; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
@@ -1199,18 +1221,18 @@ foreach ($db['leaves'] ?? [] as $leave) {
                                                                         </div>
 
                                                                         <div style="margin-top: 1rem; border-top: 1px dashed #cbd5e1; padding-top: 1rem;">
-                                                                            <h6 style="margin: 0 0 0.5rem 0; font-size: 0.8rem; text-transform: uppercase; color: #64748b; font-weight: 700;">Evaluation Status</h6>
+                                                                            <h6 style="margin: 0 0 0.5rem 0; font-size: 0.8rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 700;">Evaluation Status</h6>
                                                                             <div style="display: flex; flex-direction: column; gap: 0.5rem;">
                                                                                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                                                                                    <span style="font-size: 0.8rem; color: #475569; font-weight: 600;">Marks:</span>
+                                                                                    <span style="font-size: 0.8rem; color: var(--text-secondary); font-weight: 600;">Marks:</span>
                                                                                     <?php if ($sub_marks === 'Pending'): ?>
                                                                                         <span style="background: #fef3c7; color: #d97706; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 700;">Pending</span>
                                                                                     <?php else: ?>
-                                                                                        <span style="background: #dcfce7; color: #15803d; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: 800;"><?= htmlspecialchars($sub_marks) ?> / 10</span>
+                                                                                        <span style="background: #dcfce7; color: #15803d; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: 800;"><?= htmlspecialchars($sub_marks) ?></span>
                                                                                     <?php endif; ?>
                                                                                 </div>
                                                                                 <?php if (!empty($sub_remarks)): ?>
-                                                                                    <div style="background: #f1f5f9; padding: 0.5rem; border-radius: 6px; font-size: 0.75rem; color: #334155; border-left: 3px solid #64748b;">
+                                                                                    <div style="background: var(--bg-alt); padding: 0.5rem; border-radius: 6px; font-size: 0.75rem; color: var(--text-primary); border-left: 3px solid #64748b;">
                                                                                         <strong>Remarks:</strong> <?= htmlspecialchars($sub_remarks) ?>
                                                                                     </div>
                                                                                 <?php endif; ?>
@@ -1218,7 +1240,7 @@ foreach ($db['leaves'] ?? [] as $leave) {
                                                                         </div>
                                                                         
                                                                         <?php if ($sub_marks === 'Pending' && !$due_passed): ?>
-                                                                            <button type="button" onclick="showPortalUploadForm(<?php echo $sa_item['id']; ?>)" style="margin-top: 0.5rem; background: white; border: 1px solid #cbd5e1; color: #475569; padding: 0.4rem 0.75rem; border-radius: 6px; font-weight: 600; font-size: 0.75rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 4px; width: 100%;">
+                                                                            <button type="button" onclick="openSubjectUploadModal(this)" data-id="<?php echo $sa_item['id']; ?>" data-subject="<?php echo htmlspecialchars($subject_name); ?>" data-unit="<?php echo $unit_num; ?>" style="margin-top: 0.5rem; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-secondary); padding: 0.4rem 0.75rem; border-radius: 6px; font-weight: 600; font-size: 0.75rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 4px; width: 100%;">
                                                                                 <i class="fa-solid fa-arrows-rotate"></i> Replace Submission
                                                                             </button>
                                                                         <?php endif; ?>
@@ -1226,12 +1248,12 @@ foreach ($db['leaves'] ?? [] as $leave) {
                                                                 <?php else: ?>
                                                                     <div style="text-align: center; padding: 1rem 0;">
                                                                         <i class="fa-solid fa-arrow-up-from-bracket" style="font-size: 2rem; color: #cbd5e1; margin-bottom: 0.75rem;"></i>
-                                                                        <div style="font-weight: 600; color: #475569; margin-bottom: 0.25rem;">No Submission Yet</div>
+                                                                        <div style="font-weight: 600; color: var(--text-secondary); margin-bottom: 0.25rem;">No Submission Yet</div>
                                                                         
                                                                         <?php if ($due_passed): ?>
                                                                             <div style="color: #ef4444; font-size: 0.8rem; font-weight: 700; margin-bottom: 1rem;"><i class="fa-solid fa-triangle-exclamation"></i> Submission deadline has passed.</div>
                                                                         <?php else: ?>
-                                                                            <div style="color: #64748b; font-size: 0.75rem; margin-bottom: 1rem;">Upload your completed assignment file here.</div>
+                                                                            <div style="color: var(--text-secondary); font-size: 0.75rem; margin-bottom: 1rem;">Upload your completed assignment file here.</div>
                                                                             <button type="button" onclick="openSubjectUploadModal(this)" data-id="<?php echo $sa_item['id']; ?>" data-subject="<?php echo htmlspecialchars($subject_name); ?>" data-unit="<?php echo $unit_num; ?>" style="background: #10b981; color: white; border: none; padding: 0.6rem 1.25rem; border-radius: 8px; font-weight: 700; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.25); transition: background 0.2s;">
                                                                                 <i class="fa-solid fa-cloud-arrow-up"></i> Upload Now
                                                                             </button>
@@ -1246,7 +1268,7 @@ foreach ($db['leaves'] ?? [] as $leave) {
                                             <?php endforeach; // End $units_list ?>
                                             
                                             <?php if (!$has_any_assignment): ?>
-                                                <div style="width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 3rem 1.5rem; color: #94a3b8; font-size: 0.85rem; box-sizing: border-box;">
+                                                <div style="width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 3rem 1.5rem; color: var(--text-muted); font-size: 0.85rem; box-sizing: border-box;">
                                                     <i class="fa-solid fa-folder-open" style="font-size: 2.5rem; color: #e2e8f0; margin-bottom: 0.75rem;"></i>
                                                     <span>No assignments have been published for this subject yet.</span>
                                                 </div>
@@ -1328,8 +1350,8 @@ foreach ($db['leaves'] ?? [] as $leave) {
 
                     <!-- Leave list table -->
                     <div class="data-table-container">
-                        <div class="table-header-filters" style="justify-content: flex-start; background: #fafafa; border-bottom: 1px solid var(--border-color);">
-                            <h3 style="font-size: 1.15rem; font-weight: 700; color: #111827; padding: 0.5rem 0.25rem;">Your Leave Requests</h3>
+                        <div class="table-header-filters" style="justify-content: flex-start; background: var(--bg-alt); border-bottom: 1px solid var(--border-color);">
+                            <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text-primary); padding: 0.5rem 0.25rem;">Your Leave Requests</h3>
                         </div>
                         <table class="data-table">
                             <thead>
@@ -1426,10 +1448,10 @@ foreach ($db['leaves'] ?? [] as $leave) {
 
                     <!-- Grievances list -->
                     <div class="data-table-container">
-                        <div class="table-header-filters" style="justify-content: flex-start; background: #fafafa; border-bottom: 1px solid var(--border-color);">
-                            <h3 style="font-size: 1.15rem; font-weight: 700; color: #111827; padding: 0.5rem 0.25rem;">My Grievances</h3>
+                        <div class="table-header-filters" style="justify-content: flex-start; background: var(--bg-alt); border-bottom: 1px solid var(--border-color);">
+                            <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text-primary); padding: 0.5rem 0.25rem;">My Grievances</h3>
                         </div>
-                        <div style="padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem;">
+                        <div style="padding: 1.5rem; display: flex; flex-direction: column; gap: 2rem;">
                             <?php 
                             $my_grievances = array_filter($db['grievances'], function($g) use ($user) {
                                 return $g['student_id'] === $user['username'];
@@ -1438,10 +1460,10 @@ foreach ($db['leaves'] ?? [] as $leave) {
                             if (empty($my_grievances)): ?>
                                 <p style="color:var(--text-muted); text-align:center;">You have not submitted any grievances yet.</p>
                             <?php else: foreach ($my_grievances as $g): ?>
-                                <div style="border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: 1.25rem; background: #fafafa;">
+                                <div style="border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: 1.25rem; background: var(--bg-alt);">
                                     <div style="display:flex; justify-content:space-between; margin-bottom: 1rem;">
                                         <div>
-                                            <h4 style="font-size:1.1rem; font-weight:700; color:#111827; margin-bottom:0.25rem;"><?= htmlspecialchars($g['title']) ?></h4>
+                                            <h4 style="font-size:1.1rem; font-weight:700; color: var(--text-primary); margin-bottom:0.25rem;"><?= htmlspecialchars($g['title']) ?></h4>
                                             <span class="notice-desc"><?= htmlspecialchars($g['category']) ?> • <?= htmlspecialchars($g['date']) ?></span>
                                         </div>
                                         <div>
@@ -1452,9 +1474,9 @@ foreach ($db['leaves'] ?? [] as $leave) {
                                     
                                     <?php if (!empty($g['replies'])): ?>
                                         <div style="display:flex; flex-direction:column; gap:0.75rem;">
-                                            <h5 style="font-size:0.9rem; font-weight:600; color:#4b5563;">Responses:</h5>
+                                            <h5 style="font-size:0.9rem; font-weight:600; color: var(--text-secondary);">Responses:</h5>
                                             <?php foreach ($g['replies'] as $reply): ?>
-                                                <div style="background: white; border-radius:var(--border-radius-sm); padding:1rem; border:1px solid var(--border-color);">
+                                                <div style="background: var(--bg-card); border-radius:var(--border-radius-sm); padding:1rem; border:1px solid var(--border-color);">
                                                     <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
                                                         <span style="font-weight:600; font-size:0.85rem; color:var(--primary-color);"><?= htmlspecialchars($reply['author']) ?> (<?= htmlspecialchars($reply['role']) ?>)</span>
                                                         <span style="font-size:0.8rem; color:var(--text-muted);"><?= htmlspecialchars($reply['date']) ?></span>
@@ -1478,55 +1500,55 @@ foreach ($db['leaves'] ?? [] as $leave) {
             <!-- ============================================ -->
             <div id="tab-attendance" class="app-view">
                 <!-- Summary Cards -->
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; margin-bottom: 2rem;">
-                    <div style="background: white; border-radius: 12px; padding: 1.5rem; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03); display: flex; align-items: center; gap: 1.25rem;">
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; margin-bottom: 2rem;">
+                    <div style="background: var(--bg-card); border-radius: 12px; padding: 1.5rem; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03); display: flex; align-items: center; gap: 2rem;">
                         <div style="width: 56px; height: 56px; border-radius: 50%; background: #dcfce7; color: #166534; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0;">
                             <i class="fa-solid fa-chart-pie"></i>
                         </div>
                         <div>
-                            <div style="font-size: 0.8rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Overall Attendance</div>
-                            <div style="font-size: 1.85rem; font-weight: 800; color: #0f172a; margin: 0.15rem 0;">87.5%</div>
+                            <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Overall Attendance</div>
+                            <div style="font-size: 1.85rem; font-weight: 800; color: var(--text-primary); margin: 0.15rem 0;">87.5%</div>
                             <span style="display: inline-block; background: #dcfce7; color: #15803d; padding: 0.15rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700;">Safe (>75%)</span>
                         </div>
                     </div>
 
-                    <div style="background: white; border-radius: 12px; padding: 1.5rem; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03); display: flex; align-items: center; gap: 1.25rem;">
+                    <div style="background: var(--bg-card); border-radius: 12px; padding: 1.5rem; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03); display: flex; align-items: center; gap: 2rem;">
                         <div style="width: 56px; height: 56px; border-radius: 50%; background: #dbeafe; color: #1e40af; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0;">
                             <i class="fa-solid fa-chalkboard-user"></i>
                         </div>
                         <div>
-                            <div style="font-size: 0.8rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Total Conducted</div>
-                            <div style="font-size: 1.85rem; font-weight: 800; color: #0f172a; margin: 0.15rem 0;">120</div>
-                            <span style="color: #64748b; font-size: 0.75rem;">Lectures held</span>
+                            <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Total Conducted</div>
+                            <div style="font-size: 1.85rem; font-weight: 800; color: var(--text-primary); margin: 0.15rem 0;">120</div>
+                            <span style="color: var(--text-secondary); font-size: 0.75rem;">Lectures held</span>
                         </div>
                     </div>
 
-                    <div style="background: white; border-radius: 12px; padding: 1.5rem; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03); display: flex; align-items: center; gap: 1.25rem;">
+                    <div style="background: var(--bg-card); border-radius: 12px; padding: 1.5rem; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03); display: flex; align-items: center; gap: 2rem;">
                         <div style="width: 56px; height: 56px; border-radius: 50%; background: #f0fdf4; color: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0;">
                             <i class="fa-solid fa-user-check"></i>
                         </div>
                         <div>
-                            <div style="font-size: 0.8rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Lectures Attended</div>
+                            <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Lectures Attended</div>
                             <div style="font-size: 1.85rem; font-weight: 800; color: #16a34a; margin: 0.15rem 0;">105</div>
-                            <span style="color: #64748b; font-size: 0.75rem;">Present in class</span>
+                            <span style="color: var(--text-secondary); font-size: 0.75rem;">Present in class</span>
                         </div>
                     </div>
 
-                    <div style="background: white; border-radius: 12px; padding: 1.5rem; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03); display: flex; align-items: center; gap: 1.25rem;">
+                    <div style="background: var(--bg-card); border-radius: 12px; padding: 1.5rem; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03); display: flex; align-items: center; gap: 2rem;">
                         <div style="width: 56px; height: 56px; border-radius: 50%; background: #fef2f2; color: #dc2626; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0;">
                             <i class="fa-solid fa-user-xmark"></i>
                         </div>
                         <div>
-                            <div style="font-size: 0.8rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Missed Lectures</div>
+                            <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px;">Missed Lectures</div>
                             <div style="font-size: 1.85rem; font-weight: 800; color: #dc2626; margin: 0.15rem 0;">15</div>
-                            <span style="color: #64748b; font-size: 0.75rem;">Includes 4 approved leaves</span>
+                            <span style="color: var(--text-secondary); font-size: 0.75rem;">Includes 4 approved leaves</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Subject-wise Breakdown Section -->
-                <div style="background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03);">
-                    <h3 style="font-size: 1.15rem; font-weight: 700; color: #1e293b; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
+                <div style="background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-color); padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03);">
+                    <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;">
                         <i class="fa-solid fa-book-bookmark" style="color: #4f46e5;"></i> Subject-wise Attendance Breakdown
                     </h3>
                     
@@ -1579,20 +1601,20 @@ foreach ($db['leaves'] ?? [] as $leave) {
                         ]
                     ];
                     ?>
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem;">
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;">
                         <?php foreach ($student_subjects as $ss): ?>
-                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1.25rem;">
+                        <div style="background: var(--bg-page); border: 1px solid var(--border-color); border-radius: 10px; padding: 1.25rem;">
                             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
                                 <div>
-                                    <h4 style="margin: 0; font-size: 0.95rem; font-weight: 700; color: #0f172a;"><?php echo htmlspecialchars($ss['name']); ?></h4>
-                                    <span style="font-size: 0.75rem; color: #64748b;"><i class="fa-solid fa-user-tie" style="margin-right: 4px;"></i><?php echo htmlspecialchars($ss['faculty']); ?></span>
+                                    <h4 style="margin: 0; font-size: 0.95rem; font-weight: 700; color: var(--text-primary);"><?php echo htmlspecialchars($ss['name']); ?></h4>
+                                    <span style="font-size: 0.75rem; color: var(--text-secondary);"><i class="fa-solid fa-user-tie" style="margin-right: 4px;"></i><?php echo htmlspecialchars($ss['faculty']); ?></span>
                                 </div>
                                 <span style="font-size: 1.1rem; font-weight: 800; color: <?php echo $ss['color']; ?>;"><?php echo $ss['attendance']; ?></span>
                             </div>
                             <div style="width: 100%; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; margin: 0.75rem 0;">
                                 <div style="width: <?php echo $ss['attendance']; ?>; height: 100%; background: <?php echo $ss['color']; ?>; border-radius: 4px;"></div>
                             </div>
-                            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: #64748b;">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-secondary);">
                                 <span>Attended: <?php echo $ss['attended']; ?> / <?php echo $ss['total']; ?></span>
                                 <span>Missed: <?php echo $ss['missed']; ?></span>
                             </div>
@@ -1602,13 +1624,13 @@ foreach ($db['leaves'] ?? [] as $leave) {
                 </div>
 
                 <!-- Lecture Logs (When He Attended Lectures) -->
-                <div style="background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03);">
+                <div style="background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-color); padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
-                        <h3 style="font-size: 1.15rem; font-weight: 700; color: #1e293b; margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+                        <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text-primary); margin: 0; display: flex; align-items: center; gap: 0.5rem;">
                             <i class="fa-solid fa-clock-rotate-left" style="color: #4f46e5;"></i> Lecture Attendance History Logs
                         </h3>
                         <div style="display: flex; gap: 0.75rem;">
-                            <select class="select-filter" id="attendanceSubjectFilter" onchange="filterAttendanceLogs()" style="padding: 0.45rem 0.85rem; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.85rem; color: #334155;">
+                            <select class="select-filter" id="attendanceSubjectFilter" onchange="filterAttendanceLogs()" style="padding: 0.45rem 0.85rem; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.85rem; color: var(--text-primary);">
                                 <option value="all">All Subjects</option>
                                 <option value="Engineering Mathematics II (EM-II)">Engineering Mathematics II (EM-II)</option>
                                 <option value="Engineering Physics (EP)">Engineering Physics (EP)</option>
@@ -1616,7 +1638,7 @@ foreach ($db['leaves'] ?? [] as $leave) {
                                 <option value="Foundations of C++ Programming (C++)">Foundations of C++ Programming (C++)</option>
                                 <option value="Fundamentals of Computer Systems & Networking (FCSN)">Fundamentals of Computer Systems & Networking (FCSN)</option>
                             </select>
-                            <select class="select-filter" id="attendanceStatusFilter" onchange="filterAttendanceLogs()" style="padding: 0.45rem 0.85rem; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 0.85rem; color: #334155;">
+                            <select class="select-filter" id="attendanceStatusFilter" onchange="filterAttendanceLogs()" style="padding: 0.45rem 0.85rem; border-radius: 6px; border: 1px solid var(--border-color); font-size: 0.85rem; color: var(--text-primary);">
                                 <option value="all">All Statuses</option>
                                 <option value="Present">Present Only</option>
                                 <option value="Absent">Absent Only</option>
@@ -1638,63 +1660,63 @@ foreach ($db['leaves'] ?? [] as $leave) {
                             </thead>
                             <tbody>
                                 <tr data-subject="Engineering Mathematics II (EM-II)" data-status="Present">
-                                    <td style="font-weight: 600; color: #1e293b;">23 Jul 2026, 10:00 AM</td>
+                                    <td style="font-weight: 600; color: var(--text-primary);">23 Jul 2026, 10:00 AM</td>
                                     <td>Engineering Mathematics II (EM-II)</td>
                                     <td>Matrices & Linear Algebra (Unit 4)</td>
                                     <td>Ms. Priyanka Patil</td>
                                     <td><span style="display: inline-block; padding: 0.25rem 0.75rem; background: #dcfce7; color: #15803d; border-radius: 9999px; font-size: 0.75rem; font-weight: 700;"><i class="fa-solid fa-check" style="margin-right: 4px;"></i>Present</span></td>
                                 </tr>
                                 <tr data-subject="Digital Systems Design & Architecture (DSDA)" data-status="Present">
-                                    <td style="font-weight: 600; color: #1e293b;">23 Jul 2026, 09:00 AM</td>
+                                    <td style="font-weight: 600; color: var(--text-primary);">23 Jul 2026, 09:00 AM</td>
                                     <td>Digital Systems Design & Architecture (DSDA)</td>
                                     <td>Combinational Logic Circuits</td>
                                     <td>Dr. Ashwini Kumar Mishra</td>
                                     <td><span style="display: inline-block; padding: 0.25rem 0.75rem; background: #dcfce7; color: #15803d; border-radius: 9999px; font-size: 0.75rem; font-weight: 700;"><i class="fa-solid fa-check" style="margin-right: 4px;"></i>Present</span></td>
                                 </tr>
                                 <tr data-subject="Engineering Physics (EP)" data-status="Present">
-                                    <td style="font-weight: 600; color: #1e293b;">22 Jul 2026, 11:30 AM</td>
+                                    <td style="font-weight: 600; color: var(--text-primary);">22 Jul 2026, 11:30 AM</td>
                                     <td>Engineering Physics (EP)</td>
                                     <td>Quantum Mechanics & Wave Theory</td>
                                     <td>Dr. Yogesh Sonawane</td>
                                     <td><span style="display: inline-block; padding: 0.25rem 0.75rem; background: #dcfce7; color: #15803d; border-radius: 9999px; font-size: 0.75rem; font-weight: 700;"><i class="fa-solid fa-check" style="margin-right: 4px;"></i>Present</span></td>
                                 </tr>
                                 <tr data-subject="Digital Systems Design & Architecture (DSDA)" data-status="Absent">
-                                    <td style="font-weight: 600; color: #1e293b;">21 Jul 2026, 01:00 PM</td>
+                                    <td style="font-weight: 600; color: var(--text-primary);">21 Jul 2026, 01:00 PM</td>
                                     <td>Digital Systems Design & Architecture (DSDA)</td>
                                     <td>Instruction Set Architecture</td>
                                     <td>Dr. Ashwini Kumar Mishra</td>
                                     <td><span style="display: inline-block; padding: 0.25rem 0.75rem; background: #fee2e2; color: #b91c1c; border-radius: 9999px; font-size: 0.75rem; font-weight: 700;"><i class="fa-solid fa-xmark" style="margin-right: 4px;"></i>Absent</span></td>
                                 </tr>
                                 <tr data-subject="Engineering Mathematics II (EM-II)" data-status="Present">
-                                    <td style="font-weight: 600; color: #1e293b;">20 Jul 2026, 03:00 PM</td>
+                                    <td style="font-weight: 600; color: var(--text-primary);">20 Jul 2026, 03:00 PM</td>
                                     <td>Engineering Mathematics II (EM-II)</td>
                                     <td>Differential Equations Applications</td>
                                     <td>Ms. Priyanka Patil</td>
                                     <td><span style="display: inline-block; padding: 0.25rem 0.75rem; background: #dcfce7; color: #15803d; border-radius: 9999px; font-size: 0.75rem; font-weight: 700;"><i class="fa-solid fa-check" style="margin-right: 4px;"></i>Present</span></td>
                                 </tr>
                                 <tr data-subject="Engineering Physics (EP)" data-status="On Leave">
-                                    <td style="font-weight: 600; color: #1e293b;">20 Jul 2026, 11:30 AM</td>
+                                    <td style="font-weight: 600; color: var(--text-primary);">20 Jul 2026, 11:30 AM</td>
                                     <td>Engineering Physics (EP)</td>
                                     <td>Wave Optics & Laser Principles</td>
                                     <td>Dr. Yogesh Sonawane</td>
                                     <td><span style="display: inline-block; padding: 0.25rem 0.75rem; background: #fef3c7; color: #b45309; border-radius: 9999px; font-size: 0.75rem; font-weight: 700;"><i class="fa-solid fa-file-signature" style="margin-right: 4px;"></i>On Leave</span></td>
                                 </tr>
                                 <tr data-subject="Foundations of C++ Programming (C++)" data-status="Present">
-                                    <td style="font-weight: 600; color: #1e293b;">18 Jul 2026, 02:00 PM</td>
+                                    <td style="font-weight: 600; color: var(--text-primary);">18 Jul 2026, 02:00 PM</td>
                                     <td>Foundations of C++ Programming (C++)</td>
                                     <td>Classes, Objects & Constructors</td>
                                     <td>Mr. Karan Jadhav</td>
                                     <td><span style="display: inline-block; padding: 0.25rem 0.75rem; background: #dcfce7; color: #15803d; border-radius: 9999px; font-size: 0.75rem; font-weight: 700;"><i class="fa-solid fa-check" style="margin-right: 4px;"></i>Present</span></td>
                                 </tr>
                                 <tr data-subject="Fundamentals of Computer Systems & Networking (FCSN)" data-status="Present">
-                                    <td style="font-weight: 600; color: #1e293b;">17 Jul 2026, 09:00 AM</td>
+                                    <td style="font-weight: 600; color: var(--text-primary);">17 Jul 2026, 09:00 AM</td>
                                     <td>Fundamentals of Computer Systems & Networking (FCSN)</td>
                                     <td>OSI Reference Model & Networking Basics</td>
                                     <td>Mr. Sumesh Shinde</td>
                                     <td><span style="display: inline-block; padding: 0.25rem 0.75rem; background: #dcfce7; color: #15803d; border-radius: 9999px; font-size: 0.75rem; font-weight: 700;"><i class="fa-solid fa-check" style="margin-right: 4px;"></i>Present</span></td>
                                 </tr>
                                 <tr data-subject="Foundations of C++ Programming (C++)" data-status="Present">
-                                    <td style="font-weight: 600; color: #1e293b;">16 Jul 2026, 11:30 AM</td>
+                                    <td style="font-weight: 600; color: var(--text-primary);">16 Jul 2026, 11:30 AM</td>
                                     <td>Foundations of C++ Programming (C++)</td>
                                     <td>Pointers, References & Array Operations</td>
                                     <td>Mr. Karan Jadhav</td>
@@ -1734,7 +1756,7 @@ foreach ($db['leaves'] ?? [] as $leave) {
                     }
                 }
                 ?>
-                <form action="student_dashboard.php" method="POST" id="studentProfileForm" class="settings-form-container" style="max-width: 1100px; margin: 0 auto; background: white; border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: 2rem; box-shadow: var(--box-shadow-subtle);">
+                <form action="student_dashboard.php" method="POST" id="studentProfileForm" class="settings-form-container" style="max-width: 1100px; margin: 0 auto; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: 2rem; box-shadow: var(--box-shadow-subtle);">
                     <input type="hidden" name="action" value="save_profile">
                     <input type="hidden" name="current_active_profile_tab" id="current_active_profile_tab" value="personal">
 
@@ -1742,7 +1764,7 @@ foreach ($db['leaves'] ?? [] as $leave) {
                     <div class="profile-main-header" style="display: flex; gap: 2rem; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 2rem; margin-bottom: 1.5rem;">
                         <?= get_initials_avatar($current_student['name'], 100, 36, 4) ?>
                         <div>
-                            <h2 style="font-size: 1.75rem; font-weight: 800; color: #111827; margin: 0 0 0.5rem 0;"><?= htmlspecialchars($current_student['name']) ?></h2>
+                            <h2 style="font-size: 1.75rem; font-weight: 800; color: var(--text-primary); margin: 0 0 0.5rem 0;"><?= htmlspecialchars($current_student['name']) ?></h2>
                             <span class="status-pill graded" style="font-size: 0.85rem; padding: 0.25rem 0.75rem; background: #e0e7ff; color: #4f46e5; border-radius: 9999px; font-weight: 600;">Active Student</span>
                             <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.95rem;">PRN: <span style="font-weight: 700; color: #4f46e5;"><?= htmlspecialchars($current_student['prn']) ?></span> | ID: <?= htmlspecialchars($current_student['username']) ?> | <?= htmlspecialchars($current_student['dept']) ?></p>
                         </div>
@@ -1795,7 +1817,7 @@ foreach ($db['leaves'] ?? [] as $leave) {
                                 <label>Email(Official) <span style="color:red;">*</span></label>
                                 <div class="input-with-icon">
                                     <i class="fa-solid fa-envelope"></i>
-                                    <input type="email" readonly value="<?= htmlspecialchars($current_student['email']) ?>" style="background: #f1f5f9; cursor: not-allowed;">
+                                    <input type="email" readonly value="<?= htmlspecialchars($current_student['email']) ?>" style="background: var(--bg-alt); cursor: not-allowed;">
                                 </div>
                             </div>
                             <div class="form-group-col">
@@ -2324,14 +2346,14 @@ foreach ($db['leaves'] ?? [] as $leave) {
     <!-- ASSIGNMENT UPLOAD MODAL                      -->
     <!-- ============================================ -->
     <div id="assignmentUploadModal" class="modal-overlay" style="display: none; align-items: center; justify-content: center; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);">
-        <div class="modal-card" style="background: white; border-radius: 12px; max-width: 600px; width: 95%; max-height: 90vh; overflow-y: auto; padding: 2rem; box-shadow: var(--box-shadow-lg); position: relative;">
-            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem;">
-                <h3 id="uploadModalTitle" style="margin: 0; font-size: 1.25rem; font-weight: 700; color: #1e293b;">Upload Subject Assignment</h3>
-                <button type="button" class="btn-close-modal" onclick="closeUploadModal()" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: #94a3b8;"><i class="fa-solid fa-xmark"></i></button>
+        <div class="modal-card" style="background: var(--bg-card); border-radius: 12px; max-width: 600px; width: 95%; max-height: 90vh; overflow-y: auto; padding: 2rem; box-shadow: var(--box-shadow-lg); position: relative;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem;">
+                <h3 id="uploadModalTitle" style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--text-primary);">Upload Subject Assignment</h3>
+                <button type="button" class="btn-close-modal" onclick="closeUploadModal()" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--text-muted);"><i class="fa-solid fa-xmark"></i></button>
             </div>
             
             <!-- Read-only Assignment Details Section -->
-            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem; font-size: 0.85rem; color: #334155;">
+            <div style="background: var(--bg-page); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; margin-bottom: 1.25rem; font-size: 0.85rem; color: var(--text-primary);">
                 <h4 style="margin: 0 0 0.5rem 0; color: #4f46e5; font-size: 0.9rem; font-weight: 700;">Assignment Details</h4>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.5rem;">
                     <div><strong>Subject:</strong> <span id="dt_subject">C++</span></div>
@@ -2342,7 +2364,7 @@ foreach ($db['leaves'] ?? [] as $leave) {
                 </div>
                 <div style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px dashed #e2e8f0;">
                     <strong>Instructions:</strong>
-                    <p id="dt_instructions" style="margin: 0.25rem 0 0 0; color: #64748b; line-height: 1.4;"></p>
+                    <p id="dt_instructions" style="margin: 0.25rem 0 0 0; color: var(--text-secondary); line-height: 1.4;"></p>
                 </div>
             </div>
             
@@ -2350,15 +2372,15 @@ foreach ($db['leaves'] ?? [] as $leave) {
                 <input type="hidden" name="action" value="upload_subject_assignment">
                 <input type="hidden" name="subject_assignment_id" id="upload_sa_id">
                 
-                <div class="drag-drop-zone" id="assignmentDropZone" style="border: 2px dashed #cbd5e1; border-radius: 8px; padding: 2rem; text-align: center; cursor: pointer; background: #f8fafc; transition: all 0.2s; margin-bottom: 1.25rem;">
+                <div class="drag-drop-zone" id="assignmentDropZone" style="border: 2px dashed #cbd5e1; border-radius: 8px; padding: 2rem; text-align: center; cursor: pointer; background: var(--bg-page); transition: all 0.2s; margin-bottom: 1.25rem;">
                     <i class="fa-solid fa-cloud-arrow-up" style="font-size: 2.5rem; color: #8b5cf6; margin-bottom: 1rem; display: block;"></i>
-                    <p style="font-weight: 600; color: #334155; margin-bottom: 0.25rem;">Choose file or drag & drop here</p>
-                    <span style="font-size: 0.75rem; color: #64748b; display: block;">PDF, DOC, DOCX, JPG, JPEG, PNG (Max 20 MB)</span>
+                    <p style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.25rem;">Choose file or drag & drop here</p>
+                    <span style="font-size: 0.75rem; color: var(--text-secondary); display: block;">PDF, DOC, DOCX, JPG, JPEG, PNG (Max 20 MB)</span>
                     <input type="file" id="assignmentFileInput" name="assignment_file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" required style="display: none;">
                 </div>
                 
                 <!-- File info block with Remove Option -->
-                <div id="uploadFileInfo" style="display: none; margin-top: 1rem; padding: 0.75rem; background: #e0f2fe; color: #0369a1; border-radius: 6px; font-size: 0.85rem; font-weight: 500; margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+                <div id="uploadFileInfo" style="display: none; margin-top: 1rem; padding: 0.75rem; background: var(--bg-alt); color: #0369a1; border-radius: 6px; font-size: 0.85rem; font-weight: 500; margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center;">
                     <div>
                         <i class="fa-solid fa-file" style="margin-right: 4px;"></i> <span id="uploadFileName">filename.pdf</span>
                     </div>
@@ -2366,8 +2388,8 @@ foreach ($db['leaves'] ?? [] as $leave) {
                 </div>
 
                 <!-- Preview Box (For PDF / Images) -->
-                <div id="submissionPreviewContainer" style="display: none; margin-bottom: 1.25rem; border: 1px solid #cbd5e1; border-radius: 8px; padding: 0.5rem; background: #fafafa;">
-                    <span style="display: block; font-size: 0.75rem; font-weight: 700; color: #475569; margin-bottom: 0.5rem;">File Preview</span>
+                <div id="submissionPreviewContainer" style="display: none; margin-bottom: 1.25rem; border: 1px solid var(--border-color); border-radius: 8px; padding: 0.5rem; background: var(--bg-alt);">
+                    <span style="display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 0.5rem;">File Preview</span>
                     <div id="previewPane" style="display: flex; justify-content: center; align-items: center; max-height: 250px; overflow: hidden; border-radius: 6px;">
                         <!-- dynamic img or pdf iframe -->
                     </div>
@@ -2375,7 +2397,7 @@ foreach ($db['leaves'] ?? [] as $leave) {
                 
                 <!-- Progress Bar -->
                 <div id="uploadProgressBarContainer" style="display: none; margin-top: 1.5rem; margin-bottom: 1.25rem;">
-                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #64748b; margin-bottom: 4px; font-weight: 600;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 4px; font-weight: 600;">
                         <span>Uploading...</span>
                         <span id="uploadProgressPercent">0%</span>
                     </div>
@@ -2394,7 +2416,7 @@ foreach ($db['leaves'] ?? [] as $leave) {
                 <!-- Student Declaration -->
                 <div style="margin-bottom: 1.25rem; display: flex; gap: 0.5rem; align-items: flex-start; text-align: left;">
                     <input type="checkbox" id="declarationCheck" onchange="validateFormSubmission()" style="margin-top: 3px; cursor: pointer;">
-                    <label for="declarationCheck" style="font-size: 0.85rem; color: #334155; cursor: pointer; font-weight: 500; line-height: 1.4;">I confirm this assignment is my own work.</label>
+                    <label for="declarationCheck" style="font-size: 0.85rem; color: var(--text-primary); cursor: pointer; font-weight: 500; line-height: 1.4;">I confirm this assignment is my own work.</label>
                 </div>
                 
                 <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem;">
@@ -2412,10 +2434,10 @@ foreach ($db['leaves'] ?? [] as $leave) {
     <!-- RAISE GRIEVANCE MODAL                        -->
     <!-- ============================================ -->
     <div id="assignmentGrievanceModal" class="modal-overlay" style="display: none; align-items: center; justify-content: center; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5);">
-        <div class="modal-card" style="background: white; border-radius: 12px; max-width: 500px; width: 90%; padding: 2rem; box-shadow: var(--box-shadow-lg); position: relative;">
+        <div class="modal-card" style="background: var(--bg-card); border-radius: 12px; max-width: 500px; width: 90%; padding: 2rem; box-shadow: var(--box-shadow-lg); position: relative;">
             <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: #1e293b;">Raise Assignment Grievance</h3>
-                <button type="button" class="btn-close-modal" onclick="closeGrievanceModal()" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: #94a3b8;"><i class="fa-solid fa-xmark"></i></button>
+                <h3 style="margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--text-primary);">Raise Assignment Grievance</h3>
+                <button type="button" class="btn-close-modal" onclick="closeGrievanceModal()" style="background: none; border: none; font-size: 1.25rem; cursor: pointer; color: var(--text-muted);"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <p style="color: #ef4444; font-size: 0.8rem; font-weight: 600; margin-bottom: 1.5rem; line-height: 1.4;">
                 * Important: Grievances must be related ONLY to the faculty's uploaded question/assignment file (e.g. blurred, corrupted, wrong file). No student upload issues allowed.
@@ -2426,18 +2448,18 @@ foreach ($db['leaves'] ?? [] as $leave) {
                 <input type="hidden" name="subject_assignment_id" id="grievance_sa_id">
                 
                 <div style="display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 1rem;">
-                    <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Subject</label>
-                    <input type="text" id="grievance_subject" readonly style="background: #f1f5f9; cursor: not-allowed; border: 1px solid #cbd5e1; padding: 0.6rem; border-radius: 6px; font-weight: 600; font-size: 0.9rem; color: #475569; outline: none;">
+                    <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">Subject</label>
+                    <input type="text" id="grievance_subject" readonly style="background: var(--bg-alt); cursor: not-allowed; border: 1px solid var(--border-color); padding: 0.6rem; border-radius: 6px; font-weight: 600; font-size: 0.9rem; color: var(--text-secondary); outline: none;">
                 </div>
                 
                 <div style="display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 1rem;">
-                    <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Assignment</label>
-                    <input type="text" id="grievance_assignment" readonly style="background: #f1f5f9; cursor: not-allowed; border: 1px solid #cbd5e1; padding: 0.6rem; border-radius: 6px; font-weight: 600; font-size: 0.9rem; color: #475569; outline: none;">
+                    <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">Assignment</label>
+                    <input type="text" id="grievance_assignment" readonly style="background: var(--bg-alt); cursor: not-allowed; border: 1px solid var(--border-color); padding: 0.6rem; border-radius: 6px; font-weight: 600; font-size: 0.9rem; color: var(--text-secondary); outline: none;">
                 </div>
                 
                 <div style="display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 1rem;">
-                    <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Issue Type <span style="color: red;">*</span></label>
-                    <select name="issue_type" required style="border: 1px solid #cbd5e1; padding: 0.6rem; border-radius: 6px; outline: none; background: white; font-size: 0.9rem;">
+                    <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">Issue Type <span style="color: red;">*</span></label>
+                    <select name="issue_type" required style="border: 1px solid var(--border-color); padding: 0.6rem; border-radius: 6px; outline: none; background: var(--bg-card); font-size: 0.9rem;">
                         <option value="">Select Issue Category</option>
                         <option value="Question PDF is blurred.">Question PDF is blurred.</option>
                         <option value="PDF is corrupted.">PDF is corrupted.</option>
@@ -2452,13 +2474,13 @@ foreach ($db['leaves'] ?? [] as $leave) {
                 </div>
                 
                 <div style="display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 1rem;">
-                    <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Description <span style="color: red;">*</span></label>
-                    <textarea name="description" required rows="4" placeholder="Detail the issue with the question document..." style="border: 1px solid #cbd5e1; padding: 0.6rem; border-radius: 6px; outline: none; resize: vertical; font-size: 0.9rem; font-family: inherit;"></textarea>
+                    <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">Description <span style="color: red;">*</span></label>
+                    <textarea name="description" required rows="4" placeholder="Detail the issue with the question document..." style="border: 1px solid var(--border-color); padding: 0.6rem; border-radius: 6px; outline: none; resize: vertical; font-size: 0.9rem; font-family: inherit;"></textarea>
                 </div>
                 
                 <div style="display: flex; flex-direction: column; gap: 0.25rem; margin-bottom: 1.5rem;">
-                    <label style="font-size: 0.85rem; font-weight: 600; color: #475569;">Upload Screenshot (Optional)</label>
-                    <input type="file" name="screenshot" accept="image/*" style="border: 1px solid #cbd5e1; padding: 0.4rem; border-radius: 6px; font-size: 0.85rem; outline: none;">
+                    <label style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">Upload Screenshot (Optional)</label>
+                    <input type="file" name="screenshot" accept="image/*" style="border: 1px solid var(--border-color); padding: 0.4rem; border-radius: 6px; font-size: 0.85rem; outline: none;">
                 </div>
                 
                 <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 1rem;">
@@ -2799,7 +2821,7 @@ foreach ($db['leaves'] ?? [] as $leave) {
                         previewContainer.style.display = 'block';
                     } else {
                         // Word documents
-                        previewPane.innerHTML = `<div style="text-align:center; padding:1.5rem; color:#475569;"><i class="fa-solid fa-file-word" style="font-size:3rem; color:#2b579a; margin-bottom:0.5rem; display:block;"></i> <strong>${ext.toUpperCase()} File Preview Not Available</strong></div>`;
+                        previewPane.innerHTML = `<div style="text-align:center; padding:1.5rem; color: var(--text-secondary);"><i class="fa-solid fa-file-word" style="font-size:3rem; color:#2b579a; margin-bottom:0.5rem; display:block;"></i> <strong>${ext.toUpperCase()} File Preview Not Available</strong></div>`;
                         previewContainer.style.display = 'block';
                     }
                 }
@@ -2849,12 +2871,13 @@ foreach ($db['leaves'] ?? [] as $leave) {
                                 try {
                                     const res = JSON.parse(xhr.responseText);
                                     if (res.success) {
+                                        closeUploadModal();
                                         if (successMsg) successMsg.style.display = 'block';
                                         if (successTime) successTime.textContent = 'Submitted on: ' + res.submitted_at;
                                         showToastNotification('Assignment uploaded successfully.', 'success');
                                         setTimeout(() => {
                                             window.location.reload();
-                                        }, 1500);
+                                        }, 1000);
                                     } else {
                                         showToastNotification(res.message || 'Upload failed.', 'error');
                                         if (progressContainer) progressContainer.style.display = 'none';

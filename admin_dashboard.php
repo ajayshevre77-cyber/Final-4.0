@@ -401,7 +401,7 @@ if (isset($db['departments'])) {
         }
 
         .top-banner {
-            background-color: #fff;
+            background-color: var(--bg-card);
             padding: 25px 30px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.03);
@@ -414,12 +414,12 @@ if (isset($db['departments'])) {
         .banner-left h1 {
             font-size: 22px;
             font-weight: 700;
-            color: #111827;
+            color: var(--text-primary);
             margin-bottom: 5px;
         }
 
         .banner-left p {
-            color: #6b7280;
+            color: var(--text-secondary);
             font-size: 13.5px;
         }
 
@@ -432,8 +432,8 @@ if (isset($db['departments'])) {
         .notification-icon {
             width: 42px;
             height: 42px;
-            background-color: #f1f5f9;
-            color: #475569;
+            background-color: var(--bg-alt);
+            color: var(--text-secondary);
             border-radius: 50%;
             display: flex;
             justify-content: center;
@@ -470,12 +470,12 @@ if (isset($db['departments'])) {
         .profile-name {
             font-size: 14.5px;
             font-weight: 700;
-            color: #0f172a;
+            color: var(--text-primary);
         }
 
         .profile-role {
             font-size: 12px;
-            color: #64748b;
+            color: var(--text-secondary);
             margin-top: 2px;
         }
 
@@ -500,7 +500,7 @@ if (isset($db['departments'])) {
         }
 
         .dashboard-card {
-            background-color: #fff;
+            background-color: var(--bg-card);
             border-radius: 16px;
             padding: 35px 25px;
             display: flex;
@@ -537,7 +537,7 @@ if (isset($db['departments'])) {
         }
 
         .dashboard-card p {
-            color: #6b7280;
+            color: var(--text-secondary);
             font-size: 12px;
             line-height: 1.5;
             margin-bottom: 25px;
@@ -569,10 +569,10 @@ if (isset($db['departments'])) {
         .card-green .card-btn { border: 1px solid #6ee7b7; color: #10b981; }
         .card-green .card-btn:hover { background-color: #dcfce7; }
 
-        .card-blue .card-icon-container { background-color: #e0f2fe; color: #3b82f6; }
+        .card-blue .card-icon-container { background: var(--bg-alt); color: #3b82f6; }
         .card-blue h3 { color: #3b82f6; }
         .card-blue .card-btn { border: 1px solid #93c5fd; color: #3b82f6; }
-        .card-blue .card-btn:hover { background-color: #e0f2fe; }
+        .card-blue .card-btn:hover { background: var(--bg-alt); }
 
         .card-orange .card-icon-container { background-color: #ffedd5; color: #f97316; }
         .card-orange h3 { color: #f97316; }
@@ -593,7 +593,7 @@ if (isset($db['departments'])) {
         }
 
         .stat-card {
-            background: #fff;
+            background: var(--bg-card);
             padding: 20px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.03);
@@ -614,7 +614,7 @@ if (isset($db['departments'])) {
 
         .stat-info h4 {
             font-size: 13px;
-            color: #64748b;
+            color: var(--text-secondary);
             font-weight: 500;
             margin-bottom: 5px;
         }
@@ -622,7 +622,7 @@ if (isset($db['departments'])) {
         .stat-info p {
             font-size: 22px;
             font-weight: 700;
-            color: #0f172a;
+            color: var(--text-primary);
         }
 
         .stat-students .stat-icon { background: #eff6ff; color: #3b82f6; }
@@ -638,7 +638,7 @@ if (isset($db['departments'])) {
         }
         .section-header h2 {
             font-size: 18px;
-            color: #1e293b;
+            color: var(--text-primary);
         }
         .add-btn {
             background-color: #3b82f6;
@@ -657,7 +657,7 @@ if (isset($db['departments'])) {
         .add-btn:hover { background-color: #2563eb; }
 
         .table-container {
-            background: #fff;
+            background: var(--bg-card);
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.03);
             overflow: hidden;
@@ -669,19 +669,19 @@ if (isset($db['departments'])) {
         th, td {
             padding: 15px 20px;
             text-align: left;
-            border-bottom: 1px solid #f1f5f9;
+            border-bottom: 1px solid var(--border-color);
         }
         th {
-            background-color: #f8fafc;
+            background-color: var(--bg-page);
             font-size: 12px;
             text-transform: uppercase;
-            color: #64748b;
+            color: var(--text-secondary);
             font-weight: 600;
             letter-spacing: 0.5px;
         }
         td {
             font-size: 14px;
-            color: #334155;
+            color: var(--text-primary);
         }
         .user-cell {
             display: flex;
@@ -721,7 +721,7 @@ if (isset($db['departments'])) {
             opacity: 1;
         }
         .modal-content {
-            background: #fff;
+            background: var(--bg-card);
             width: 100%;
             max-width: 500px;
             border-radius: 16px;
@@ -740,30 +740,30 @@ if (isset($db['departments'])) {
         }
         .modal-header h3 {
             font-size: 18px;
-            color: #1e293b;
+            color: var(--text-primary);
         }
         .close-modal {
             background: none;
             border: none;
             font-size: 20px;
-            color: #64748b;
+            color: var(--text-secondary);
             cursor: pointer;
         }
         .form-group { margin-bottom: 15px; }
         .form-group label {
             display: block;
             font-size: 13px;
-            color: #475569;
+            color: var(--text-secondary);
             font-weight: 500;
             margin-bottom: 8px;
         }
         .form-group input, .form-group select {
             width: 100%;
             padding: 10px 15px;
-            border: 1px solid #cbd5e1;
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             font-size: 14px;
-            color: #1e293b;
+            color: var(--text-primary);
             outline: none;
             transition: border-color 0.2s;
         }
@@ -915,7 +915,7 @@ if (isset($db['departments'])) {
         }
         .profile-card-body {
             padding: 30px;
-            background: #ffffff;
+            background: var(--bg-card);
         }
         .pm-info-row {
             display: flex;
@@ -930,7 +930,7 @@ if (isset($db['departments'])) {
         }
         .pm-info-icon {
             width: 40px; height: 40px;
-            background: #f8fafc;
+            background: var(--bg-page);
             border-radius: 12px;
             display: flex; justify-content: center; align-items: center;
             color: #6366f1;
@@ -947,13 +947,13 @@ if (isset($db['departments'])) {
             font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
-            color: #94a3b8;
+            color: var(--text-muted);
             margin-bottom: 3px;
             letter-spacing: 0.5px;
         }
         .pm-info-text p {
             font-size: 14.5px;
-            color: #1e293b;
+            color: var(--text-primary);
             font-weight: 600;
             margin: 0;
             line-height: 1.4;
@@ -1053,14 +1053,14 @@ if (isset($db['departments'])) {
                         <?php endif; ?>
                     </div>
                     
-                    <div class="notification-dropdown" id="notificationDropdown" style="display: none; position: absolute; top: 120%; right: 0; width: 320px; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid var(--border-color); z-index: 100; overflow: hidden; cursor: default;">
-                        <div style="padding: 1rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: #f8fafc;">
-                            <h4 style="margin: 0; font-size: 1rem; color: #1e293b;">Notifications</h4>
-                            <span style="font-size: 0.75rem; color: var(--primary-color); cursor: pointer; font-weight: 600;" onclick="fetch(window.location.href, {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: 'action=clear_notifications'}).then(() => { this.parentElement.nextElementSibling.innerHTML='<div style=\'padding: 2rem 1rem; text-align: center; color: #64748b; font-size: 0.9rem;\'><i class=\'fa-regular fa-bell-slash\' style=\'font-size: 1.5rem; margin-bottom: 0.5rem; color: #cbd5e1;\'></i><br>No new notifications</div>'; let b = document.querySelector('#notificationToggle .badge'); if(b) b.style.display='none'; });">Mark all as read</span>
+                    <div class="notification-dropdown" id="notificationDropdown" style="display: none; position: absolute; top: 120%; right: 0; width: 320px; background: var(--bg-card); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid var(--border-color); z-index: 100; overflow: hidden; cursor: default;">
+                        <div style="padding: 1rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--bg-page);">
+                            <h4 style="margin: 0; font-size: 1rem; color: var(--text-primary);">Notifications</h4>
+                            <span style="font-size: 0.75rem; color: var(--primary-color); cursor: pointer; font-weight: 600;" onclick="fetch(window.location.href, {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: 'action=clear_notifications'}).then(() => { this.parentElement.nextElementSibling.innerHTML='<div style=\'padding: 2rem 1rem; text-align: center; color: var(--text-secondary); font-size: 0.9rem;\'><i class=\'fa-regular fa-bell-slash\' style=\'font-size: 1.5rem; margin-bottom: 0.5rem; color: #cbd5e1;\'></i><br>No new notifications</div>'; let b = document.querySelector('#notificationToggle .badge'); if(b) b.style.display='none'; });">Mark all as read</span>
                         </div>
                         <div style="max-height: 350px; overflow-y: auto; text-align: left;">
                             <?php if (empty($db['recent_activity'])): ?>
-                                <div style="padding: 2rem 1rem; text-align: center; color: #64748b; font-size: 0.9rem;">
+                                <div style="padding: 2rem 1rem; text-align: center; color: var(--text-secondary); font-size: 0.9rem;">
                                     <i class="fa-regular fa-bell-slash" style="font-size: 1.5rem; margin-bottom: 0.5rem; color: #cbd5e1;"></i><br>
                                     No new notifications
                                 </div>
@@ -1074,15 +1074,15 @@ if (isset($db['departments'])) {
                                 elseif (strpos($t, 'assignment') !== false) $targetTab = 'assignments';
                                 elseif (strpos($t, 'notice') !== false) $targetTab = 'notices';
                                 ?>
-                                <div onclick="triggerTab('<?php echo $targetTab; ?>')" style="padding: 1rem; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: background 0.2s; <?php echo $idx === 0 ? 'background: #f0f9ff;' : ''; ?>" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='<?php echo $idx === 0 ? '#f0f9ff' : 'transparent'; ?>'">
+                                <div onclick="triggerTab('<?php echo $targetTab; ?>')" style="padding: 1rem; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s; <?php echo $idx === 0 ? 'background: #f0f9ff;' : ''; ?>" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='<?php echo $idx === 0 ? '#f0f9ff' : 'transparent'; ?>'">
                                     <div style="display: flex; gap: 0.75rem;">
-                                        <div style="width: 36px; height: 36px; border-radius: 50%; background: #e0f2fe; color: #0284c7; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                        <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--bg-alt); color: #0284c7; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                                             <i class="fa-solid fa-bolt"></i>
                                         </div>
                                         <div>
-                                            <div style="font-weight: 600; font-size: 0.9rem; color: #334155; margin-bottom: 0.15rem;"><?php echo htmlspecialchars($activity['title'] ?? 'Notification'); ?></div>
-                                            <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.25rem;"><?php echo htmlspecialchars($activity['desc'] ?? ''); ?></div>
-                                            <div style="font-size: 0.7rem; color: #94a3b8;"><i class="fa-regular fa-clock" style="margin-right: 3px;"></i> <?php echo htmlspecialchars($activity['time'] ?? 'Just now'); ?></div>
+                                            <div style="font-weight: 600; font-size: 0.9rem; color: var(--text-primary); margin-bottom: 0.15rem;"><?php echo htmlspecialchars($activity['title'] ?? 'Notification'); ?></div>
+                                            <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.25rem;"><?php echo htmlspecialchars($activity['desc'] ?? ''); ?></div>
+                                            <div style="font-size: 0.7rem; color: var(--text-muted);"><i class="fa-regular fa-clock" style="margin-right: 3px;"></i> <?php echo htmlspecialchars($activity['time'] ?? 'Just now'); ?></div>
                                         </div>
                                     </div>
                                 </div>
@@ -1172,38 +1172,8 @@ if (isset($db['departments'])) {
         <!-- Dashboard View -->
         <div id="view-dashboard" class="app-view active">
             <!-- Admin Portal Summary -->
-            <div class="stats-row" style="margin-bottom: 30px;">
-                <div class="stat-card stat-students">
-                    <div class="stat-icon" style="background: #eff6ff; color: #3b82f6;"><i class="fa-solid fa-user-graduate"></i></div>
-                    <div class="stat-info">
-                        <h4>Total Students</h4>
-                        <p><?php echo isset($db['students']) ? count($db['students']) : 0; ?></p>
-                    </div>
-                </div>
-                <div class="stat-card stat-faculty">
-                    <div class="stat-icon" style="background: #f0fdf4; color: #22c55e;"><i class="fa-solid fa-chalkboard-user"></i></div>
-                    <div class="stat-info">
-                        <h4>Total Faculties</h4>
-                        <p><?php echo isset($db['faculty']) ? count($db['faculty']) : 0; ?></p>
-                    </div>
-                </div>
-                <div class="stat-card stat-department">
-                    <div class="stat-icon" style="background: #fdf2f8; color: #ec4899;"><i class="fa-solid fa-building"></i></div>
-                    <div class="stat-info">
-                        <h4>Total Departments</h4>
-                        <p><?php echo isset($db['departments']) ? count($db['departments']) : 0; ?></p>
-                    </div>
-                </div>
-                <div class="stat-card stat-notice">
-                    <div class="stat-icon" style="background: #fffbeb; color: #f59e0b;"><i class="fa-solid fa-bullhorn"></i></div>
-                    <div class="stat-info">
-                        <h4>Total Notices</h4>
-                        <p><?php echo isset($db['notices']) ? count($db['notices']) : 0; ?></p>
-                    </div>
-                </div>
-            </div>
-            
-            <h3 style="font-size: 1.15rem; color: #1e293b; margin-bottom: 20px; font-weight: 700;">Quick Access</h3>
+
+            <h3 style="font-size: 1.15rem; color: var(--text-primary); margin-bottom: 20px; font-weight: 700;">Quick Access</h3>
             <div class="cards-grid">
                 <!-- User Management Card -->
                 <div class="dashboard-card card-purple">
@@ -1266,6 +1236,19 @@ if (isset($db['departments'])) {
                     <p>Configure system settings and preferences.</p>
                     <a onclick="switchTab('system-configuration')" class="card-btn">
                         <span>Go to System Configuration</span>
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </a>
+                </div>
+
+                <!-- Student Marks Card -->
+                <div class="dashboard-card card-blue">
+                    <div class="card-icon-container">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <h3>Student Marks</h3>
+                    <p>View and manage student marks.</p>
+                    <a onclick="switchTab('student-marks')" class="card-btn">
+                        <span>Go to Student Marks</span>
                         <i class="fa-solid fa-chevron-right"></i>
                     </a>
                 </div>
@@ -1362,7 +1345,7 @@ if (isset($db['departments'])) {
                             
                             echo "<tr>";
                             echo "<td><div class='user-cell'><span class='user-name-link' onclick='showUserProfile(this)' data-user='{$user_data}'>".htmlspecialchars($f['name'])."</span></div></td>";
-                            echo "<td><span style='font-size:0.85rem; color:#64748b; font-weight:600;'>".htmlspecialchars($f['id'])."</span></td>";
+                            echo "<td><span style='font-size:0.85rem; color: var(--text-secondary); font-weight:600;'>".htmlspecialchars($f['id'])."</span></td>";
                             echo "<td><span class='badge {$badgeClass}'>{$roleLabel}</span></td>";
                             echo "<td>".htmlspecialchars($department)."</td>";
                             echo "<td>".htmlspecialchars($subjects)."</td>";
@@ -1463,21 +1446,21 @@ if (isset($db['departments'])) {
         <div id="view-notice-management" class="app-view">
             <div style="text-align: center; margin-bottom: 2rem;">
                 <h2 style="font-size: 2.25rem; color: #3b82f6; font-weight: 800; margin-bottom: 0.5rem;">Publish Notice</h2>
-                <p style="color: #64748b;">Post announcements and broadcast updates to everyone or specific departments.</p>
+                <p style="color: var(--text-secondary);">Post announcements and broadcast updates to everyone or specific departments.</p>
             </div>
             
-            <div style="background: white; border: 1px solid #cbd5e1; border-radius: 12px; padding: 2rem; margin-bottom: 3rem; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+            <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 2rem; margin-bottom: 3rem; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
                 <form method="POST" enctype="multipart/form-data">
                     <input type="hidden" name="action" value="publish_notice">
                     
                     <div style="margin-bottom: 1.5rem;">
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: #334155;">Notice Title</label>
-                        <input type="text" name="title" required placeholder="e.g. Extra Class Scheduled" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit; font-size: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">Notice Title</label>
+                        <input type="text" name="title" required placeholder="e.g. Extra Class Scheduled" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; font-size: 1rem;">
                     </div>
                     
                     <div style="margin-bottom: 1.5rem;">
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: #334155;">Target Audience (Department)</label>
-                        <select name="target_audience" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit; font-size: 1rem; outline: none;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">Target Audience (Department)</label>
+                        <select name="target_audience" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; font-size: 1rem; outline: none;">
                             <option value="All Departments">All Departments</option>
                             <option value="Information Technology">Information Technology</option>
                             <option value="Computer Engineering">Computer Engineering</option>
@@ -1490,28 +1473,28 @@ if (isset($db['departments'])) {
                     </div>
 
                     <div style="margin-bottom: 1.5rem;">
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: #334155;">Description</label>
-                        <textarea name="desc" rows="4" required placeholder="Enter notice details..." style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit; font-size: 1rem; resize: vertical;"></textarea>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">Description</label>
+                        <textarea name="desc" rows="4" required placeholder="Enter notice details..." style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; font-size: 1rem; resize: vertical;"></textarea>
                     </div>
                     
                     <div style="margin-bottom: 1.5rem;">
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: #334155;">Expiry Date (Optional)</label>
-                        <input type="date" name="expiry" min="<?= date('Y-m-d') ?>" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit; font-size: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">Expiry Date (Optional)</label>
+                        <input type="date" name="expiry" min="<?= date('Y-m-d') ?>" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; font-size: 1rem;">
                     </div>
                     
-                    <div style="border: 2px dashed #cbd5e1; border-radius: 8px; padding: 2rem; background: #f8fafc; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
-                        <div style="display: flex; align-items: center; gap: 1.25rem;">
+                    <div style="border: 2px dashed #cbd5e1; border-radius: 8px; padding: 2rem; background: var(--bg-page); margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 2rem;">
                             <div style="width: 56px; height: 56px; background: #dbeafe; color: #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0;">
                                 <i class="fa-solid fa-paperclip"></i>
                             </div>
                             <div style="text-align: left;">
-                                <h4 style="font-weight: 600; margin-bottom: 0.25rem; font-size: 1.05rem; color: #1e293b;">Attach File (Optional)</h4>
-                                <p style="font-size: 0.9rem; color: #64748b;">Click here to <label for="admin-notice-upload" style="color: #3b82f6; font-weight: 600; cursor: pointer;">browse</label> and select a file</p>
+                                <h4 style="font-weight: 600; margin-bottom: 0.25rem; font-size: 1.05rem; color: var(--text-primary);">Attach File (Optional)</h4>
+                                <p style="font-size: 0.9rem; color: var(--text-secondary);">Click here to <label for="admin-notice-upload" style="color: #3b82f6; font-weight: 600; cursor: pointer;">browse</label> and select a file</p>
                                 <input id="admin-notice-upload" type="file" name="attachment" style="display: none;">
-                                <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.35rem;">Supported formats: PDF, DOCX, JPG, PNG (Max 5MB)</p>
+                                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.35rem;">Supported formats: PDF, DOCX, JPG, PNG (Max 5MB)</p>
                             </div>
                         </div>
-                        <label for="admin-notice-upload" style="background: white; border: 1px solid #cbd5e1; padding: 0.65rem 1.25rem; border-radius: 6px; color: #3b82f6; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: background 0.2s;">
+                        <label for="admin-notice-upload" style="background: var(--bg-card); border: 1px solid var(--border-color); padding: 0.65rem 1.25rem; border-radius: 6px; color: #3b82f6; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: background 0.2s;">
                             <i class="fa-solid fa-arrow-up-from-bracket"></i> Choose File
                         </label>
                     </div>
@@ -1522,25 +1505,25 @@ if (isset($db['departments'])) {
                 </form>
             </div>
             
-            <h3 style="font-size: 1.35rem; font-weight: 700; margin-bottom: 1.5rem; color: #1e293b;">Published Notices</h3>
+            <h3 style="font-size: 1.35rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--text-primary);">Published Notices</h3>
             
             <?php foreach (array_reverse($db['notices'] ?? []) as $n): ?>
-            <div style="background: white; border: 1px solid #cbd5e1; border-radius: 12px; margin-bottom: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.02); overflow: hidden;">
-                <div style="padding: 1.5rem; display: flex; gap: 1.25rem; align-items: flex-start;">
-                    <div style="width: 48px; height: 48px; background: #fff1f2; color: #e11d48; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.35rem; flex-shrink: 0;">
+            <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 1.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.02); overflow: hidden;">
+                <div style="padding: 1.5rem; display: flex; gap: 2rem; align-items: flex-start;">
+                    <div style="width: 48px; height: 48px; background: var(--bg-card);1f2; color: #e11d48; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.35rem; flex-shrink: 0;">
                         <i class="fa-solid fa-bullhorn"></i>
                     </div>
                     <div style="flex: 1;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
-                            <h4 style="font-size: 1.15rem; font-weight: 700; color: #1e293b;"><?= htmlspecialchars($n['title']) ?></h4>
+                            <h4 style="font-size: 1.15rem; font-weight: 700; color: var(--text-primary);"><?= htmlspecialchars($n['title']) ?></h4>
                             <?php if (isset($n['target_audience'])): ?>
-                                <span style="background: #f1f5f9; color: #475569; padding: 0.25rem 0.65rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;"><?= htmlspecialchars($n['target_audience']) ?></span>
+                                <span style="background: var(--bg-alt); color: var(--text-secondary); padding: 0.25rem 0.65rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;"><?= htmlspecialchars($n['target_audience']) ?></span>
                             <?php endif; ?>
                         </div>
-                        <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 0.65rem;"><?= htmlspecialchars($n['desc']) ?></p>
-                        <div style="display: flex; align-items: center; gap: 1.5rem; font-size: 0.85rem; color: #475569; font-weight: 500; flex-wrap: wrap;">
-                            <span><i class="fa-regular fa-calendar" style="color: #64748b;"></i> Published: <?= htmlspecialchars($n['date']) ?></span>
-                            <span><i class="fa-regular fa-clock" style="color: #64748b;"></i> Expiry: <?= htmlspecialchars($n['expiry'] ?: 'N/A') ?></span>
+                        <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 0.65rem;"><?= htmlspecialchars($n['desc']) ?></p>
+                        <div style="display: flex; align-items: center; gap: 2rem; font-size: 0.85rem; color: var(--text-secondary); font-weight: 500; flex-wrap: wrap;">
+                            <span><i class="fa-regular fa-calendar" style="color: var(--text-secondary);"></i> Published: <?= htmlspecialchars($n['date']) ?></span>
+                            <span><i class="fa-regular fa-clock" style="color: var(--text-secondary);"></i> Expiry: <?= htmlspecialchars($n['expiry'] ?: 'N/A') ?></span>
                             <?php if (!empty($n['attachment'])): ?>
                                 <a href="<?= htmlspecialchars($n['attachment']) ?>" target="_blank" style="color: #0284c7; text-decoration: none;"><i class="fa-solid fa-paperclip"></i> <?= htmlspecialchars($n['attachment']) ?></a>
                             <?php endif; ?>
@@ -1568,13 +1551,13 @@ if (isset($db['departments'])) {
             </div>
 
             <!-- Form Container (Hidden by default) -->
-            <div id="reportFormContainer" style="display: none; background: white; border: 1px solid #cbd5e1; border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+            <div id="reportFormContainer" style="display: none; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
                 <form method="POST" action="admin_dashboard.php">
                     <input type="hidden" name="action" value="generate_report">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 1.5rem;">
                         <div>
-                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: #334155;">Report Type</label>
-                            <select name="report_type" required style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit; font-size: 1rem; outline: none;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">Report Type</label>
+                            <select name="report_type" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; font-size: 1rem; outline: none;">
                                 <option value="" disabled selected>Select Report Type</option>
                                 <option value="Student Master List">Student Master List</option>
                                 <option value="Faculty Directory">Faculty Directory</option>
@@ -1584,8 +1567,8 @@ if (isset($db['departments'])) {
                             </select>
                         </div>
                         <div>
-                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: #334155;">Department Filter</label>
-                            <select name="department" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit; font-size: 1rem; outline: none;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">Department Filter</label>
+                            <select name="department" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; font-size: 1rem; outline: none;">
                                 <option value="All">All Departments</option>
                                 <?php if(isset($db['departments'])): foreach($db['departments'] as $d): ?>
                                     <option value="<?= htmlspecialchars($d['name']) ?>"><?= htmlspecialchars($d['name']) ?></option>
@@ -1593,24 +1576,24 @@ if (isset($db['departments'])) {
                             </select>
                         </div>
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 1.5rem;">
                         <div>
-                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: #334155;">Start Date (Optional)</label>
-                            <input type="date" name="start_date" min="<?= date('Y-m-d') ?>" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit; font-size: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">Start Date (Optional)</label>
+                            <input type="date" name="start_date" min="<?= date('Y-m-d') ?>" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; font-size: 1rem;">
                         </div>
                         <div>
-                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: #334155;">End Date (Optional)</label>
-                            <input type="date" name="end_date" min="<?= date('Y-m-d') ?>" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit; font-size: 1rem;">
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">End Date (Optional)</label>
+                            <input type="date" name="end_date" min="<?= date('Y-m-d') ?>" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; font-size: 1rem;">
                         </div>
                     </div>
                     <div style="margin-bottom: 2rem;">
-                        <label style="display: block; margin-bottom: 0.75rem; font-weight: 600; font-size: 0.9rem; color: #334155;">Export Format</label>
+                        <label style="display: block; margin-bottom: 0.75rem; font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">Export Format</label>
                         <div style="display: flex; gap: 1rem;">
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; border: 1px solid #cbd5e1; padding: 0.5rem 1rem; border-radius: 6px; transition: border 0.2s;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; border: 1px solid var(--border-color); padding: 0.5rem 1rem; border-radius: 6px; transition: border 0.2s;">
                                 <input type="radio" name="format" value="pdf" checked style="accent-color: #5b21b6;">
                                 <i class="fa-solid fa-file-pdf" style="color: #ef4444;"></i> PDF Document
                             </label>
-                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; border: 1px solid #cbd5e1; padding: 0.5rem 1rem; border-radius: 6px; transition: border 0.2s;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; border: 1px solid var(--border-color); padding: 0.5rem 1rem; border-radius: 6px; transition: border 0.2s;">
                                 <input type="radio" name="format" value="csv" style="accent-color: #5b21b6;">
                                 <i class="fa-solid fa-file-csv" style="color: #10b981;"></i> CSV/Excel
                             </label>
@@ -1625,130 +1608,130 @@ if (isset($db['departments'])) {
             </div>
 
             <!-- Stats Cards -->
-            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2rem;">
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; margin-bottom: 2rem;">
                 <!-- Card 1 -->
-                <div style="background: white; border-radius: 8px; border: 1px solid #f1f5f9; padding: 1.25rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.01);">
+                <div style="background: var(--bg-card); border-radius: 8px; border: 1px solid #f1f5f9; padding: 1.25rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.01);">
                     <div style="background: #f3e8ff; color: #8b5cf6; width: 55px; height: 55px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; flex-shrink: 0;">
                         <i class="fa-regular fa-file-lines"></i>
                     </div>
                     <div>
-                        <div style="font-size: 0.8rem; color: #0f172a; font-weight: 600; margin-bottom: 0.25rem;">Total Reports</div>
+                        <div style="font-size: 0.8rem; color: var(--text-primary); font-weight: 600; margin-bottom: 0.25rem;">Total Reports</div>
                         <div style="font-size: 1.6rem; font-weight: 700; color: #8b5cf6; line-height: 1;">32</div>
-                        <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">All time</div>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">All time</div>
                     </div>
                 </div>
                 <!-- Card 2 -->
-                <div style="background: white; border-radius: 8px; border: 1px solid #f1f5f9; padding: 1.25rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.01);">
+                <div style="background: var(--bg-card); border-radius: 8px; border: 1px solid #f1f5f9; padding: 1.25rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.01);">
                     <div style="background: #dcfce7; color: #22c55e; width: 55px; height: 55px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; flex-shrink: 0;">
                         <i class="fa-solid fa-user-group"></i>
                     </div>
                     <div>
-                        <div style="font-size: 0.8rem; color: #0f172a; font-weight: 600; margin-bottom: 0.25rem;">Student Reports</div>
+                        <div style="font-size: 0.8rem; color: var(--text-primary); font-weight: 600; margin-bottom: 0.25rem;">Student Reports</div>
                         <div style="font-size: 1.6rem; font-weight: 700; color: #22c55e; line-height: 1;">16</div>
-                        <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">All time</div>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">All time</div>
                     </div>
                 </div>
                 <!-- Card 3 -->
-                <div style="background: white; border-radius: 8px; border: 1px solid #f1f5f9; padding: 1.25rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.01);">
+                <div style="background: var(--bg-card); border-radius: 8px; border: 1px solid #f1f5f9; padding: 1.25rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.01);">
                     <div style="background: #ffedd5; color: #f97316; width: 55px; height: 55px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; flex-shrink: 0;">
                         <i class="fa-regular fa-user"></i>
                     </div>
                     <div>
-                        <div style="font-size: 0.8rem; color: #0f172a; font-weight: 600; margin-bottom: 0.25rem;">Faculty Reports</div>
+                        <div style="font-size: 0.8rem; color: var(--text-primary); font-weight: 600; margin-bottom: 0.25rem;">Faculty Reports</div>
                         <div style="font-size: 1.6rem; font-weight: 700; color: #f97316; line-height: 1;">8</div>
-                        <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">All time</div>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">All time</div>
                     </div>
                 </div>
                 <!-- Card 4 -->
-                <div style="background: white; border-radius: 8px; border: 1px solid #f1f5f9; padding: 1.25rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.01);">
-                    <div style="background: #e0f2fe; color: #3b82f6; width: 55px; height: 55px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; flex-shrink: 0;">
+                <div style="background: var(--bg-card); border-radius: 8px; border: 1px solid #f1f5f9; padding: 1.25rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.01);">
+                    <div style="background: var(--bg-alt); color: #3b82f6; width: 55px; height: 55px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; flex-shrink: 0;">
                         <i class="fa-regular fa-calendar"></i>
                     </div>
                     <div>
-                        <div style="font-size: 0.8rem; color: #0f172a; font-weight: 600; margin-bottom: 0.25rem;">Generated This Month</div>
+                        <div style="font-size: 0.8rem; color: var(--text-primary); font-weight: 600; margin-bottom: 0.25rem;">Generated This Month</div>
                         <div style="font-size: 1.6rem; font-weight: 700; color: #3b82f6; line-height: 1;">7</div>
-                        <div style="font-size: 0.75rem; color: #64748b; margin-top: 0.25rem;">May 2024</div>
+                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">May 2024</div>
                     </div>
                 </div>
             </div>
 
             <!-- Table -->
-            <div style="background: white; border-radius: 10px; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.01); padding: 1.5rem;">
-                <h3 style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 1.5rem;">Reports List</h3>
+            <div style="background: var(--bg-card); border-radius: 10px; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.01); padding: 1.5rem;">
+                <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1.5rem;">Reports List</h3>
                 <div style="overflow-x: auto;">
                     <table style="width: 100%; border-collapse: collapse; text-align: left; min-width: 800px;">
                         <thead>
-                            <tr style="border-bottom: 1px solid #f1f5f9; background: #fafaf9;">
-                                <th style="padding: 1rem; font-weight: 600; color: #0f172a; font-size: 0.85rem;">Report Name</th>
-                                <th style="padding: 1rem; font-weight: 600; color: #0f172a; font-size: 0.85rem;">Category</th>
-                                <th style="padding: 1rem; font-weight: 600; color: #0f172a; font-size: 0.85rem;">Generated By</th>
-                                <th style="padding: 1rem; font-weight: 600; color: #0f172a; font-size: 0.85rem;">Date</th>
-                                <th style="padding: 1rem; font-weight: 600; color: #0f172a; font-size: 0.85rem;">Status</th>
-                                <th style="padding: 1rem; font-weight: 600; color: #0f172a; font-size: 0.85rem; text-align: center;">Download</th>
+                            <tr style="border-bottom: 1px solid var(--border-color); background: #fafaf9;">
+                                <th style="padding: 1rem; font-weight: 600; color: var(--text-primary); font-size: 0.85rem;">Report Name</th>
+                                <th style="padding: 1rem; font-weight: 600; color: var(--text-primary); font-size: 0.85rem;">Category</th>
+                                <th style="padding: 1rem; font-weight: 600; color: var(--text-primary); font-size: 0.85rem;">Generated By</th>
+                                <th style="padding: 1rem; font-weight: 600; color: var(--text-primary); font-size: 0.85rem;">Date</th>
+                                <th style="padding: 1rem; font-weight: 600; color: var(--text-primary); font-size: 0.85rem;">Status</th>
+                                <th style="padding: 1rem; font-weight: 600; color: var(--text-primary); font-size: 0.85rem; text-align: center;">Download</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr style="border-bottom: 1px solid #f8fafc;">
-                                <td style="padding: 1rem; font-size: 0.85rem; color: #334155; font-weight: 500;">Student Attendance Report</td>
+                                <td style="padding: 1rem; font-size: 0.85rem; color: var(--text-primary); font-weight: 500;">Student Attendance Report</td>
                                 <td style="padding: 1rem;"><span style="background: #f3e8ff; color: #8b5cf6; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Student</span></td>
-                                <td style="padding: 1rem; font-size: 0.85rem; color: #334155;">Administrator</td>
-                                <td style="padding: 1rem; font-size: 0.85rem; color: #334155;">20 May 2024 10:30 AM</td>
+                                <td style="padding: 1rem; font-size: 0.85rem; color: var(--text-primary);">Administrator</td>
+                                <td style="padding: 1rem; font-size: 0.85rem; color: var(--text-primary);">20 May 2024 10:30 AM</td>
                                 <td style="padding: 1rem;"><span style="background: #dcfce7; color: #16a34a; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Completed</span></td>
                                 <td style="padding: 1rem; text-align: center;"><a href="download_report.php?report=Student_Attendance_Report" target="_blank" style="color: #8b5cf6; font-size: 1.1rem; text-decoration: none;"><i class="fa-solid fa-download"></i></a></td>
                             </tr>
                             <tr style="border-bottom: 1px solid #f8fafc;">
-                                <td style="padding: 1rem; font-size: 0.85rem; color: #334155; font-weight: 500;">Student Marks Report</td>
+                                <td style="padding: 1rem; font-size: 0.85rem; color: var(--text-primary); font-weight: 500;">Student Marks Report</td>
                                 <td style="padding: 1rem;"><span style="background: #f3e8ff; color: #8b5cf6; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Student</span></td>
-                                <td style="padding: 1rem; font-size: 0.85rem; color: #334155;">Administrator</td>
-                                <td style="padding: 1rem; font-size: 0.85rem; color: #334155;">19 May 2024 04:15 PM</td>
+                                <td style="padding: 1rem; font-size: 0.85rem; color: var(--text-primary);">Administrator</td>
+                                <td style="padding: 1rem; font-size: 0.85rem; color: var(--text-primary);">19 May 2024 04:15 PM</td>
                                 <td style="padding: 1rem;"><span style="background: #dcfce7; color: #16a34a; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Completed</span></td>
                                 <td style="padding: 1rem; text-align: center;"><a href="download_report.php?report=Student_Marks_Report" target="_blank" style="color: #8b5cf6; font-size: 1.1rem; text-decoration: none;"><i class="fa-solid fa-download"></i></a></td>
                             </tr>
                             <tr style="border-bottom: 1px solid #f8fafc;">
-                                <td style="padding: 1rem; font-size: 0.85rem; color: #334155; font-weight: 500;">Faculty Attendance Report</td>
+                                <td style="padding: 1rem; font-size: 0.85rem; color: var(--text-primary); font-weight: 500;">Faculty Attendance Report</td>
                                 <td style="padding: 1rem;"><span style="background: #dcfce7; color: #16a34a; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Faculty</span></td>
-                                <td style="padding: 1rem; font-size: 0.85rem; color: #334155;">Administrator</td>
-                                <td style="padding: 1rem; font-size: 0.85rem; color: #334155;">18 May 2024 11:20 AM</td>
+                                <td style="padding: 1rem; font-size: 0.85rem; color: var(--text-primary);">Administrator</td>
+                                <td style="padding: 1rem; font-size: 0.85rem; color: var(--text-primary);">18 May 2024 11:20 AM</td>
                                 <td style="padding: 1rem;"><span style="background: #dcfce7; color: #16a34a; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Completed</span></td>
                                 <td style="padding: 1rem; text-align: center;"><a href="download_report.php?report=Faculty_Attendance_Report" target="_blank" style="color: #8b5cf6; font-size: 1.1rem; text-decoration: none;"><i class="fa-solid fa-download"></i></a></td>
                             </tr>
                             <tr style="border-bottom: 1px solid #f8fafc;">
-                                <td style="padding: 1rem; font-size: 0.85rem; color: #334155; font-weight: 500;">Assignment Submission Report</td>
+                                <td style="padding: 1rem; font-size: 0.85rem; color: var(--text-primary); font-weight: 500;">Assignment Submission Report</td>
                                 <td style="padding: 1rem;"><span style="background: #ffedd5; color: #ea580c; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Academic</span></td>
-                                <td style="padding: 1rem; font-size: 0.85rem; color: #334155;">Administrator</td>
-                                <td style="padding: 1rem; font-size: 0.85rem; color: #334155;">17 May 2024 02:45 PM</td>
+                                <td style="padding: 1rem; font-size: 0.85rem; color: var(--text-primary);">Administrator</td>
+                                <td style="padding: 1rem; font-size: 0.85rem; color: var(--text-primary);">17 May 2024 02:45 PM</td>
                                 <td style="padding: 1rem;"><span style="background: #dcfce7; color: #16a34a; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Completed</span></td>
                                 <td style="padding: 1rem; text-align: center;"><a href="download_report.php?report=Assignment_Submission_Report" target="_blank" style="color: #8b5cf6; font-size: 1.1rem; text-decoration: none;"><i class="fa-solid fa-download"></i></a></td>
                             </tr>
                             <tr style="border-bottom: 1px solid #f8fafc;">
-                                <td style="padding: 1rem; font-size: 0.85rem; color: #334155; font-weight: 500;">Leave Report</td>
+                                <td style="padding: 1rem; font-size: 0.85rem; color: var(--text-primary); font-weight: 500;">Leave Report</td>
                                 <td style="padding: 1rem;"><span style="background: #dbeafe; color: #2563eb; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Leave</span></td>
-                                <td style="padding: 1rem; font-size: 0.85rem; color: #334155;">Administrator</td>
-                                <td style="padding: 1rem; font-size: 0.85rem; color: #334155;">16 May 2024 09:10 AM</td>
+                                <td style="padding: 1rem; font-size: 0.85rem; color: var(--text-primary);">Administrator</td>
+                                <td style="padding: 1rem; font-size: 0.85rem; color: var(--text-primary);">16 May 2024 09:10 AM</td>
                                 <td style="padding: 1rem;"><span style="background: #dcfce7; color: #16a34a; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Completed</span></td>
                                 <td style="padding: 1rem; text-align: center;"><a href="download_report.php?report=Leave_Report" target="_blank" style="color: #8b5cf6; font-size: 1.1rem; text-decoration: none;"><i class="fa-solid fa-download"></i></a></td>
                             </tr>
                             <tr style="border-bottom: 1px solid #f8fafc;">
-                                <td style="padding: 1rem; font-size: 0.85rem; color: #334155; font-weight: 500;">Grievance Report</td>
+                                <td style="padding: 1rem; font-size: 0.85rem; color: var(--text-primary); font-weight: 500;">Grievance Report</td>
                                 <td style="padding: 1rem;"><span style="background: #fee2e2; color: #e11d48; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Grievance</span></td>
-                                <td style="padding: 1rem; font-size: 0.85rem; color: #334155;">Administrator</td>
-                                <td style="padding: 1rem; font-size: 0.85rem; color: #334155;">15 May 2024 03:30 PM</td>
+                                <td style="padding: 1rem; font-size: 0.85rem; color: var(--text-primary);">Administrator</td>
+                                <td style="padding: 1rem; font-size: 0.85rem; color: var(--text-primary);">15 May 2024 03:30 PM</td>
                                 <td style="padding: 1rem;"><span style="background: #dcfce7; color: #16a34a; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Completed</span></td>
                                 <td style="padding: 1rem; text-align: center;"><a href="download_report.php?report=Grievance_Report" target="_blank" style="color: #8b5cf6; font-size: 1.1rem; text-decoration: none;"><i class="fa-solid fa-download"></i></a></td>
                             </tr>
                             <tr style="border-bottom: 1px solid #f8fafc;">
-                                <td style="padding: 1rem; font-size: 0.85rem; color: #334155; font-weight: 500;">Notice Report</td>
+                                <td style="padding: 1rem; font-size: 0.85rem; color: var(--text-primary); font-weight: 500;">Notice Report</td>
                                 <td style="padding: 1rem;"><span style="background: #cffafe; color: #0891b2; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Notice</span></td>
-                                <td style="padding: 1rem; font-size: 0.85rem; color: #334155;">Administrator</td>
-                                <td style="padding: 1rem; font-size: 0.85rem; color: #334155;">14 May 2024 10:05 AM</td>
+                                <td style="padding: 1rem; font-size: 0.85rem; color: var(--text-primary);">Administrator</td>
+                                <td style="padding: 1rem; font-size: 0.85rem; color: var(--text-primary);">14 May 2024 10:05 AM</td>
                                 <td style="padding: 1rem;"><span style="background: #dcfce7; color: #16a34a; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Completed</span></td>
                                 <td style="padding: 1rem; text-align: center;"><a href="download_report.php?report=Notice_Report" target="_blank" style="color: #8b5cf6; font-size: 1.1rem; text-decoration: none;"><i class="fa-solid fa-download"></i></a></td>
                             </tr>
                             <tr>
-                                <td style="padding: 1rem; font-size: 0.85rem; color: #334155; font-weight: 500;">Fee Collection Report</td>
+                                <td style="padding: 1rem; font-size: 0.85rem; color: var(--text-primary); font-weight: 500;">Fee Collection Report</td>
                                 <td style="padding: 1rem;"><span style="background: #fef3c7; color: #d97706; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Finance</span></td>
-                                <td style="padding: 1rem; font-size: 0.85rem; color: #334155;">Administrator</td>
-                                <td style="padding: 1rem; font-size: 0.85rem; color: #334155;">13 May 2024 05:00 PM</td>
+                                <td style="padding: 1rem; font-size: 0.85rem; color: var(--text-primary);">Administrator</td>
+                                <td style="padding: 1rem; font-size: 0.85rem; color: var(--text-primary);">13 May 2024 05:00 PM</td>
                                 <td style="padding: 1rem;"><span style="background: #dcfce7; color: #16a34a; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Completed</span></td>
                                 <td style="padding: 1rem; text-align: center;"><a href="download_report.php?report=Fee_Collection_Report" target="_blank" style="color: #8b5cf6; font-size: 1.1rem; text-decoration: none;"><i class="fa-solid fa-download"></i></a></td>
                             </tr>
@@ -1763,23 +1746,23 @@ if (isset($db['departments'])) {
         <div id="view-grievance-management" class="app-view">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
                 <div>
-                    <h2 style="font-size: 1.5rem; font-weight: 700; color: #0f172a; margin-bottom: 0.25rem;">Grievance Management</h2>
-                    <p style="color: #64748b; font-size: 0.95rem;">Monitor system-wide general and assignment grievances.</p>
+                    <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.25rem;">Grievance Management</h2>
+                    <p style="color: var(--text-secondary); font-size: 0.95rem;">Monitor system-wide general and assignment grievances.</p>
                 </div>
             </div>
 
             <!-- General Grievances Section -->
-            <div style="background: white; border-radius: 10px; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.01); padding: 1.5rem; margin-bottom: 2rem;">
-                <h3 style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 1.5rem;">General Grievances</h3>
+            <div style="background: var(--bg-card); border-radius: 10px; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.01); padding: 1.5rem; margin-bottom: 2rem;">
+                <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1.5rem;">General Grievances</h3>
                 <div style="overflow-x: auto;">
                     <table style="width: 100%; border-collapse: collapse; text-align: left; min-width: 800px;">
                         <thead>
-                            <tr style="border-bottom: 1px solid #f1f5f9; background: #fafaf9;">
-                                <th style="padding: 1rem; font-weight: 600; color: #0f172a; font-size: 0.85rem;">Student</th>
-                                <th style="padding: 1rem; font-weight: 600; color: #0f172a; font-size: 0.85rem;">Category</th>
-                                <th style="padding: 1rem; font-weight: 600; color: #0f172a; font-size: 0.85rem;">Title & Issue</th>
-                                <th style="padding: 1rem; font-weight: 600; color: #0f172a; font-size: 0.85rem;">Date</th>
-                                <th style="padding: 1rem; font-weight: 600; color: #0f172a; font-size: 0.85rem;">Status</th>
+                            <tr style="border-bottom: 1px solid var(--border-color); background: #fafaf9;">
+                                <th style="padding: 1rem; font-weight: 600; color: var(--text-primary); font-size: 0.85rem;">Student</th>
+                                <th style="padding: 1rem; font-weight: 600; color: var(--text-primary); font-size: 0.85rem;">Category</th>
+                                <th style="padding: 1rem; font-weight: 600; color: var(--text-primary); font-size: 0.85rem;">Title & Issue</th>
+                                <th style="padding: 1rem; font-weight: 600; color: var(--text-primary); font-size: 0.85rem;">Date</th>
+                                <th style="padding: 1rem; font-weight: 600; color: var(--text-primary); font-size: 0.85rem;">Status</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1792,15 +1775,15 @@ if (isset($db['departments'])) {
                             <?php else: foreach ($all_grievances as $g): ?>
                             <tr style="border-bottom: 1px solid #f8fafc;">
                                 <td style="padding: 1rem;">
-                                    <div style="font-weight: 500; font-size: 0.9rem; color: #0f172a;"><?= htmlspecialchars($g['student_name'] ?? 'Unknown') ?></div>
-                                    <div style="font-size: 0.8rem; color: #64748b;"><?= htmlspecialchars($g['student_id'] ?? '') ?></div>
+                                    <div style="font-weight: 500; font-size: 0.9rem; color: var(--text-primary);"><?= htmlspecialchars($g['student_name'] ?? 'Unknown') ?></div>
+                                    <div style="font-size: 0.8rem; color: var(--text-secondary);"><?= htmlspecialchars($g['student_id'] ?? '') ?></div>
                                 </td>
-                                <td style="padding: 1rem; font-size: 0.85rem; color: #334155;"><?= htmlspecialchars($g['category'] ?? '') ?></td>
+                                <td style="padding: 1rem; font-size: 0.85rem; color: var(--text-primary);"><?= htmlspecialchars($g['category'] ?? '') ?></td>
                                 <td style="padding: 1rem;">
-                                    <div style="font-weight: 600; font-size: 0.85rem; color: #0f172a;"><?= htmlspecialchars($g['title'] ?? '') ?></div>
-                                    <div style="font-size: 0.8rem; color: #64748b; margin-top:4px; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="<?= htmlspecialchars($g['desc'] ?? '') ?>"><?= htmlspecialchars($g['desc'] ?? '') ?></div>
+                                    <div style="font-weight: 600; font-size: 0.85rem; color: var(--text-primary);"><?= htmlspecialchars($g['title'] ?? '') ?></div>
+                                    <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top:4px; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="<?= htmlspecialchars($g['desc'] ?? '') ?>"><?= htmlspecialchars($g['desc'] ?? '') ?></div>
                                 </td>
-                                <td style="padding: 1rem; font-size: 0.85rem; color: #334155;"><?= htmlspecialchars($g['date'] ?? '') ?></td>
+                                <td style="padding: 1rem; font-size: 0.85rem; color: var(--text-primary);"><?= htmlspecialchars($g['date'] ?? '') ?></td>
                                 <td style="padding: 1rem;">
                                     <?php 
                                     $st = strtolower($g['status'] ?? 'pending');
@@ -1819,17 +1802,17 @@ if (isset($db['departments'])) {
             </div>
 
             <!-- Assignment Grievances Section -->
-            <div style="background: white; border-radius: 10px; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.01); padding: 1.5rem;">
-                <h3 style="font-size: 1.1rem; font-weight: 700; color: #0f172a; margin-bottom: 1.5rem;">Assignment Grievances</h3>
+            <div style="background: var(--bg-card); border-radius: 10px; border: 1px solid #f1f5f9; box-shadow: 0 2px 8px rgba(0,0,0,0.01); padding: 1.5rem;">
+                <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1.5rem;">Assignment Grievances</h3>
                 <div style="overflow-x: auto;">
                     <table style="width: 100%; border-collapse: collapse; text-align: left; min-width: 800px;">
                         <thead>
-                            <tr style="border-bottom: 1px solid #f1f5f9; background: #fafaf9;">
-                                <th style="padding: 1rem; font-weight: 600; color: #0f172a; font-size: 0.85rem;">Student</th>
-                                <th style="padding: 1rem; font-weight: 600; color: #0f172a; font-size: 0.85rem;">Assignment / Subject</th>
-                                <th style="padding: 1rem; font-weight: 600; color: #0f172a; font-size: 0.85rem;">Issue Type</th>
-                                <th style="padding: 1rem; font-weight: 600; color: #0f172a; font-size: 0.85rem;">Status</th>
-                                <th style="padding: 1rem; font-weight: 600; color: #0f172a; font-size: 0.85rem;">Action</th>
+                            <tr style="border-bottom: 1px solid var(--border-color); background: #fafaf9;">
+                                <th style="padding: 1rem; font-weight: 600; color: var(--text-primary); font-size: 0.85rem;">Student</th>
+                                <th style="padding: 1rem; font-weight: 600; color: var(--text-primary); font-size: 0.85rem;">Assignment / Subject</th>
+                                <th style="padding: 1rem; font-weight: 600; color: var(--text-primary); font-size: 0.85rem;">Issue Type</th>
+                                <th style="padding: 1rem; font-weight: 600; color: var(--text-primary); font-size: 0.85rem;">Status</th>
+                                <th style="padding: 1rem; font-weight: 600; color: var(--text-primary); font-size: 0.85rem;">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1852,16 +1835,16 @@ if (isset($db['departments'])) {
                             ?>
                             <tr style="border-bottom: 1px solid #f8fafc;">
                                 <td style="padding: 1rem;">
-                                    <div style="font-weight: 500; font-size: 0.9rem; color: #0f172a;"><?= htmlspecialchars($g['student_name']) ?></div>
-                                    <div style="font-size: 0.8rem; color: #64748b;"><?= htmlspecialchars($g['student_id']) ?></div>
+                                    <div style="font-weight: 500; font-size: 0.9rem; color: var(--text-primary);"><?= htmlspecialchars($g['student_name']) ?></div>
+                                    <div style="font-size: 0.8rem; color: var(--text-secondary);"><?= htmlspecialchars($g['student_id']) ?></div>
                                 </td>
                                 <td style="padding: 1rem;">
-                                    <div style="font-weight: 500; font-size: 0.85rem; color: #0f172a;"><?= htmlspecialchars($subject_name) ?></div>
-                                    <div style="font-size: 0.8rem; color: #64748b;"><?= htmlspecialchars($assign_title) ?></div>
+                                    <div style="font-weight: 500; font-size: 0.85rem; color: var(--text-primary);"><?= htmlspecialchars($subject_name) ?></div>
+                                    <div style="font-size: 0.8rem; color: var(--text-secondary);"><?= htmlspecialchars($assign_title) ?></div>
                                 </td>
                                 <td style="padding: 1rem;">
                                     <div style="font-weight: 600; color: #b91c1c; font-size: 0.85rem;"><?= htmlspecialchars($g['issue_type']) ?></div>
-                                    <div style="font-size: 0.8rem; color: #64748b; margin-top:4px; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="<?= htmlspecialchars($g['description']) ?>">
+                                    <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top:4px; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="<?= htmlspecialchars($g['description']) ?>">
                                         <?= htmlspecialchars($g['description']) ?>
                                     </div>
                                 </td>
@@ -1892,269 +1875,572 @@ if (isset($db['departments'])) {
         <!-- ============================================ -->
         <!-- 6. STUDENT MARKS VIEW                        -->
         <!-- ============================================ -->
-        <div id="view-student-marks" class="app-view">
+                <div id="view-student-marks" class="app-view">
             <style>
-                .marks-filters { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem; }
-                .marks-filter-row { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
-                .marks-search-bar { flex-grow: 1; min-width: 250px; display: flex; align-items: center; background: white; padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-                .marks-search-bar input { border: none; outline: none; background: transparent; width: 100%; margin-left: 0.5rem; font-size: 0.95rem; }
+                .overview-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+                .overview-filters { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; background: var(--bg-card); padding: 1rem; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin-bottom: 2rem; position: sticky; top: 0; z-index: 10; }
+                .overview-filters select { padding: 0.5rem; border-radius: 6px; border: 1px solid var(--border-color); color: var(--text-color); font-size: 0.9rem; outline: none; }
+                .search-box { flex-grow: 1; min-width: 200px; display: flex; align-items: center; border: 1px solid var(--border-color); border-radius: 6px; padding: 0.4rem 0.8rem; background: var(--bg-page); }
+                .search-box input { border: none; background: transparent; outline: none; margin-left: 0.5rem; width: 100%; font-size: 0.9rem; }
+                .export-btn { background: var(--bg-card); border: 1px solid var(--border-color); padding: 0.5rem 1rem; border-radius: 6px; color: var(--text-color); font-weight: 500; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.2s; }
+                .export-btn:hover { background: var(--bg-alt); }
                 
-                .marks-tab-group { display: flex; gap: 0.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; }
-                .marks-tab { padding: 0.5rem 1rem; cursor: pointer; color: var(--text-muted); font-weight: 600; font-size: 0.95rem; border-bottom: 2px solid transparent; transition: all 0.2s; }
-                .marks-tab:hover { color: var(--primary-color); }
-                .marks-tab.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
-
-                .marks-pill-group { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-                .marks-pill { padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; border: 1px solid var(--border-color); background: white; color: var(--text-color); font-size: 0.9rem; font-weight: 500; transition: all 0.2s; }
-                .marks-pill:hover { background: #f8fafc; }
-                .marks-pill.active { background: #e0e7ff; color: #4338ca; border-color: #c7d2fe; }
-
-                .marks-pill-div { padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; background: #f1f5f9; color: var(--text-color); font-size: 0.9rem; font-weight: 500; transition: all 0.2s; border: none; }
-                .marks-pill-div:hover { background: #e2e8f0; }
-                .marks-pill-div.active { background: #3b82f6; color: white; }
-
-                .marks-table-container { background: white; border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); overflow: hidden; margin-top: 1rem; }
-                .marks-empty-state { padding: 4rem 2rem; text-align: center; color: var(--text-muted); }
-                .marks-empty-state i { font-size: 3rem; color: #cbd5e1; margin-bottom: 1rem; }
+                .stat-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+                .stat-card { background: var(--bg-card); border-radius: 12px; padding: 1.2rem; border: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.02); display: flex; align-items: center; gap: 1rem; transition: transform 0.2s, box-shadow 0.2s; cursor: default; }
+                .stat-card:hover { transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.05); }
+                .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+                .stat-icon.blue { background: #eff6ff; color: #3b82f6; }
+                .stat-icon.green { background: #f0fdf4; color: #22c55e; }
+                .stat-icon.purple { background: #faf5ff; color: #a855f7; }
+                .stat-icon.orange { background: var(--bg-card);beb; color: #f59e0b; }
+                .stat-icon.red { background: #fef2f2; color: #ef4444; }
+                .stat-info h3 { font-size: 0.85rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; margin: 0 0 0.25rem 0; letter-spacing: 0.5px; }
+                .stat-info .value { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin: 0; display: flex; align-items: baseline; gap: 0.5rem; }
+                .stat-info .sub-value { font-size: 0.85rem; font-weight: 500; color: var(--text-muted); }
+                
+                .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; margin-bottom: 2rem; }
+                @media (max-width: 1200px) { .dashboard-grid { grid-template-columns: 1fr; } }
+                
+                .panel { background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); overflow: hidden; display: flex; flex-direction: column; }
+                .panel-header { padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border-color); background: var(--bg-page); }
+                .panel-title { font-weight: 700; color: var(--text-primary); font-size: 1.1rem; margin: 0 0 0.25rem 0; }
+                .panel-subtitle { font-size: 0.85rem; color: var(--text-secondary); margin: 0; }
+                .panel-body { padding: 0; flex-grow: 1; overflow-y: auto; }
+                .panel-inner { padding: 1.5rem; }
+                
+                /* Subject Table */
+                .subject-row { border-bottom: 1px solid var(--border-color); transition: background 0.2s; cursor: pointer; display: flex; align-items: center; padding: 1rem 1.5rem; gap: 1rem; }
+                .subject-row:hover { background: var(--bg-page); }
+                .subject-name-col { flex: 2; min-width: 200px; }
+                .subject-name { font-weight: 600; color: var(--text-primary); font-size: 0.95rem; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.2rem; }
+                .subject-faculty { font-size: 0.8rem; color: var(--text-secondary); }
+                .subject-stats-col { flex: 1; text-align: center; }
+                .subject-stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.2rem; }
+                .subject-stat-val { font-weight: 600; color: var(--text-primary); font-size: 0.95rem; }
+                
+                /* Progress circle */
+                .circular-chart { display: block; margin: 0 auto; max-width: 80%; max-height: 250px; }
+                .circle-bg { fill: none; stroke: #f1f5f9; stroke-width: 3.8; }
+                .circle { fill: none; stroke-width: 2.8; stroke-linecap: round; animation: progress 1s ease-out forwards; }
+                @keyframes progress { 0% { stroke-dasharray: 0 100; } }
+                .percentage { fill: #1e293b; font-family: sans-serif; font-size: 0.5em; text-anchor: middle; font-weight: bold; }
+                
+                .badge { padding: 0.25rem 0.6rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+                .badge.green { background: #dcfce7; color: #166534; }
+                .badge.orange { background: #fef3c7; color: #92400e; }
+                .badge.red { background: #fee2e2; color: #991b1b; }
+                .badge.gray { background: var(--bg-alt); color: var(--text-secondary); }
+                
+                /* Accordion */
+                .accordion-content { background: var(--bg-page); border-bottom: 1px solid var(--border-color); display: none; padding: 1rem 1.5rem; }
+                .accordion-content.open { display: block; animation: slideDown 0.3s ease-out; }
+                @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+                .assignment-item { display: flex; align-items: center; justify-content: space-between; padding: 0.8rem; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 0.5rem; }
+                .assignment-item:last-child { margin-bottom: 0; }
+                .assign-title { font-weight: 600; color: var(--text-primary); font-size: 0.9rem; }
+                .assign-stats { display: flex; gap: 2rem; font-size: 0.85rem; color: var(--text-secondary); }
+                .assign-stats span strong { color: var(--text-primary); }
+                .btn-view { background: var(--bg-card); border: 1px solid var(--border-color); padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; color: var(--primary-color); cursor: pointer; transition: all 0.2s; }
+                .btn-view:hover { background: #eff6ff; border-color: #bfdbfe; }
+                
+                /* Drawer */
+                .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(2px); z-index: 100; display: none; opacity: 0; transition: opacity 0.3s; }
+                .drawer { position: fixed; top: 0; right: 0; height: 100vh; width: 100%; max-width: 600px; background: var(--bg-card); z-index: 101; box-shadow: -4px 0 15px rgba(0,0,0,0.1); transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; }
+                .drawer-overlay.active { display: block; opacity: 1; }
+                .drawer.active { transform: translateX(0); }
+                .drawer-header { padding: 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--bg-page); }
+                .drawer-body { flex-grow: 1; overflow-y: auto; padding: 0; background: var(--bg-alt); }
+                .drawer-close { background: none; border: none; font-size: 1.2rem; color: var(--text-secondary); cursor: pointer; }
+                .drawer-filters { padding: 1rem 1.5rem; background: var(--bg-card); border-bottom: 1px solid var(--border-color); display: flex; gap: 0.5rem; flex-wrap: wrap; }
+                .student-list { padding: 1rem; }
+                .student-card { background: var(--bg-card); border-radius: 8px; padding: 1rem; margin-bottom: 0.75rem; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+                .student-card .info { display: flex; align-items: center; gap: 1rem; flex-grow: 1; }
+                
+                /* Layout utilities */
+                .mb-1 { margin-bottom: 0.25rem; } .mb-2 { margin-bottom: 0.5rem; } .mb-4 { margin-bottom: 1rem; }
+                .flex { display: flex; } .items-center { align-items: center; } .gap-2 { gap: 0.5rem; } .gap-4 { gap: 1rem; }
+                .text-sm { font-size: 0.875rem; } .text-xs { font-size: 0.75rem; } .text-muted { color: var(--text-secondary); }
             </style>
             
-            <div class="marks-filters">
-                <div class="marks-filter-row">
-                    <select id="marks-dept-select" class="form-control" style="width: auto; min-width: 200px; padding: 0.5rem;" onchange="updateMarksFilters()">
-                        <option value="ALL">All Departments</option>
-                        <?php foreach($db['departments'] ?? [] as $d): ?>
-                            <option value="<?php echo htmlspecialchars($d['name']); ?>"><?php echo htmlspecialchars($d['name']); ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                    
-                    <div class="marks-search-bar">
-                        <i class="fa-solid fa-magnifying-glass" style="color: #94a3b8;"></i>
-                        <input type="text" id="marks-search-input" placeholder="Search by ZPRN, username, or email..." oninput="updateMarksFilters()">
+            <div class="overview-header">
+                <div>
+                    <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.25rem;">Assignment Overview</h2>
+                </div>
+            </div>
+            
+            <div class="overview-filters">
+                <select id="ao-dept" onchange="fetchAOData()">
+                    <option value="ALL">All Departments</option>
+                    <?php foreach($db['departments'] ?? [] as $d): ?>
+                        <option value="<?php echo htmlspecialchars($d['name']); ?>"><?php echo htmlspecialchars($d['name']); ?></option>
+                    <?php endforeach; ?>
+                </select>
+                <select id="ao-year" onchange="fetchAOData()">
+                    <option value="1">1st Year</option>
+                    <option value="2">2nd Year</option>
+                    <option value="3">3rd Year</option>
+                    <option value="4">4th Year</option>
+                </select>
+                <select id="ao-sem" onchange="fetchAOData()">
+                    <option value="1">Semester 1</option>
+                    <option value="2">Semester 2</option>
+                </select>
+                <select id="ao-div" onchange="fetchAOData()">
+                    <option value="A">Div A</option>
+                    <option value="B">Div B</option>
+                    <option value="C">Div C</option>
+                    <option value="D">Div D</option>
+                </select>
+                <div class="search-box">
+                    <i class="fa-solid fa-search" style="color: var(--text-muted);"></i>
+                    <input type="text" id="ao-search" placeholder="Search Student..." onkeyup="debounceFetchAO()">
+                </div>
+                <button class="export-btn" onclick="exportAOCSV()">
+                    <i class="fa-solid fa-download"></i> Export Report
+                </button>
+            </div>
+            
+            <!-- Stat Cards -->
+            <div class="stat-cards" id="ao-stat-cards">
+                <!-- Injected via JS -->
+                <div class="stat-card"><div class="stat-icon gray"><i class="fa-solid fa-spinner fa-spin"></i></div><div class="stat-info"><h3>Loading</h3><p class="value">...</p></div></div>
+            </div>
+            
+            <div class="dashboard-grid">
+                <!-- Left: Subject Table -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title">Subject Wise Assignment Summary</h3>
+                        <p class="panel-subtitle">Overview of all subjects and assignments</p>
+                    </div>
+                    <div class="panel-body" id="ao-subjects-container">
+                        <div style="padding: 2rem; text-align: center; color: var(--text-muted);"><i class="fa-solid fa-circle-notch fa-spin fa-2x"></i></div>
+                    </div>
+                    <div style="padding: 0.75rem 1.5rem; background: #eff6ff; border-top: 1px solid #bfdbfe; font-size: 0.8rem; color: #1d4ed8; display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fa-solid fa-info-circle"></i> Click on any subject row to view assignment wise details
                     </div>
                 </div>
-
-                <div class="marks-tab-group" id="marks-year-tabs">
-                    <div class="marks-tab active" data-year="1" onclick="setMarksFilter('year', 1)">Year 1</div>
-                    <div class="marks-tab" data-year="2" onclick="setMarksFilter('year', 2)">Year 2</div>
-                    <div class="marks-tab" data-year="3" onclick="setMarksFilter('year', 3)">Year 3</div>
-                    <div class="marks-tab" data-year="4" onclick="setMarksFilter('year', 4)">Year 4</div>
-                </div>
-
-                <div class="marks-pill-group" id="marks-sem-pills">
-                    <div class="marks-pill active" data-sem="1" onclick="setMarksFilter('sem', 1)">Semester 1</div>
-                    <div class="marks-pill" data-sem="2" onclick="setMarksFilter('sem', 2)">Semester 2</div>
-                </div>
-
-                <div class="marks-pill-group" id="marks-div-pills">
-                    <div class="marks-pill-div active" data-div="A" onclick="setMarksFilter('div', 'A')">Div A</div>
-                    <div class="marks-pill-div" data-div="B" onclick="setMarksFilter('div', 'B')">Div B</div>
-                    <div class="marks-pill-div" data-div="C" onclick="setMarksFilter('div', 'C')">Div C</div>
-                    <div class="marks-pill-div" data-div="D" onclick="setMarksFilter('div', 'D')">Div D</div>
+                
+                <!-- Right: Analytics -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h3 class="panel-title">Overall Assignment Completion</h3>
+                        <p class="panel-subtitle">Visual overview of class performance</p>
+                    </div>
+                    <div class="panel-inner" style="display: flex; flex-direction: column; align-items: center; border-bottom: 1px solid var(--border-color);">
+                        <svg viewBox="0 0 36 36" class="circular-chart" id="ao-doughnut">
+                            <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            <path class="circle" stroke="#22c55e" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" id="ao-doughnut-path" />
+                            <text x="18" y="19.5" class="percentage" id="ao-doughnut-text" style="font-size: 8px;">0%</text>
+                            <text x="18" y="24" class="percentage" style="font-size: 3px; font-weight: normal; fill: #64748b;">Overall Completion</text>
+                        </svg>
+                    </div>
+                    <div class="panel-inner" id="ao-analytics-stats" style="flex-grow: 1;">
+                        <!-- Injected via JS -->
+                    </div>
                 </div>
             </div>
-
-            <div id="marks-results-area">
-                <!-- Populated by JS -->
-            </div>
-        </div>
-
-        <script>
-            let currentMarksFilters = {
-                dept: 'ALL',
-                year: 1,
-                sem: 1, // Relative to year (1 or 2). Absolute sem is (year-1)*2 + sem
-                div: 'A',
-                search: ''
-            };
-
-            const studentsData = <?php echo json_encode($db['students'] ?? []); ?>;
-            const subsData = <?php echo json_encode($db['assignment_submissions'] ?? []); ?>;
-            const subjectsData = <?php echo json_encode($db['subjects'] ?? []); ?>;
-            const assignmentsData = <?php echo json_encode($db['subject_assignments'] ?? []); ?>;
-
-            function setMarksFilter(type, value) {
-                currentMarksFilters[type] = value;
-                
-                // Update UI active states
-                if (type === 'year') {
-                    document.querySelectorAll('#marks-year-tabs .marks-tab').forEach(el => el.classList.remove('active'));
-                    document.querySelector(`#marks-year-tabs .marks-tab[data-year="${value}"]`).classList.add('active');
-                } else if (type === 'sem') {
-                    document.querySelectorAll('#marks-sem-pills .marks-pill').forEach(el => el.classList.remove('active'));
-                    document.querySelector(`#marks-sem-pills .marks-pill[data-sem="${value}"]`).classList.add('active');
-                } else if (type === 'div') {
-                    document.querySelectorAll('#marks-div-pills .marks-pill-div').forEach(el => el.classList.remove('active'));
-                    document.querySelector(`#marks-div-pills .marks-pill-div[data-div="${value}"]`).classList.add('active');
-                }
-                
-                renderStudentMarks();
-            }
-
-            function updateMarksFilters() {
-                currentMarksFilters.dept = document.getElementById('marks-dept-select').value;
-                currentMarksFilters.search = document.getElementById('marks-search-input').value.trim().toLowerCase();
-                renderStudentMarks();
-            }
-
-            function getAbsoluteSem(semesterStr) {
-                if (!semesterStr) return 1;
-                const str = String(semesterStr).toLowerCase();
-                
-                // Check for "X Year Y Semester" format e.g. "3rd Year Semester 1"
-                const yearMatch = str.match(/(\d+)(?:st|nd|rd|th)?\s+year/);
-                const semMatch = str.match(/semester\s+(\d+)/);
-                if (yearMatch && semMatch) {
-                    const y = parseInt(yearMatch[1]);
-                    const s = parseInt(semMatch[1]);
-                    return (y - 1) * 2 + s;
-                }
-                
-                // Check for "Xth Semester" format e.g. "5th Semester"
-                const singleSemMatch = str.match(/(\d+)(?:st|nd|rd|th)?\s+semester/);
-                if (singleSemMatch) {
-                    return parseInt(singleSemMatch[1]);
-                }
-                
-                // Fallback: just try to parse the first integer
-                return parseInt(str) || 1;
-            }
-
-            function renderStudentMarks() {
-                const resultsArea = document.getElementById('marks-results-area');
-                let html = '';
-                
-                // Calculate absolute semester (1-8)
-                const absoluteSem = (currentMarksFilters.year - 1) * 2 + currentMarksFilters.sem;
-                const isSearching = currentMarksFilters.search.length > 0;
-
-                // 1. Filter students
-                let filteredStudents = studentsData.filter(s => {
-                    if (isSearching) {
-                        const q = currentMarksFilters.search;
-                        return (s.prn && s.prn.toLowerCase().includes(q)) || 
-                               (s.id && String(s.id).toLowerCase().includes(q)) || 
-                               (s.username && s.username.toLowerCase().includes(q)) ||
-                               (s.email && s.email.toLowerCase().includes(q)) ||
-                               (s.name && s.name.toLowerCase().includes(q));
-                    } else {
-                        const sSem = getAbsoluteSem(s.semester);
-                        const matchSem = sSem === absoluteSem;
-                        const sDivMatch = (s.division || 'A').toUpperCase() === currentMarksFilters.div;
-                        
-                        let matchDept = true;
-                        if (currentMarksFilters.dept !== 'ALL') {
-                            matchDept = (s.department && s.department.toLowerCase() === currentMarksFilters.dept.toLowerCase()) ||
-                                        (s.dept && s.dept.toLowerCase().includes(currentMarksFilters.dept.toLowerCase()));
-                        }
-                        return matchSem && sDivMatch && matchDept;
-                    }
-                });
-
-                if (filteredStudents.length === 0) {
-                    let emptyMsg = isSearching ? `No students found matching "${currentMarksFilters.search}"` 
-                                             : `No assignments published for Year ${currentMarksFilters.year}, Semester ${currentMarksFilters.sem}, Division ${currentMarksFilters.div}`;
-                    resultsArea.innerHTML = `
-                        <div class="marks-empty-state">
-                            <i class="fa-solid fa-inbox"></i>
-                            <h3>No Data Available</h3>
-                            <p>${emptyMsg}</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                // Create a table of students and their recent submissions
-                html += `
-                <div class="marks-table-container">
+            
+            <div class="panel" style="margin-bottom: 2rem;">
+                <div class="panel-header">
+                    <h3 class="panel-title">Recent Assignments Summary</h3>
+                </div>
+                <div class="panel-body">
                     <table class="data-table" style="width: 100%; border-collapse: collapse;">
-                        <thead style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                        <thead style="background: var(--bg-page); border-bottom: 1px solid var(--border-color); font-size: 0.85rem; color: var(--text-secondary);">
                             <tr>
-                                <th style="padding: 1rem; text-align: left; font-weight: 600; color: #475569;">Student</th>
-                                <th style="padding: 1rem; text-align: left; font-weight: 600; color: #475569;">ZPRN / ID</th>
-                                <th style="padding: 1rem; text-align: left; font-weight: 600; color: #475569;">Department</th>
-                                <th style="padding: 1rem; text-align: left; font-weight: 600; color: #475569;">Subject Assignments</th>
+                                <th style="padding: 1rem; text-align: left;">Assignment Title</th>
+                                <th style="padding: 1rem; text-align: left;">Subject</th>
+                                <th style="padding: 1rem; text-align: left;">Total Students</th>
+                                <th style="padding: 1rem; text-align: left;">Submitted</th>
+                                <th style="padding: 1rem; text-align: left;">Pending</th>
+                                <th style="padding: 1rem; text-align: center;">Completion</th>
                             </tr>
                         </thead>
-                        <tbody>
-                `;
-
-                filteredStudents.forEach(student => {
-                    const studentId = student.id || student.username || student.prn;
-                    const studentSubs = subsData.filter(sub => sub.student_id == studentId || sub.student_name === student.name);
+                        <tbody id="ao-recent-table" style="font-size: 0.9rem;">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div style="text-align: center; color: #166534; background: #dcfce7; padding: 0.75rem; border-radius: 8px; font-size: 0.85rem; font-weight: 600; margin-bottom: 2rem;">
+                <i class="fa-solid fa-check-circle"></i> All data is real-time and updated as per student submissions
+            </div>
+            
+            <!-- Drawer -->
+            <div class="drawer-overlay" id="ao-drawer-overlay" onclick="closeAODrawer()"></div>
+            <div class="drawer" id="ao-drawer">
+                <div class="drawer-header">
+                    <div>
+                        <h3 class="panel-title" id="drawer-assign-title">Assignment Title</h3>
+                        <p class="panel-subtitle" id="drawer-assign-subtitle">Subject Name</p>
+                    </div>
+                    <button class="drawer-close" onclick="closeAODrawer()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="drawer-filters">
+                    <div class="search-box" style="padding: 0.3rem 0.6rem;">
+                        <i class="fa-solid fa-search" style="font-size: 0.8rem;"></i>
+                        <input type="text" id="drawer-search" placeholder="Search students..." onkeyup="renderAODrawerStudents()">
+                    </div>
+                    <select id="drawer-status-filter" style="border: 1px solid var(--border-color); border-radius: 6px; outline: none; padding: 0.3rem 0.5rem; font-size: 0.85rem;" onchange="renderAODrawerStudents()">
+                        <option value="ALL">All Status</option>
+                        <option value="Submitted">Submitted</option>
+                        <option value="Pending">Pending Evaluation</option>
+                        <option value="Not Uploaded">Not Uploaded</option>
+                    </select>
+                </div>
+                <div class="drawer-body">
+                    <div class="student-list" id="drawer-student-list">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+            </div>
+            
+            <script>
+                let aoData = null;
+                let aoDrawerData = [];
+                let aoDebounceTimer;
+                
+                function debounceFetchAO() {
+                    clearTimeout(aoDebounceTimer);
+                    aoDebounceTimer = setTimeout(fetchAOData, 500);
+                }
+                
+                async function fetchAOData() {
+                    const dept = document.getElementById('ao-dept').value;
+                    const year = document.getElementById('ao-year').value;
+                    const sem = document.getElementById('ao-sem').value;
+                    const div = document.getElementById('ao-div').value;
+                    const search = document.getElementById('ao-search').value;
                     
-                    html += `
-                        <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.2s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
-                            <td style="padding: 1rem;">
-                                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                    <img src="${student.avatar || 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=150&auto=format&fit=crop'}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
-                                    <div>
-                                        <div style="font-weight: 600; color: #1e293b;">${student.name}</div>
-                                        <div style="font-size: 0.8rem; color: #64748b;">${student.email || 'No email'}</div>
+                    document.getElementById('ao-subjects-container').innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--text-muted);"><i class="fa-solid fa-circle-notch fa-spin fa-2x"></i></div>';
+                    
+                    try {
+                        const res = await fetch(`api_admin_assignments.php?action=get_dashboard_summary&dept=${dept}&year=${year}&sem=${sem}&div=${div}&search=${search}`);
+                        const data = await res.json();
+                        if (data.success) {
+                            aoData = data;
+                            renderAODashboard();
+                        }
+                    } catch (e) {
+                        console.error('Error fetching data', e);
+                    }
+                }
+                
+                function renderAODashboard() {
+                    if (!aoData) return;
+                    
+                    // Stat Cards
+                    const stats = aoData.stats;
+                    const subPercent = stats.expected > 0 ? Math.round((stats.submitted / stats.expected)*100) : 0;
+                    const penPercent = stats.expected > 0 ? Math.round((stats.pending / stats.expected)*100) : 0;
+                    
+                    document.getElementById('ao-stat-cards').innerHTML = `
+                        <div class="stat-card">
+                            <div class="stat-icon blue"><i class="fa-solid fa-users"></i></div>
+                            <div class="stat-info"><h3>Total Students</h3><p class="value">${stats.total_students}</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon green"><i class="fa-solid fa-book-open"></i></div>
+                            <div class="stat-info"><h3>Total Subjects</h3><p class="value">${stats.total_subjects}</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon purple"><i class="fa-solid fa-file-invoice"></i></div>
+                            <div class="stat-info"><h3>Total Assignments</h3><p class="value">${stats.total_assignments}</p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon orange"><i class="fa-regular fa-circle-check"></i></div>
+                            <div class="stat-info"><h3>Submitted</h3><p class="value">${stats.submitted} <span class="sub-value">(${subPercent}%)</span></p></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon red"><i class="fa-regular fa-clock"></i></div>
+                            <div class="stat-info"><h3>Pending</h3><p class="value">${stats.pending} <span class="sub-value">(${penPercent}%)</span></p></div>
+                        </div>
+                    `;
+                    
+                    // Subjects Table
+                    let subjHtml = '';
+                    if (aoData.subject_summary.length === 0) {
+                        subjHtml = '<div style="padding: 2rem; text-align: center; color: var(--text-muted);">No data available for these filters.</div>';
+                    } else {
+                        aoData.subject_summary.forEach((subj, idx) => {
+                            const badgeColor = subj.status === 'Excellent' ? 'green' : (subj.status === 'Good' ? 'green' : (subj.status === 'Average' ? 'orange' : 'red'));
+                            
+                            subjHtml += `
+                                <div class="subject-row" onclick="toggleAccordion('ao-acc-${idx}')">
+                                    <div style="width: 40px; height: 40px; border-radius: 50%; background: #e0e7ff; color: #4338ca; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem;">
+                                        ${subj.subject_name.substring(0,2).toUpperCase()}
+                                    </div>
+                                    <div class="subject-name-col">
+                                        <div class="subject-name">${subj.subject_name}</div>
+                                        <div class="subject-faculty">${subj.faculty_name}</div>
+                                    </div>
+                                    <div class="subject-stats-col">
+                                        <div class="subject-stat-label">Total Assignments</div>
+                                        <div class="subject-stat-val">${subj.total_assignments}</div>
+                                    </div>
+                                    <div class="subject-stats-col">
+                                        <div class="subject-stat-label">Submitted</div>
+                                        <div class="subject-stat-val">${subj.submitted}</div>
+                                    </div>
+                                    <div class="subject-stats-col">
+                                        <div class="subject-stat-label">Pending</div>
+                                        <div class="subject-stat-val">${subj.pending}</div>
+                                    </div>
+                                    <div class="subject-stats-col">
+                                        <div class="subject-stat-label">Avg Score</div>
+                                        <div class="subject-stat-val"><span style="color: ${subj.avg_score >= 70 ? '#166534' : '#92400e'}">${subj.avg_score}%</span></div>
+                                    </div>
+                                    <div class="subject-stats-col" style="flex: 1.5; display: flex; align-items: center; justify-content: space-between;">
+                                        <span class="badge ${badgeColor}">${subj.status}</span>
+                                        <i class="fa-solid fa-chevron-down" style="color: #cbd5e1; font-size: 0.8rem; margin-left: 1rem;"></i>
                                     </div>
                                 </div>
-                            </td>
-                            <td style="padding: 1rem; color: #475569; font-weight: 500;">
-                                ${student.prn || studentId}
-                            </td>
-                            <td style="padding: 1rem; color: #475569;">
-                                <div>${student.department || student.dept || 'IT'}</div>
-                                <div style="font-size: 0.8rem; color: #94a3b8;">Sem ${student.semester || 1} • Div ${student.division || 'A'}</div>
-                            </td>
-                            <td style="padding: 1rem;">
-                                <div style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 120px; overflow-y: auto; padding-right: 0.5rem;">
-                    `;
-
-                    if (studentSubs.length === 0) {
-                        html += `<div style="font-size: 0.85rem; color: #94a3b8; font-style: italic;">No submissions found.</div>`;
-                    } else {
-                        studentSubs.forEach(sub => {
-                            // find subject assignment name
-                            const sa = assignmentsData.find(a => a.id == sub.subject_assignment_id);
-                            const subjName = sa ? sa.subject_name : 'Unknown Subject';
-                            let marksColor = '#ef4444'; // red for low or pending
-                            if (sub.marks !== 'Pending') {
-                                const m = parseInt(sub.marks);
-                                if (!isNaN(m) && m >= 8) marksColor = '#10b981'; // green for good
-                                else if (!isNaN(m) && m >= 5) marksColor = '#f59e0b'; // yellow for avg
+                                <div class="accordion-content" id="ao-acc-${idx}">
+                            `;
+                            
+                            if (subj.assignments.length === 0) {
+                                subjHtml += `<div style="font-size: 0.85rem; color: var(--text-secondary);">No assignments published.</div>`;
                             } else {
-                                marksColor = '#64748b';
+                                subj.assignments.forEach(ass => {
+                                    subjHtml += `
+                                        <div class="assignment-item">
+                                            <div class="assign-title"><i class="fa-solid fa-file-lines text-muted" style="margin-right: 0.5rem;"></i> ${ass.title}</div>
+                                            <div class="assign-stats">
+                                                <span>Submitted <strong>${ass.submitted}</strong></span>
+                                                <span>Pending <strong>${ass.pending}</strong></span>
+                                                <span>Completion <strong>${ass.completion}%</strong></span>
+                                                <button class="btn-view" onclick="openAODrawer(${ass.id}, '${ass.title.replace(/'/g, "\\'")}', '${subj.subject_name.replace(/'/g, "\\'")}')">View Students</button>
+                                            </div>
+                                        </div>
+                                    `;
+                                });
                             }
-
+                            subjHtml += `</div>`;
+                        });
+                    }
+                    document.getElementById('ao-subjects-container').innerHTML = subjHtml;
+                    
+                    // Doughnut Chart & Analytics
+                    document.getElementById('ao-doughnut-path').style.strokeDasharray = `${subPercent}, 100`;
+                    document.getElementById('ao-doughnut-text').textContent = `${subPercent}%`;
+                    
+                    let analyticsHtml = `
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-size: 0.85rem;">
+                            <span style="color: var(--text-secondary); display: flex; align-items: center; gap: 0.5rem;"><div style="width: 8px; height: 8px; border-radius: 50%; background: #22c55e;"></div> Submitted</span>
+                            <span style="font-weight: 600; color: var(--text-primary);">${subPercent}% <span style="color: var(--text-muted); font-weight: normal; margin-left: 0.5rem;">${stats.submitted} Assignments</span></span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 1.5rem; font-size: 0.85rem;">
+                            <span style="color: var(--text-secondary); display: flex; align-items: center; gap: 0.5rem;"><div style="width: 8px; height: 8px; border-radius: 50%; background: var(--bg-alt); border: 1px solid var(--border-color);"></div> Pending</span>
+                            <span style="font-weight: 600; color: var(--text-primary);">${penPercent}% <span style="color: var(--text-muted); font-weight: normal; margin-left: 0.5rem;">${stats.pending} Assignments</span></span>
+                        </div>
+                    `;
+                    
+                    if (aoData.matched_students && aoData.matched_students.length > 0) {
+                        let msHtml = '<div style="padding: 1rem; background: #f0fdf4; border-radius: 8px; border: 1px solid #bbf7d0;">';
+                        msHtml += '<div style="color: #166534; font-weight: 600; margin-bottom: 0.5rem;"><i class="fa-solid fa-user"></i> Matched Student Profile</div>';
+                        
+                        aoData.matched_students.forEach(st => {
+                            msHtml += `
+                                <div style="font-size: 0.85rem; color: #15803d; margin-bottom: 0.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid #dcfce7;">
+                                    <div style="font-weight: 700; color: #14532d; font-size: 0.95rem;">${st.name}</div>
+                                    <div style="display: flex; justify-content: space-between; margin-top: 0.25rem;">
+                                        <span><strong>PRN:</strong> ${st.prn}</span>
+                                        <span><strong>Year/Sem:</strong> ${st.year} / ${st.semester}</span>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; margin-top: 0.25rem;">
+                                        <span><strong>Dept:</strong> ${st.department}</span>
+                                        <span><strong>Div:</strong> ${st.division}</span>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        msHtml += '</div>';
+                        analyticsHtml += msHtml;
+                    } else {
+                        analyticsHtml += `
+                            <div style="padding: 1rem; background: var(--bg-page); border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span style="font-size: 0.85rem; color: var(--text-secondary);"><i class="fa-solid fa-ranking-star text-muted" style="margin-right: 0.25rem;"></i> Class Average Score</span>
+                                    <span style="font-weight: 700; color: var(--text-primary);">${aoData.analytics.class_average}%</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                    <span style="font-size: 0.85rem; color: var(--text-secondary);"><i class="fa-solid fa-arrow-trend-up text-muted" style="margin-right: 0.25rem;"></i> Highest Subject</span>
+                                    <span style="font-weight: 600; color: #166534; font-size: 0.8rem; text-align: right; max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${aoData.analytics.highest_subject}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="font-size: 0.85rem; color: var(--text-secondary);"><i class="fa-solid fa-arrow-trend-down text-muted" style="margin-right: 0.25rem;"></i> Lowest Subject</span>
+                                    <span style="font-weight: 600; color: #991b1b; font-size: 0.8rem; text-align: right; max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${aoData.analytics.lowest_subject}</span>
+                                </div>
+                            </div>
+                            <div style="padding: 0.75rem 1rem; background: var(--bg-card);beb; border-radius: 8px; border: 1px solid #fde68a; font-size: 0.85rem; margin-bottom: 1rem;">
+                                <div style="color: #92400e; font-weight: 600; margin-bottom: 0.25rem;"><i class="fa-solid fa-award"></i> Top Faculty</div>
+                                <div style="color: #b45309;">${aoData.analytics.top_faculty}</div>
+                            </div>
+                        `;
+                    }
+                    
+                    document.getElementById('ao-analytics-stats').innerHTML = analyticsHtml;
+                    
+                    // Recent Table
+                    let rtHtml = '';
+                    if (aoData.recent_assignments.length === 0) {
+                        rtHtml = `<tr><td colspan="6" style="padding: 1.5rem; text-align: center; color: var(--text-muted);">No recent assignments.</td></tr>`;
+                    } else {
+                        aoData.recent_assignments.forEach(ra => {
+                            rtHtml += `
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 1rem; font-weight: 500; color: var(--text-primary);">${ra.title}</td>
+                                    <td style="padding: 1rem; color: var(--text-secondary);">${ra.subject}<br><span style="font-size: 0.75rem; color: var(--text-muted);">${ra.faculty}</span></td>
+                                    <td style="padding: 1rem; color: var(--text-secondary);">${ra.total_students}</td>
+                                    <td style="padding: 1rem; color: #166534; font-weight: 600;">${ra.submitted}</td>
+                                    <td style="padding: 1rem; color: #991b1b; font-weight: 600;">${ra.pending}</td>
+                                    <td style="padding: 1rem; text-align: center;">
+                                        <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.2rem;">${ra.completion}%</div>
+                                        <div style="width: 100%; height: 4px; background: var(--bg-alt); border-radius: 2px; overflow: hidden;">
+                                            <div style="width: ${ra.completion}%; height: 100%; background: #3b82f6;"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                    }
+                    document.getElementById('ao-recent-table').innerHTML = rtHtml;
+                }
+                
+                function toggleAccordion(id) {
+                    const el = document.getElementById(id);
+                    if (el.classList.contains('open')) {
+                        el.classList.remove('open');
+                    } else {
+                        document.querySelectorAll('.accordion-content').forEach(e => e.classList.remove('open'));
+                        el.classList.add('open');
+                    }
+                }
+                
+                async function openAODrawer(saId, title, subj) {
+                    event.stopPropagation();
+                    document.getElementById('drawer-assign-title').textContent = title;
+                    document.getElementById('drawer-assign-subtitle').textContent = subj;
+                    
+                    document.getElementById('ao-drawer-overlay').classList.add('active');
+                    document.getElementById('ao-drawer').classList.add('active');
+                    
+                    document.getElementById('drawer-student-list').innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--text-muted);"><i class="fa-solid fa-circle-notch fa-spin fa-2x"></i></div>';
+                    
+                    const dept = document.getElementById('ao-dept').value;
+                    const year = document.getElementById('ao-year').value;
+                    const sem = document.getElementById('ao-sem').value;
+                    const div = document.getElementById('ao-div').value;
+                    
+                    try {
+                        const res = await fetch(`api_admin_assignments.php?action=get_assignment_students&sa_id=${saId}&dept=${dept}&year=${year}&sem=${sem}&div=${div}`);
+                        const data = await res.json();
+                        if (data.success) {
+                            aoDrawerData = data.students;
+                            renderAODrawerStudents();
+                        }
+                    } catch (e) {
+                        console.error('Error fetching students', e);
+                        document.getElementById('drawer-student-list').innerHTML = '<div style="color: red;">Error loading students.</div>';
+                    }
+                }
+                
+                function closeAODrawer() {
+                    document.getElementById('ao-drawer-overlay').classList.remove('active');
+                    document.getElementById('ao-drawer').classList.remove('active');
+                }
+                
+                function renderAODrawerStudents() {
+                    const search = document.getElementById('drawer-search').value.toLowerCase();
+                    const statusFilter = document.getElementById('drawer-status-filter').value;
+                    
+                    const filtered = aoDrawerData.filter(s => {
+                        let ms = true;
+                        if (search !== '') {
+                            ms = s.name.toLowerCase().includes(search) || s.roll.toLowerCase().includes(search);
+                        }
+                        let mStat = true;
+                        if (statusFilter !== 'ALL') {
+                            if (statusFilter === 'Pending') mStat = (s.status === 'Pending Evaluation' || s.status === 'Pending');
+                            else mStat = (s.status === statusFilter);
+                        }
+                        return ms && mStat;
+                    });
+                    
+                    let html = '';
+                    if (filtered.length === 0) {
+                        html = '<div style="padding: 2rem; text-align: center; color: var(--text-muted);">No students found.</div>';
+                    } else {
+                        filtered.forEach(s => {
+                            let badgeClass = 'gray';
+                            if (s.status === 'Submitted' || s.status === 'Evaluated') badgeClass = 'green';
+                            if (s.status === 'Pending' || s.status === 'Pending Evaluation') badgeClass = 'orange';
+                            
                             html += `
-                                <div style="display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 0.4rem 0.75rem; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 0.85rem;">
-                                    <span style="font-weight: 500; color: #334155; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;" title="${subjName}">
-                                        ${subjName}
-                                    </span>
-                                    <span style="font-weight: 700; color: ${marksColor}; background: ${marksColor}15; padding: 0.1rem 0.5rem; border-radius: 4px;">
-                                        ${sub.marks}
-                                    </span>
+                                <div class="student-card">
+                                    <div class="info">
+                                        <img src="${s.photo}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
+                                        <div>
+                                            <div style="font-weight: 600; color: var(--text-primary); font-size: 0.95rem; margin-bottom: 0.2rem;">${s.name}</div>
+                                            <div style="font-size: 0.8rem; color: var(--text-secondary);">${s.roll} • <span class="badge ${badgeClass}" style="font-size: 0.65rem;">${s.status}</span></div>
+                                        </div>
+                                    </div>
+                                    <div style="text-align: right;">
+                                        <div style="font-weight: 700; color: ${badgeClass === 'green' ? '#166534' : '#64748b'}; font-size: 1.1rem;">${s.marks}</div>
+                                        <div style="font-size: 0.75rem; color: var(--text-muted);">${s.submitted_at}</div>
+                                    </div>
                                 </div>
                             `;
                         });
                     }
-
-                    html += `
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                });
-
-                html += `
-                        </tbody>
-                    </table>
-                </div>
-                `;
+                    document.getElementById('drawer-student-list').innerHTML = html;
+                }
                 
-                resultsArea.innerHTML = html;
-            }
-        </script>
+                function exportAOCSV() {
+                    if (!aoData || aoData.subject_summary.length === 0) {
+                        alert("No data to export");
+                        return;
+                    }
+                    
+                    let csv = [];
+                    aoData.subject_summary.forEach(subj => {
+                        subj.assignments.forEach(ass => {
+                            csv.push({
+                                Subject: subj.subject_name,
+                                Faculty: subj.faculty_name,
+                                Assignment: ass.title,
+                                Total_Students: subj.expected_submissions / subj.total_assignments, // approx class size
+                                Submitted: ass.submitted,
+                                Pending: ass.pending,
+                                Completion: ass.completion + '%'
+                            });
+                        });
+                    });
+                    
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = 'api_admin_assignments.php?action=export_csv';
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'data';
+                    input.value = JSON.stringify(csv);
+                    form.appendChild(input);
+                    document.body.appendChild(form);
+                    form.submit();
+                    document.body.removeChild(form);
+                }
+
+                // Initial fetch
+                setTimeout(fetchAOData, 100);
+            </script>
+        </div>
 
         <div id="view-system-configuration" class="app-view">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
                 <div>
-                    <h2 style="font-size: 1.5rem; font-weight: 700; color: #0f172a; margin-bottom: 0.25rem;">System Configuration</h2>
-                    <p style="color: #64748b; font-size: 0.95rem;">Configure system settings and preferences.</p>
+                    <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.25rem;">System Configuration</h2>
+                    <p style="color: var(--text-secondary); font-size: 0.95rem;">Configure system settings and preferences.</p>
                 </div>
             </div>
 
@@ -2258,11 +2544,11 @@ if (isset($db['departments'])) {
             <style>
                 .masonry-grid {
                     column-count: 2;
-                    column-gap: 1.5rem;
+                    column-gap: 2rem;
                 }
                 .masonry-card {
                     break-inside: avoid;
-                    background: white;
+                    background: var(--bg-card);
                     border-radius: 12px;
                     border: 1px solid #f1f5f9;
                     box-shadow: 0 4px 12px rgba(0,0,0,0.02);
@@ -2287,8 +2573,8 @@ if (isset($db['departments'])) {
                             <?= $group_data['icon'] ?>
                         </div>
                         <div>
-                            <h3 style="font-size: 1.05rem; font-weight: 700; color: #0f172a; margin-bottom: 0.15rem;"><?= htmlspecialchars($group_name) ?></h3>
-                            <p style="font-size: 0.8rem; color: #64748b; margin: 0; line-height: 1.4;"><?= htmlspecialchars($group_data['desc']) ?></p>
+                            <h3 style="font-size: 1.05rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.15rem;"><?= htmlspecialchars($group_name) ?></h3>
+                            <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0; line-height: 1.4;"><?= htmlspecialchars($group_data['desc']) ?></p>
                         </div>
                     </div>
                     
@@ -2300,8 +2586,8 @@ if (isset($db['departments'])) {
                                     $val = $db['settings'][$key] ?? '';
                                 ?>
                                 <tr style="border-bottom: 1px dashed #f1f5f9;">
-                                    <td style="padding: 0.75rem 0; font-size: 0.85rem; font-weight: 600; color: #334155; width: 45%;"><?= htmlspecialchars($label) ?></td>
-                                    <td style="padding: 0.75rem 0; font-size: 0.85rem; color: #475569;" id="val-<?= $key ?>">
+                                    <td style="padding: 0.75rem 0; font-size: 0.85rem; font-weight: 600; color: var(--text-primary); width: 45%;"><?= htmlspecialchars($label) ?></td>
+                                    <td style="padding: 0.75rem 0; font-size: 0.85rem; color: var(--text-secondary);" id="val-<?= $key ?>">
                                         <?php if ($key === 'system_status'): ?>
                                             <span style="background: #dcfce7; color: #16a34a; padding: 0.15rem 0.6rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">Healthy</span>
                                         <?php else: ?>
@@ -2370,12 +2656,12 @@ if (isset($db['departments'])) {
                 </div>
 
                 <div class="form-group" id="prnGroup">
-                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: #334155;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">
                         Automatic Student PRN
                     </label>
-                    <div style="display: flex; align-items: center; gap: 0.6rem; background: #f8fafc; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 0.6rem 0.75rem; margin-bottom: 0.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.6rem; background: var(--bg-page); border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 0.6rem 0.75rem; margin-bottom: 0.5rem;">
                         <input type="checkbox" id="autoPrnToggle" checked onchange="toggleAutoPrnMode(this)" style="width: 18px; height: 18px; accent-color: #4f46e5; cursor: pointer;">
-                        <label for="autoPrnToggle" style="font-size: 0.85rem; font-weight: 600; color: #475569; cursor: pointer; margin: 0; user-select: none;">Auto-generate PRN by Department</label>
+                        <label for="autoPrnToggle" style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); cursor: pointer; margin: 0; user-select: none;">Auto-generate PRN by Department</label>
                         <span style="margin-left: auto; font-size: 0.75rem; color: #4f46e5; font-weight: 700; background: #e0e7ff; padding: 2px 8px; border-radius: 12px;">Active</span>
                     </div>
                     <div>
@@ -2421,7 +2707,7 @@ if (isset($db['departments'])) {
                     <input type="file" name="csv_file" accept=".csv" required style="padding: 0.5rem; border: 1.5px solid #cbd5e1; border-radius: 8px; width: 100%;">
                 </div>
                 
-                <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 1rem; line-height: 1.4;">
+                <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.4;">
                     <strong>CSV Columns expected:</strong><br>
                     Student Name, ZPRN, Division, Semester, Department
                 </div>

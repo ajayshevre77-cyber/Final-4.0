@@ -1,19 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-    --font-primary: 'Outfit', sans-serif;
+    --font-primary: 'Inter', sans-serif;
     --transition-fast: 0.2s ease;
     --transition-normal: 0.3s ease;
     --transition-slow: 0.5s ease;
     --border-radius-sm: 8px;
-    --border-radius-md: 16px;
+    --border-radius-md: 14px;
     --border-radius-lg: 24px;
-    --box-shadow-subtle: 0 4px 20px rgba(0, 0, 0, 0.04);
-    --box-shadow-medium: 0 10px 30px rgba(0, 0, 0, 0.08);
+    --box-shadow-subtle: 0 15px 35px -5px rgba(0,0,0,0.07), 0 5px 15px rgba(0,0,0,0.03);
+    --box-shadow-medium: 0 25px 50px -12px rgba(0,0,0,0.15), 0 10px 20px rgba(0,0,0,0.05);
     --box-shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
 
     /* Default / Student Colors */
-    --primary-color: #3b82f6;
+    --primary-color: #2563EB;
     --primary-hover: #1d4ed8;
     --primary-light: #eff6ff;
     --primary-gradient: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
@@ -21,12 +21,17 @@
     --accent-glow: rgba(59, 130, 246, 0.15);
     --text-main: #1f2937;
     --text-muted: #6b7280;
-    --border-color: #e5e7eb;
+    --border-color: #e2e8f0;
+    /* Luxury Theme Variables */
+    --bg-page: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+    --bg-card: rgba(255, 255, 255, 0.75);
+    --bg-alt: rgba(241, 245, 249, 0.6);
+    --border-color: rgba(226, 232, 240, 0.8);
 }
 
 /* Theme overrides based on body class */
 body.theme-student {
-    --primary-color: #3b82f6;
+    --primary-color: #2563EB;
     --primary-hover: #1d4ed8;
     --primary-light: #eff6ff;
     --primary-gradient: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
@@ -35,7 +40,7 @@ body.theme-student {
 }
 
 body.theme-faculty {
-    --primary-color: #10b981;
+    --primary-color: #2563EB;
     --primary-hover: #047857;
     --primary-light: #ecfdf5;
     --primary-gradient: linear-gradient(135deg, #34d399 0%, #059669 100%);
@@ -44,7 +49,7 @@ body.theme-faculty {
 }
 
 body.theme-hod {
-    --primary-color: #8b5cf6;
+    --primary-color: #2563EB;
     --primary-hover: #6d28d9;
     --primary-light: #f5f3ff;
     --primary-gradient: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
@@ -53,7 +58,7 @@ body.theme-hod {
 }
 
 body.theme-admin {
-    --primary-color: #f97316;
+    --primary-color: #2563EB;
     --primary-hover: #c2410c;
     --primary-light: #fff7ed;
     --primary-gradient: linear-gradient(135deg, #fb923c 0%, #ea580c 100%);
@@ -74,7 +79,7 @@ body {
     min-height: 100vh;
     overflow-x: hidden;
     line-height: 1.5;
-    transition: background var(--transition-slow);
+    transition: background var(--transition-slow), color var(--transition-slow);
 }
 
 /* Glassmorphism containers */
@@ -628,19 +633,7 @@ body {
 }
 
 /* Sidebar styling */
-.sidebar {
-    background: #1e1b4b;
-    /* Deep Indigo background */
-    color: rgba(255, 255, 255, 0.7);
-    padding: 2rem 1.25rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    border-right: 1px solid rgba(255, 255, 255, 0.05);
-    height: 100vh;
-    position: sticky;
-    top: 0;
-}
+.sidebar { background: #0F172A; }
 
 .sidebar-top {
     display: flex;
@@ -2120,4 +2113,169 @@ body.dark-mode .btn-action-upload:hover {
         text-align: left !important;
         align-items: flex-start !important;
     }
+}
+
+body.dark-mode {
+    filter: invert(1) hue-rotate(180deg);
+    background: #111;
+}
+
+body.dark-mode img,
+body.dark-mode video,
+body.dark-mode iframe,
+body.dark-mode canvas,
+body.dark-mode .fa-sun,
+body.dark-mode .fa-moon,
+body.dark-mode .badge {
+    filter: invert(1) hue-rotate(180deg);
+}
+
+
+
+/* Luxury Dark Mode Variables */
+body.dark-mode {
+    --bg-page: linear-gradient(135deg, #0f172a 0%, #020617 100%);
+    --bg-card: rgba(30, 41, 59, 0.65);
+    --bg-alt: rgba(51, 65, 85, 0.5);
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --border-color: rgba(255, 255, 255, 0.08);
+    
+    /* Ensure body itself respects the page bg */
+    background: var(--bg-page) !important;
+    background-attachment: fixed !important;
+    color: var(--text-primary) !important;
+}
+
+
+body {
+    /* Smooth theme transitions */
+    transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* Base resets for global variable adoption */
+.card, .panel, .glass-container, .stat-card, .drawer, .drawer-header, .drawer-filters, .modal-content, .overview-filters, table th, .accordion-content, .subject-row {
+    background-color: var(--bg-card);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+.drawer-body, .dashboard-wrapper, .app-view, body {
+    background-color: var(--bg-page);
+}
+
+input, select, textarea {
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+h1, h2, h3, h4, h5, h6, strong, .text-main, .value {
+    color: var(--text-primary);
+}
+
+p, span, .text-muted, .sub-value, .subject-faculty {
+    color: var(--text-secondary);
+}
+
+.border, .border-bottom, .border-top {
+    border-color: var(--border-color);
+}
+
+/* Ensure inputs are visible in dark mode */
+body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
+    color: #ffffff;
+}
+body.dark-mode input::placeholder {
+    color: var(--text-muted);
+}
+
+
+/* Premium Table Styling */
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+th {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    background-color: var(--bg-alt);
+    padding: 12px 16px;
+}
+td {
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+tbody tr:nth-child(even) {
+    background-color: var(--bg-alt);
+}
+tbody tr:hover {
+    background-color: rgba(37, 99, 235, 0.05);
+}
+body.dark-mode tbody tr:hover {
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+
+.sidebar a { color: #94A3B8; transition: background 0.2s ease, color 0.2s ease; }
+.sidebar a:hover { background: rgba(255,255,255,0.05); color: #F8FAFC; }
+.sidebar a.active { background: rgba(37, 99, 235, 0.1); color: #3B82F6; border-right: 3px solid #3B82F6; }
+
+
+/* Luxury Glassmorphism & Animations */
+.card, .panel, .glass-container, .stat-card, .drawer, .modal-content, table th, .subject-row {
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    box-shadow: var(--box-shadow-subtle);
+    border: 1px solid var(--border-color);
+}
+
+.stat-card, .subject-row, .card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stat-card:hover, .subject-row:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--box-shadow-medium);
+    border-color: rgba(37, 99, 235, 0.3);
+}
+
+body.dark-mode .stat-card:hover, body.dark-mode .subject-row:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5), 0 10px 20px rgba(0,0,0,0.3);
+}
+
+/* Luxurious Inputs */
+input, select, textarea {
+    transition: all 0.3s ease;
+    background-color: var(--bg-card);
+}
+
+input:focus, select:focus, textarea:focus {
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+    border-color: #3b82f6 !important;
+    outline: none;
+}
+
+body.dark-mode input:focus, body.dark-mode select:focus, body.dark-mode textarea:focus {
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Glowing primary buttons */
+.btn-primary, button[type="submit"] {
+    box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.39);
+    transition: all 0.3s ease;
+}
+.btn-primary:hover, button[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
+}
+
+/* Make sure body background covers and doesn't scroll weirdly */
+body {
+    background-attachment: fixed;
 }

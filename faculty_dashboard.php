@@ -419,14 +419,14 @@ $db = get_db();
                             <?php endif; ?>
                         </div>
                         
-                        <div class="notification-dropdown" id="notificationDropdown" style="display: none; position: absolute; top: 120%; right: 0; width: 320px; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid var(--border-color); z-index: 100; overflow: hidden; cursor: default;">
-                            <div style="padding: 1rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: #f8fafc;">
-                                <h4 style="margin: 0; font-size: 1rem; color: #1e293b;">Notifications</h4>
-                                <span style="font-size: 0.75rem; color: var(--primary-color); cursor: pointer; font-weight: 600;" onclick="fetch(window.location.href, {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: 'action=clear_notifications'}).then(() => { this.parentElement.nextElementSibling.innerHTML='<div style=\'padding: 2rem 1rem; text-align: center; color: #64748b; font-size: 0.9rem;\'><i class=\'fa-regular fa-bell-slash\' style=\'font-size: 1.5rem; margin-bottom: 0.5rem; color: #cbd5e1;\'></i><br>No new notifications</div>'; let b = document.querySelector('#notificationToggle .badge'); if(b) b.style.display='none'; });">Mark all as read</span>
+                        <div class="notification-dropdown" id="notificationDropdown" style="display: none; position: absolute; top: 120%; right: 0; width: 320px; background: var(--bg-card); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid var(--border-color); z-index: 100; overflow: hidden; cursor: default;">
+                            <div style="padding: 1rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: var(--bg-page);">
+                                <h4 style="margin: 0; font-size: 1rem; color: var(--text-primary);">Notifications</h4>
+                                <span style="font-size: 0.75rem; color: var(--primary-color); cursor: pointer; font-weight: 600;" onclick="fetch(window.location.href, {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: 'action=clear_notifications'}).then(() => { this.parentElement.nextElementSibling.innerHTML='<div style=\'padding: 2rem 1rem; text-align: center; color: var(--text-secondary); font-size: 0.9rem;\'><i class=\'fa-regular fa-bell-slash\' style=\'font-size: 1.5rem; margin-bottom: 0.5rem; color: #cbd5e1;\'></i><br>No new notifications</div>'; let b = document.querySelector('#notificationToggle .badge'); if(b) b.style.display='none'; });">Mark all as read</span>
                             </div>
                             <div style="max-height: 350px; overflow-y: auto; text-align: left;">
                                 <?php if (empty($db['recent_activity'])): ?>
-                                    <div style="padding: 2rem 1rem; text-align: center; color: #64748b; font-size: 0.9rem;">
+                                    <div style="padding: 2rem 1rem; text-align: center; color: var(--text-secondary); font-size: 0.9rem;">
                                         <i class="fa-regular fa-bell-slash" style="font-size: 1.5rem; margin-bottom: 0.5rem; color: #cbd5e1;"></i><br>
                                         No new notifications
                                     </div>
@@ -440,15 +440,15 @@ $db = get_db();
                                     elseif (strpos($t, 'assignment') !== false) $targetTab = 'assignments';
                                     elseif (strpos($t, 'notice') !== false) $targetTab = 'notices';
                                     ?>
-                                    <div onclick="triggerTab('<?php echo $targetTab; ?>')" style="padding: 1rem; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: background 0.2s; <?php echo $idx === 0 ? 'background: #f0f9ff;' : ''; ?>" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='<?php echo $idx === 0 ? '#f0f9ff' : 'transparent'; ?>'">
+                                    <div onclick="triggerTab('<?php echo $targetTab; ?>')" style="padding: 1rem; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s; <?php echo $idx === 0 ? 'background: #f0f9ff;' : ''; ?>" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='<?php echo $idx === 0 ? '#f0f9ff' : 'transparent'; ?>'">
                                         <div style="display: flex; gap: 0.75rem;">
-                                            <div style="width: 36px; height: 36px; border-radius: 50%; background: #e0f2fe; color: #0284c7; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                            <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--bg-alt); color: #0284c7; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                                                 <i class="fa-solid fa-bolt"></i>
                                             </div>
                                             <div>
-                                                <div style="font-weight: 600; font-size: 0.9rem; color: #334155; margin-bottom: 0.15rem;"><?php echo htmlspecialchars($activity['title'] ?? 'Notification'); ?></div>
-                                                <div style="font-size: 0.8rem; color: #64748b; margin-bottom: 0.25rem;"><?php echo htmlspecialchars($activity['desc'] ?? ''); ?></div>
-                                                <div style="font-size: 0.7rem; color: #94a3b8;"><i class="fa-regular fa-clock" style="margin-right: 3px;"></i> <?php echo htmlspecialchars($activity['time'] ?? 'Just now'); ?></div>
+                                                <div style="font-weight: 600; font-size: 0.9rem; color: var(--text-primary); margin-bottom: 0.15rem;"><?php echo htmlspecialchars($activity['title'] ?? 'Notification'); ?></div>
+                                                <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.25rem;"><?php echo htmlspecialchars($activity['desc'] ?? ''); ?></div>
+                                                <div style="font-size: 0.7rem; color: var(--text-muted);"><i class="fa-regular fa-clock" style="margin-right: 3px;"></i> <?php echo htmlspecialchars($activity['time'] ?? 'Just now'); ?></div>
                                             </div>
                                         </div>
                                     </div>
@@ -540,7 +540,7 @@ $db = get_db();
             <!-- 0. DASHBOARD PAGE                            -->
             <!-- ============================================ -->
             <div id="tab-dashboard" class="app-view active">
-                <h3 style="margin-bottom: 1.5rem; color: #1e293b;">Portal Summary</h3>
+                <h3 style="margin-bottom: 1.5rem; color: var(--text-primary);">Portal Summary</h3>
                 <?php
                 // Calculate summaries
                 // Leaves: filter by faculty's students
@@ -615,46 +615,46 @@ $db = get_db();
                     }
                 }
                 ?>
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem;">
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem;">
                     
                     <!-- Leave Approvals Card -->
-                    <div style="background: white; border-radius: 12px; padding: 2rem 1.5rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 15px -3px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px -1px rgba(0,0,0,0.05)';" onclick="switchTab('leaves', document.querySelectorAll('.sidebar-nav-item')[2])">
+                    <div style="background: var(--bg-card); border-radius: 12px; padding: 2rem 1.5rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 15px -3px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px -1px rgba(0,0,0,0.05)';" onclick="switchTab('leaves', document.querySelectorAll('.sidebar-nav-item')[2])">
                         <div style="width: 64px; height: 64px; border-radius: 50%; background: #dcfce7; color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; margin-bottom: 1.25rem;">
                             <i class="fa-solid fa-envelope-open-text"></i>
                         </div>
-                        <h4 style="color: #64748b; font-size: 0.95rem; font-weight: 600; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Leaves Pending</h4>
+                        <h4 style="color: var(--text-secondary); font-size: 0.95rem; font-weight: 600; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Leaves Pending</h4>
                         <div style="color: #10b981; font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem;"><?= $pending_leaves ?></div>
-                        <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 0;">Out of <?= $total_leaves ?> total leaves</p>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0;">Out of <?= $total_leaves ?> total leaves</p>
                     </div>
 
                     <!-- Manage Assignments Card -->
-                    <div style="background: white; border-radius: 12px; padding: 2rem 1.5rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 15px -3px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px -1px rgba(0,0,0,0.05)';" onclick="switchTab('assignments', document.querySelectorAll('.sidebar-nav-item')[3])">
+                    <div style="background: var(--bg-card); border-radius: 12px; padding: 2rem 1.5rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 15px -3px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px -1px rgba(0,0,0,0.05)';" onclick="switchTab('assignments', document.querySelectorAll('.sidebar-nav-item')[3])">
                         <div style="width: 64px; height: 64px; border-radius: 50%; background: #f3e8ff; color: #8b5cf6; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; margin-bottom: 1.25rem;">
                             <i class="fa-solid fa-file-invoice"></i>
                         </div>
-                        <h4 style="color: #64748b; font-size: 0.95rem; font-weight: 600; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Ungraded Work</h4>
+                        <h4 style="color: var(--text-secondary); font-size: 0.95rem; font-weight: 600; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Ungraded Work</h4>
                         <div style="color: #6366f1; font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem;"><?= $ungraded_submissions ?></div>
-                        <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 0;">Out of <?= $total_submissions ?> submissions</p>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0;">Out of <?= $total_submissions ?> submissions</p>
                     </div>
 
                     <!-- Publish Notices Card -->
-                    <div style="background: white; border-radius: 12px; padding: 2rem 1.5rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 15px -3px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px -1px rgba(0,0,0,0.05)';" onclick="switchTab('notices', document.querySelectorAll('.sidebar-nav-item')[4])">
+                    <div style="background: var(--bg-card); border-radius: 12px; padding: 2rem 1.5rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 15px -3px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px -1px rgba(0,0,0,0.05)';" onclick="switchTab('notices', document.querySelectorAll('.sidebar-nav-item')[4])">
                         <div style="width: 64px; height: 64px; border-radius: 50%; background: #dbeafe; color: #3b82f6; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; margin-bottom: 1.25rem;">
                             <i class="fa-solid fa-bullhorn"></i>
                         </div>
-                        <h4 style="color: #64748b; font-size: 0.95rem; font-weight: 600; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Active Notices</h4>
+                        <h4 style="color: var(--text-secondary); font-size: 0.95rem; font-weight: 600; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Active Notices</h4>
                         <div style="color: #3b82f6; font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem;"><?= $total_notices ?></div>
-                        <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 0;">Recent updates</p>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0;">Recent updates</p>
                     </div>
 
                     <!-- Grievance Card -->
-                    <div style="background: white; border-radius: 12px; padding: 2rem 1.5rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 15px -3px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px -1px rgba(0,0,0,0.05)';" onclick="switchTab('grievances', document.querySelectorAll('.sidebar-nav-item')[5])">
+                    <div style="background: var(--bg-card); border-radius: 12px; padding: 2rem 1.5rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 15px -3px rgba(0,0,0,0.1)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px -1px rgba(0,0,0,0.05)';" onclick="switchTab('grievances', document.querySelectorAll('.sidebar-nav-item')[5])">
                         <div style="width: 64px; height: 64px; border-radius: 50%; background: #ffedd5; color: #f97316; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; margin-bottom: 1.25rem;">
                             <i class="fa-solid fa-circle-exclamation"></i>
                         </div>
-                        <h4 style="color: #64748b; font-size: 0.95rem; font-weight: 600; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Active Grievances</h4>
+                        <h4 style="color: var(--text-secondary); font-size: 0.95rem; font-weight: 600; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px;">Active Grievances</h4>
                         <div style="color: #f97316; font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem;"><?= $active_grievances ?></div>
-                        <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 0;">Requires resolution</p>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0;">Requires resolution</p>
                     </div>
 
                 </div>
@@ -664,46 +664,46 @@ $db = get_db();
             <!-- -1. PROFILE PAGE                             -->
             <!-- ============================================ -->
             <div id="tab-profile" class="app-view">
-                <div class="settings-form-container" style="max-width: 800px; margin: 0 auto; background: white; border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: 2rem; box-shadow: var(--box-shadow-subtle);">
+                <div class="settings-form-container" style="max-width: 800px; margin: 0 auto; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--border-radius-md); padding: 2rem; box-shadow: var(--box-shadow-subtle);">
                     <div style="display: flex; gap: 2rem; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 2rem; margin-bottom: 2rem;">
                         <?= get_initials_avatar($user['name'], 120, 48, 4) ?>
                         <div>
-                            <h2 style="font-size: 1.75rem; font-weight: 800; color: #111827; margin: 0 0 0.5rem 0;"><?= htmlspecialchars($user['name']) ?></h2>
+                            <h2 style="font-size: 1.75rem; font-weight: 800; color: var(--text-primary); margin: 0 0 0.5rem 0;"><?= htmlspecialchars($user['name']) ?></h2>
                             <span class="status-pill graded" style="font-size: 0.85rem; padding: 0.25rem 0.75rem; background: #dcfce7; color: #15803d;">Active Faculty</span>
                             <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.95rem;">ID: <?= htmlspecialchars($user['username']) ?> | <?= htmlspecialchars($user['dept']) ?></p>
                         </div>
                     </div>
                     
-                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
                         <div class="form-group-col">
-                            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #4b5563; margin-bottom: 0.5rem;">Full Name</label>
-                            <input type="text" readonly value="<?= htmlspecialchars($user['name']) ?>" style="width: 100%; background: #f9fafb; cursor: not-allowed; border: 1px solid var(--border-color); padding: 0.75rem 1rem; border-radius: var(--border-radius-sm);">
+                            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem;">Full Name</label>
+                            <input type="text" readonly value="<?= htmlspecialchars($user['name']) ?>" style="width: 100%; background: var(--bg-alt); cursor: not-allowed; border: 1px solid var(--border-color); padding: 0.75rem 1rem; border-radius: var(--border-radius-sm);">
                         </div>
                         <div class="form-group-col">
-                            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #4b5563; margin-bottom: 0.5rem;">Employee ID</label>
-                            <input type="text" readonly value="<?= htmlspecialchars($user['username']) ?>" style="width: 100%; background: #f9fafb; cursor: not-allowed; border: 1px solid var(--border-color); padding: 0.75rem 1rem; border-radius: var(--border-radius-sm);">
+                            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem;">Employee ID</label>
+                            <input type="text" readonly value="<?= htmlspecialchars($user['username']) ?>" style="width: 100%; background: var(--bg-alt); cursor: not-allowed; border: 1px solid var(--border-color); padding: 0.75rem 1rem; border-radius: var(--border-radius-sm);">
                         </div>
                     </div>
                     
-                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem;">
+                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
                         <div class="form-group-col">
-                            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #4b5563; margin-bottom: 0.5rem;">Email Address</label>
-                            <input type="text" readonly value="<?= htmlspecialchars($current_faculty['email'] ?? '') ?>" style="width: 100%; background: #f9fafb; cursor: not-allowed; border: 1px solid var(--border-color); padding: 0.75rem 1rem; border-radius: var(--border-radius-sm);">
+                            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem;">Email Address</label>
+                            <input type="text" readonly value="<?= htmlspecialchars($current_faculty['email'] ?? '') ?>" style="width: 100%; background: var(--bg-alt); cursor: not-allowed; border: 1px solid var(--border-color); padding: 0.75rem 1rem; border-radius: var(--border-radius-sm);">
                         </div>
                         <div class="form-group-col">
-                            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #4b5563; margin-bottom: 0.5rem;">Phone Number</label>
-                            <input type="text" readonly value="<?= htmlspecialchars($current_faculty['phone'] ?? '') ?>" style="width: 100%; background: #f9fafb; cursor: not-allowed; border: 1px solid var(--border-color); padding: 0.75rem 1rem; border-radius: var(--border-radius-sm);">
+                            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem;">Phone Number</label>
+                            <input type="text" readonly value="<?= htmlspecialchars($current_faculty['phone'] ?? '') ?>" style="width: 100%; background: var(--bg-alt); cursor: not-allowed; border: 1px solid var(--border-color); padding: 0.75rem 1rem; border-radius: var(--border-radius-sm);">
                         </div>
                     </div>
 
-                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 1.5rem;">
+                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
                         <div class="form-group-col">
-                            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #4b5563; margin-bottom: 0.5rem;">Department</label>
-                            <input type="text" readonly value="<?= htmlspecialchars($user['dept']) ?>" style="width: 100%; background: #f9fafb; cursor: not-allowed; border: 1px solid var(--border-color); padding: 0.75rem 1rem; border-radius: var(--border-radius-sm);">
+                            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem;">Department</label>
+                            <input type="text" readonly value="<?= htmlspecialchars($user['dept']) ?>" style="width: 100%; background: var(--bg-alt); cursor: not-allowed; border: 1px solid var(--border-color); padding: 0.75rem 1rem; border-radius: var(--border-radius-sm);">
                         </div>
                         <div class="form-group-col">
-                            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #4b5563; margin-bottom: 0.5rem;">Designation</label>
-                            <input type="text" readonly value="Associate Professor" style="width: 100%; background: #f9fafb; cursor: not-allowed; border: 1px solid var(--border-color); padding: 0.75rem 1rem; border-radius: var(--border-radius-sm);">
+                            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem;">Designation</label>
+                            <input type="text" readonly value="Associate Professor" style="width: 100%; background: var(--bg-alt); cursor: not-allowed; border: 1px solid var(--border-color); padding: 0.75rem 1rem; border-radius: var(--border-radius-sm);">
                         </div>
                     </div>
                 </div>
@@ -714,8 +714,8 @@ $db = get_db();
             <!-- ============================================ -->
             <div id="tab-leaves" class="app-view">
                 <div class="data-table-container">
-                    <div class="table-header-filters" style="justify-content: flex-start; background: #fafafa; border-bottom: 1px solid var(--border-color);">
-                        <h3 style="font-size: 1.15rem; font-weight: 700; color: #111827; padding: 0.5rem 0.25rem;">Active Leave Requests</h3>
+                    <div class="table-header-filters" style="justify-content: flex-start; background: var(--bg-alt); border-bottom: 1px solid var(--border-color);">
+                        <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text-primary); padding: 0.5rem 0.25rem;">Active Leave Requests</h3>
                     </div>
                     <table class="data-table">
                         <thead>
@@ -825,21 +825,21 @@ $db = get_db();
                 </div>
 
                 <!-- Publish Assignment Form -->
-                <div style="background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 2rem; margin-bottom: 3rem; box-shadow: var(--box-shadow-subtle);">
+                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 2rem; margin-bottom: 3rem; box-shadow: var(--box-shadow-subtle);">
                     <form id="publishAssignmentForm" method="POST" enctype="multipart/form-data">
                         <input type="hidden" name="action" value="publish_assignment">
-                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 1.5rem;">
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; margin-bottom: 1.5rem;">
                             <div>
-                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: #334155;">Assignment Title</label>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">Assignment Title</label>
                                 <input type="text" name="title" required placeholder="e.g. Introduction to Basics" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit;">
                             </div>
                             <div>
-                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: #334155;">Due Date</label>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">Due Date</label>
                                 <input type="date" name="due_date" required min="<?= date('Y-m-d') ?>" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit;">
                             </div>
                             <div>
-                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: #334155;">Target Year</label>
-                                <select name="target_year" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; background: white;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">Target Year</label>
+                                <select name="target_year" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; background: var(--bg-card);">
                                     <option value="1">First Year (1)</option>
                                     <option value="2">Second Year (2)</option>
                                     <option value="3" selected>Third Year (3)</option>
@@ -847,15 +847,15 @@ $db = get_db();
                                 </select>
                             </div>
                             <div>
-                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: #334155;">Target Semester</label>
-                                <select name="target_sem" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; background: white;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">Target Semester</label>
+                                <select name="target_sem" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; background: var(--bg-card);">
                                     <option value="1" selected>Semester 1</option>
                                     <option value="2">Semester 2</option>
                                 </select>
                             </div>
                             <div>
-                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: #334155;">Target Division</label>
-                                <select name="target_div" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; background: white;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">Target Division</label>
+                                <select name="target_div" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; background: var(--bg-card);">
                                     <option value="A">Division A</option>
                                     <option value="B" selected>Division B</option>
                                     <option value="C">Division C</option>
@@ -863,16 +863,16 @@ $db = get_db();
                                 </select>
                             </div>
                             <div>
-                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: #334155;">Subject</label>
-                                 <select name="subject_name" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; background: white;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">Subject</label>
+                                 <select name="subject_name" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; background: var(--bg-card);">
                                     <?php foreach ($faculty_subjects as $fs): ?>
                                         <option value="<?php echo htmlspecialchars($fs); ?>"><?php echo htmlspecialchars($fs); ?></option>
                                     <?php endforeach; ?>
                                  </select>
                             </div>
                             <div>
-                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: #334155;">Unit Number</label>
-                                <select name="unit_number" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; background: white;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">Unit Number</label>
+                                <select name="unit_number" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; background: var(--bg-card);">
                                     <option value="1">Unit 1</option>
                                     <option value="2">Unit 2</option>
                                     <option value="3">Unit 3</option>
@@ -882,8 +882,8 @@ $db = get_db();
                                 </select>
                             </div>
                             <div>
-                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: #334155;">Target Department</label>
-                                <select name="target_dept" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; background: white;">
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">Target Department</label>
+                                <select name="target_dept" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; background: var(--bg-card);">
                                     <option value="Information Technology" selected>Information Technology</option>
                                     <option value="Computer Engineering">Computer Engineering</option>
                                     <option value="Mechanical Engineering">Mechanical Engineering</option>
@@ -891,34 +891,34 @@ $db = get_db();
                                 </select>
                             </div>
                             <div style="grid-column: span 4;">
-                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: #334155;">Assignment Description</label>
+                                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">Assignment Description</label>
                                 <textarea name="description" required rows="3" placeholder="Provide detailed instructions..." style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; resize: vertical;"></textarea>
                             </div>
                         </div>
                         
                         <!-- Dynamic Drop Area -->
-                        <div id="facultyDropZone" style="border: 2px dashed #cbd5e1; border-radius: 8px; padding: 2rem; background: #f8fafc; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; cursor: pointer; transition: all 0.2s;">
-                            <div style="display: flex; align-items: center; gap: 1.25rem; pointer-events: none;">
+                        <div id="facultyDropZone" style="border: 2px dashed #cbd5e1; border-radius: 8px; padding: 2rem; background: var(--bg-page); margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; cursor: pointer; transition: all 0.2s;">
+                            <div style="display: flex; align-items: center; gap: 2rem; pointer-events: none;">
                                 <div id="upload-icon-container" style="width: 56px; height: 56px; background: #e0e7ff; color: #4f46e5; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0;">
                                     <i class="fa-solid fa-cloud-arrow-up"></i>
                                 </div>
                                 <div style="text-align: left;">
-                                    <h4 id="upload-title-text" style="font-weight: 600; margin-bottom: 0.25rem; font-size: 1.05rem; color: #1e293b;">Upload Question File *</h4>
+                                    <h4 id="upload-title-text" style="font-weight: 600; margin-bottom: 0.25rem; font-size: 1.05rem; color: var(--text-primary);">Upload Question File *</h4>
                                     <p id="upload-status-text" style="font-size: 0.9rem; color: var(--text-muted);">Click here to <span style="color: #4f46e5; font-weight: 600;">browse</span> and select a file</p>
                                     <input id="file-upload" type="file" name="assignment_file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="display: none;">
-                                    <p id="upload-allowed-text" style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.35rem;">PDF, DOC, DOCX, JPG, JPEG, PNG allowed (Max 10MB)</p>
+                                    <p id="upload-allowed-text" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.35rem;">PDF, DOC, DOCX, JPG, JPEG, PNG allowed (Max 10MB)</p>
                                 </div>
                             </div>
                             <div id="dynamic-btn-area">
-                                <label for="file-upload" style="background: white; border: 1px solid var(--border-color); padding: 0.65rem 1.25rem; border-radius: 6px; color: #4f46e5; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: background 0.2s;">
+                                <label for="file-upload" style="background: var(--bg-card); border: 1px solid var(--border-color); padding: 0.65rem 1.25rem; border-radius: 6px; color: #4f46e5; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: background 0.2s;">
                                     <i class="fa-solid fa-arrow-up-from-bracket"></i> Choose File
                                 </label>
                             </div>
                         </div>
 
                         <!-- Progress Bar Container -->
-                        <div id="uploadProgressContainer" style="display: none; background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 1.25rem; margin-bottom: 1.5rem;">
-                            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; color: #475569; margin-bottom: 0.25rem;">
+                        <div id="uploadProgressContainer" style="display: none; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; padding: 1.25rem; margin-bottom: 1.5rem;">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 0.25rem;">
                                 <span id="progressStatusLabel">Uploading...</span>
                                 <span id="progressPercentText">0%</span>
                             </div>
@@ -933,30 +933,30 @@ $db = get_db();
                     </form>
                 </div>
 
-                <h3 style="font-size: 1.6rem; font-weight: 700; margin-bottom: 1.5rem; color: #1e293b;">Your Assignments</h3>
+                <h3 style="font-size: 1.6rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--text-primary);">Your Assignments</h3>
 
                 <!-- Interactive Filters -->
                 <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem;">
                     <!-- Year Tabs -->
-                    <div style="display: flex; gap: 1.5rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem;">
+                    <div style="display: flex; gap: 2rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem;">
                         <button type="button" class="filter-year-btn" data-year="1" style="background: none; border: none; font-size: 1rem; font-weight: 700; color: #4f46e5; padding-bottom: 0.5rem; border-bottom: 2px solid #4f46e5; cursor: pointer; margin-bottom: -10px; font-family: inherit;">Year 1</button>
-                        <button type="button" class="filter-year-btn" data-year="2" style="background: none; border: none; font-size: 1rem; font-weight: 600; color: #64748b; padding-bottom: 0.5rem; cursor: pointer; margin-bottom: -10px; font-family: inherit;">Year 2</button>
-                        <button type="button" class="filter-year-btn" data-year="3" style="background: none; border: none; font-size: 1rem; font-weight: 600; color: #64748b; padding-bottom: 0.5rem; cursor: pointer; margin-bottom: -10px; font-family: inherit;">Year 3</button>
-                        <button type="button" class="filter-year-btn" data-year="4" style="background: none; border: none; font-size: 1rem; font-weight: 600; color: #64748b; padding-bottom: 0.5rem; cursor: pointer; margin-bottom: -10px; font-family: inherit;">Year 4</button>
+                        <button type="button" class="filter-year-btn" data-year="2" style="background: none; border: none; font-size: 1rem; font-weight: 600; color: var(--text-secondary); padding-bottom: 0.5rem; cursor: pointer; margin-bottom: -10px; font-family: inherit;">Year 2</button>
+                        <button type="button" class="filter-year-btn" data-year="3" style="background: none; border: none; font-size: 1rem; font-weight: 600; color: var(--text-secondary); padding-bottom: 0.5rem; cursor: pointer; margin-bottom: -10px; font-family: inherit;">Year 3</button>
+                        <button type="button" class="filter-year-btn" data-year="4" style="background: none; border: none; font-size: 1rem; font-weight: 600; color: var(--text-secondary); padding-bottom: 0.5rem; cursor: pointer; margin-bottom: -10px; font-family: inherit;">Year 4</button>
                     </div>
 
                     <!-- Semester Pills -->
                     <div style="display: flex; gap: 0.75rem;">
                         <button type="button" class="filter-sem-btn" data-sem="1" style="background: #f5f3ff; color: #8b5cf6; border: 1px solid #c084fc; padding: 0.4rem 1rem; border-radius: 6px; font-weight: 700; font-size: 0.85rem; cursor: pointer; font-family: inherit;">Semester 1</button>
-                        <button type="button" class="filter-sem-btn" data-sem="2" style="background: white; color: #64748b; border: 1px solid #cbd5e1; padding: 0.4rem 1rem; border-radius: 6px; font-weight: 600; font-size: 0.85rem; cursor: pointer; font-family: inherit;">Semester 2</button>
+                        <button type="button" class="filter-sem-btn" data-sem="2" style="background: var(--bg-card); color: var(--text-secondary); border: 1px solid var(--border-color); padding: 0.4rem 1rem; border-radius: 6px; font-weight: 600; font-size: 0.85rem; cursor: pointer; font-family: inherit;">Semester 2</button>
                     </div>
 
                     <!-- Division Buttons -->
                     <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                         <button type="button" class="filter-div-btn" data-div="A" style="background: #3b82f6; color: white; border: none; padding: 0.4rem 1rem; border-radius: 6px; font-weight: 700; font-size: 0.85rem; cursor: pointer; font-family: inherit;">Div A</button>
-                        <button type="button" class="filter-div-btn" data-div="B" style="background: #f1f5f9; color: #475569; border: none; padding: 0.4rem 1rem; border-radius: 6px; font-weight: 600; font-size: 0.85rem; cursor: pointer; font-family: inherit;">Div B</button>
-                        <button type="button" class="filter-div-btn" data-div="C" style="background: #f1f5f9; color: #475569; border: none; padding: 0.4rem 1rem; border-radius: 6px; font-weight: 600; font-size: 0.85rem; cursor: pointer; font-family: inherit;">Div C</button>
-                        <button type="button" class="filter-div-btn" data-div="D" style="background: #f1f5f9; color: #475569; border: none; padding: 0.4rem 1rem; border-radius: 6px; font-weight: 600; font-size: 0.85rem; cursor: pointer; font-family: inherit;">Div D</button>
+                        <button type="button" class="filter-div-btn" data-div="B" style="background: var(--bg-alt); color: var(--text-secondary); border: none; padding: 0.4rem 1rem; border-radius: 6px; font-weight: 600; font-size: 0.85rem; cursor: pointer; font-family: inherit;">Div B</button>
+                        <button type="button" class="filter-div-btn" data-div="C" style="background: var(--bg-alt); color: var(--text-secondary); border: none; padding: 0.4rem 1rem; border-radius: 6px; font-weight: 600; font-size: 0.85rem; cursor: pointer; font-family: inherit;">Div C</button>
+                        <button type="button" class="filter-div-btn" data-div="D" style="background: var(--bg-alt); color: var(--text-secondary); border: none; padding: 0.4rem 1rem; border-radius: 6px; font-weight: 600; font-size: 0.85rem; cursor: pointer; font-family: inherit;">Div D</button>
                     </div>
                 </div>
 
@@ -972,7 +972,7 @@ $db = get_db();
 
                 if (empty($my_published_sas)):
                 ?>
-                    <div style="padding: 3rem; text-align: center; background: white; border-radius: 12px; border: 1px solid var(--border-color); color: var(--text-muted);">
+                    <div style="padding: 3rem; text-align: center; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-color); color: var(--text-muted);">
                         No assignments published by you yet.
                     </div>
                 <?php 
@@ -1031,21 +1031,21 @@ $db = get_db();
                         $submitted_count = count($submissions);
                         $pending_count = max(0, $assigned_count - $submitted_count);
                 ?>
-                <div class="assignment-card-item" data-year="<?= $year_num ?>" data-semester="<?= $sem_in_year ?>" data-division="<?= htmlspecialchars($sa['division'] ?? 'A') ?>" style="background: white; border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 1.5rem; box-shadow: var(--box-shadow-subtle); overflow: hidden;">
-                    <div style="padding: 1.5rem; display: flex; gap: 1.25rem; align-items: flex-start; border-bottom: <?php echo $has_submissions ? '1px solid var(--border-color)' : 'none'; ?>;">
+                <div class="assignment-card-item" data-year="<?= $year_num ?>" data-semester="<?= $sem_in_year ?>" data-division="<?= htmlspecialchars($sa['division'] ?? 'A') ?>" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 1.5rem; box-shadow: var(--box-shadow-subtle); overflow: hidden;">
+                    <div style="padding: 1.5rem; display: flex; gap: 2rem; align-items: flex-start; border-bottom: <?php echo $has_submissions ? '1px solid var(--border-color)' : 'none'; ?>;">
                         <div style="width: 48px; height: 48px; background: #f5f3ff; color: #8b5cf6; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.35rem; flex-shrink: 0;">
                             <i class="fa-solid fa-file-lines"></i>
                         </div>
                         <div style="flex:1;">
                             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                                 <div>
-                                    <h4 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.35rem; color: #1e293b;">Unit <?= htmlspecialchars($unit_no) ?> - <?= htmlspecialchars($sa['assignment_title']) ?></h4>
+                                    <h4 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.35rem; color: var(--text-primary);">Unit <?= htmlspecialchars($unit_no) ?> - <?= htmlspecialchars($sa['assignment_title']) ?></h4>
                                     <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 0.65rem;"><?= htmlspecialchars($sa['description'] ?? 'Solve all questions.') ?></p>
                                     
                                     <!-- Badges -->
                                     <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
-                                        <span style="background: #e0f2fe; color: #0369a1; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Target: Year <?= $year_num ?>, Sem <?= $sem_in_year ?> - Div <?= htmlspecialchars($sa['division'] ?? 'A') ?></span>
-                                        <span style="background: #f1f5f9; color: #475569; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Assigned: <?= $assigned_count ?></span>
+                                        <span style="background: var(--bg-alt); color: #0369a1; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Target: Year <?= $year_num ?>, Sem <?= $sem_in_year ?> - Div <?= htmlspecialchars($sa['division'] ?? 'A') ?></span>
+                                        <span style="background: var(--bg-alt); color: var(--text-secondary); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Assigned: <?= $assigned_count ?></span>
                                         <span style="background: #dcfce7; color: #166534; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Submitted: <?= $submitted_count ?></span>
                                         <span style="background: #fee2e2; color: #991b1b; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Pending: <?= $pending_count ?></span>
                                     </div>
@@ -1057,7 +1057,7 @@ $db = get_db();
                                     <button type="submit" style="background:transparent;border:none;color:#ef4444;cursor:pointer;padding:0.4rem; font-size:1rem;" title="Delete Assignment" onclick="return confirm('Delete this assignment?');"><i class="fa-solid fa-trash"></i></button>
                                 </form>
                             </div>
-                            <div style="display: flex; align-items: center; gap: 1.5rem; font-size: 0.85rem; color: #4f46e5; font-weight: 500;">
+                            <div style="display: flex; align-items: center; gap: 2rem; font-size: 0.85rem; color: #4f46e5; font-weight: 500;">
                                 <span><i class="fa-regular fa-calendar"></i> Due: <?= htmlspecialchars($sa['due'] ?? $sa['due_date'] ?? '') ?></span>
                                 <?php if (!empty($sa['question_pdf'])): ?>
                                     <a href="uploads/<?= htmlspecialchars($sa['question_pdf']) ?>" target="_blank" style="color: #0284c7; text-decoration: none;"><i class="fa-solid fa-paperclip"></i> @<?= basename($sa['question_pdf']) ?></a>
@@ -1069,7 +1069,7 @@ $db = get_db();
                     <?php if ($has_submissions): ?>
                     <div style="overflow-x: auto;">
                         <table style="width: 100%; border-collapse: collapse; min-width: 700px;">
-                            <thead style="background: #f8fafc; font-size: 0.75rem; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em;">
+                            <thead style="background: var(--bg-page); font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary); letter-spacing: 0.05em;">
                                 <tr>
                                     <th style="padding: 1rem 1.5rem; text-align: left; font-weight: 600; border-bottom: 1px solid var(--border-color); width: 60px;">#</th>
                                     <th style="padding: 1rem 1.5rem; text-align: left; font-weight: 600; border-bottom: 1px solid var(--border-color); width: 140px;">STUDENT ID</th>
@@ -1080,10 +1080,10 @@ $db = get_db();
                             </thead>
                             <tbody>
                                 <?php foreach ($submissions as $i => $sub): ?>
-                                <tr style="border-bottom: 1px solid var(--border-color); background: white; vertical-align: top;">
-                                    <td style="padding: 1rem 1.5rem; font-size: 0.9rem; color: #334155;"><?php echo $i + 1; ?></td>
-                                    <td style="padding: 1rem 1.5rem; font-size: 0.9rem; color: #334155;"><?php echo htmlspecialchars($sub['student_id']); ?></td>
-                                    <td style="padding: 1rem 1.5rem; font-size: 0.9rem; color: #334155;"><?php echo htmlspecialchars($sub['student_name']); ?></td>
+                                <tr style="border-bottom: 1px solid var(--border-color); background: var(--bg-card); vertical-align: top;">
+                                    <td style="padding: 1rem 1.5rem; font-size: 0.9rem; color: var(--text-primary);"><?php echo $i + 1; ?></td>
+                                    <td style="padding: 1rem 1.5rem; font-size: 0.9rem; color: var(--text-primary);"><?php echo htmlspecialchars($sub['student_id']); ?></td>
+                                    <td style="padding: 1rem 1.5rem; font-size: 0.9rem; color: var(--text-primary);"><?php echo htmlspecialchars($sub['student_name']); ?></td>
                                     <td style="padding: 1rem 1.5rem; font-size: 0.9rem;">
                                         <div style="display: flex; gap: 0.5rem; flex-direction: column;">
                                             <?php
@@ -1107,8 +1107,8 @@ $db = get_db();
                                                 <input type="hidden" name="action" value="grade_assignment">
                                                 <input type="hidden" name="assignment_id" value="<?php echo $sub['id']; ?>">
                                                 <input type="hidden" name="status" value="Graded">
-                                                <input type="text" name="marks" value="<?php echo htmlspecialchars(trim(explode('/', $sub['marks'] ?? '')[0]) === 'Pending' ? '' : trim(explode('/', $sub['marks'] ?? '')[0])); ?>" required style="width: 50px; padding: 0.4rem; border: 1px solid #cbd5e1; border-radius: 4px; text-align: center; font-family: inherit; font-size: 0.9rem;">
-                                                <span style="color: #475569; font-size: 0.9rem; font-weight: 600;">/ 10</span>
+                                                <input type="text" name="marks" value="<?php echo htmlspecialchars(trim(explode('/', $sub['marks'] ?? '')[0]) === 'Pending' ? '' : trim(explode('/', $sub['marks'] ?? '')[0])); ?>" required style="width: 50px; padding: 0.4rem; border: 1px solid var(--border-color); border-radius: 4px; text-align: center; font-family: inherit; font-size: 0.9rem;">
+                                                <span style="color: var(--text-secondary); font-size: 0.9rem; font-weight: 600;">/ 10</span>
                                                 <button type="submit" style="padding: 0.4rem 0.85rem; border: none; border-radius: 4px; background-color: #3b82f6; color: white; cursor: pointer; font-weight: 600; font-size: 0.85rem;">Save</button>
                                             </form>
                                             <form method="POST" action="faculty_dashboard.php" style="margin: 0; display: inline-flex; align-items: center;">
@@ -1220,7 +1220,7 @@ $db = get_db();
                         if (!noAssignmentsMsg) {
                             noAssignmentsMsg = document.createElement('div');
                             noAssignmentsMsg.id = 'noAssignmentsFilteredMsg';
-                            noAssignmentsMsg.style.cssText = 'padding: 3rem; text-align: center; background: white; border-radius: 12px; border: 1px solid var(--border-color); color: var(--text-muted); margin-top: 1rem;';
+                            noAssignmentsMsg.style.cssText = 'padding: 3rem; text-align: center; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-color); color: var(--text-muted); margin-top: 1rem;';
                             noAssignmentsMsg.innerHTML = '<div style="font-size: 2.5rem; color: #cbd5e1; margin-bottom: 0.75rem;"><i class="fa-solid fa-inbox"></i></div><p style="font-size: 0.95rem;"></p>';
                             const parent = document.getElementById('tab-assignments');
                             parent.appendChild(noAssignmentsMsg);
@@ -1270,38 +1270,38 @@ $db = get_db();
                     <p style="color: var(--text-muted);">Post announcements and broadcast updates to everyone.</p>
                 </div>
                 
-                <div style="background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 2rem; margin-bottom: 3rem; box-shadow: var(--box-shadow-subtle);">
+                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 2rem; margin-bottom: 3rem; box-shadow: var(--box-shadow-subtle);">
                     <form method="POST" enctype="multipart/form-data">
                         <input type="hidden" name="action" value="publish_notice">
                         
                         <div style="margin-bottom: 1.5rem;">
-                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: #334155;">Notice Title</label>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">Notice Title</label>
                             <input type="text" name="title" required placeholder="e.g. Extra Class Scheduled" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; font-size: 1rem;">
                         </div>
                         
                         <div style="margin-bottom: 1.5rem;">
-                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: #334155;">Description</label>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">Description</label>
                             <textarea name="desc" rows="4" required placeholder="Enter notice details..." style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; font-size: 1rem; resize: vertical;"></textarea>
                         </div>
                         
                         <div style="margin-bottom: 1.5rem;">
-                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: #334155;">Expiry Date (Optional)</label>
+                            <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">Expiry Date (Optional)</label>
                             <input type="date" name="expiry" min="<?= date('Y-m-d') ?>" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; font-size: 1rem;">
                         </div>
                         
-                        <div style="border: 2px dashed #cbd5e1; border-radius: 8px; padding: 2rem; background: #f8fafc; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
-                            <div style="display: flex; align-items: center; gap: 1.25rem;">
+                        <div style="border: 2px dashed #cbd5e1; border-radius: 8px; padding: 2rem; background: var(--bg-page); margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;">
+                            <div style="display: flex; align-items: center; gap: 2rem;">
                                 <div style="width: 56px; height: 56px; background: #dbeafe; color: #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0;">
                                     <i class="fa-solid fa-paperclip"></i>
                                 </div>
                                 <div style="text-align: left;">
-                                    <h4 style="font-weight: 600; margin-bottom: 0.25rem; font-size: 1.05rem; color: #1e293b;">Attach File (Optional)</h4>
+                                    <h4 style="font-weight: 600; margin-bottom: 0.25rem; font-size: 1.05rem; color: var(--text-primary);">Attach File (Optional)</h4>
                                     <p style="font-size: 0.9rem; color: var(--text-muted);">Click here to <label for="notice-file-upload" style="color: #3b82f6; font-weight: 600; cursor: pointer;">browse</label> and select a file</p>
                                     <input id="notice-file-upload" type="file" name="attachment" style="display: none;">
-                                    <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 0.35rem;">Supported formats: PDF, DOCX, JPG, PNG (Max 5MB)</p>
+                                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.35rem;">Supported formats: PDF, DOCX, JPG, PNG (Max 5MB)</p>
                                 </div>
                             </div>
-                            <label for="notice-file-upload" style="background: white; border: 1px solid var(--border-color); padding: 0.65rem 1.25rem; border-radius: 6px; color: #3b82f6; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: background 0.2s;">
+                            <label for="notice-file-upload" style="background: var(--bg-card); border: 1px solid var(--border-color); padding: 0.65rem 1.25rem; border-radius: 6px; color: #3b82f6; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: background 0.2s;">
                                 <i class="fa-solid fa-arrow-up-from-bracket"></i> Choose File
                             </label>
                         </div>
@@ -1312,23 +1312,23 @@ $db = get_db();
                     </form>
                 </div>
                 
-                <h3 style="font-size: 1.35rem; font-weight: 700; margin-top: 3rem; margin-bottom: 1.5rem; color: #1e293b;">Published Notices</h3>
+                <h3 style="font-size: 1.35rem; font-weight: 700; margin-top: 3rem; margin-bottom: 1.5rem; color: var(--text-primary);">Published Notices</h3>
                 
                 <?php 
                 foreach ($db['notices'] as $n): 
                     if ($n['author'] !== $current_faculty['name']) continue;
                 ?>
-                <div style="background: white; border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 1.5rem; box-shadow: var(--box-shadow-subtle); overflow: hidden;">
-                    <div style="padding: 1.5rem; display: flex; gap: 1.25rem; align-items: flex-start;">
-                        <div style="width: 48px; height: 48px; background: #fff1f2; color: #e11d48; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.35rem; flex-shrink: 0;">
+                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 1.5rem; box-shadow: var(--box-shadow-subtle); overflow: hidden;">
+                    <div style="padding: 1.5rem; display: flex; gap: 2rem; align-items: flex-start;">
+                        <div style="width: 48px; height: 48px; background: var(--bg-card);1f2; color: #e11d48; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.35rem; flex-shrink: 0;">
                             <i class="fa-solid fa-bullhorn"></i>
                         </div>
                         <div style="flex: 1;">
-                            <h4 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.35rem; color: #1e293b;"><?= htmlspecialchars($n['title']) ?></h4>
+                            <h4 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.35rem; color: var(--text-primary);"><?= htmlspecialchars($n['title']) ?></h4>
                             <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 0.65rem;"><?= htmlspecialchars($n['desc']) ?></p>
-                            <div style="display: flex; align-items: center; gap: 1.5rem; font-size: 0.85rem; color: #475569; font-weight: 500; flex-wrap: wrap;">
-                                <span><i class="fa-regular fa-calendar" style="color: #64748b;"></i> Published: <?= htmlspecialchars($n['date']) ?></span>
-                                <span><i class="fa-regular fa-clock" style="color: #64748b;"></i> Expiry: <?= htmlspecialchars($n['expiry'] ?: 'N/A') ?></span>
+                            <div style="display: flex; align-items: center; gap: 2rem; font-size: 0.85rem; color: var(--text-secondary); font-weight: 500; flex-wrap: wrap;">
+                                <span><i class="fa-regular fa-calendar" style="color: var(--text-secondary);"></i> Published: <?= htmlspecialchars($n['date']) ?></span>
+                                <span><i class="fa-regular fa-clock" style="color: var(--text-secondary);"></i> Expiry: <?= htmlspecialchars($n['expiry'] ?: 'N/A') ?></span>
                                 <?php if (!empty($n['attachment'])): ?>
                                     <a href="<?= htmlspecialchars($n['attachment']) ?>" target="_blank" style="color: #0284c7; text-decoration: none;"><i class="fa-solid fa-paperclip"></i> <?= htmlspecialchars($n['attachment']) ?></a>
                                 <?php endif; ?>
@@ -1350,13 +1350,13 @@ $db = get_db();
             <!-- GRIEVANCES TAB                               -->
             <!-- ============================================ -->
             <div id="tab-grievances" class="app-view">
-                <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; color: #1e293b;">Assignment Document Grievances</h3>
+                <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--text-primary);">Assignment Document Grievances</h3>
                 
                 <!-- Filters for Assignment Grievances -->
-                <div style="background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; display: flex; gap: 1rem; box-shadow: var(--box-shadow-subtle);">
+                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; display: flex; gap: 1rem; box-shadow: var(--box-shadow-subtle);">
                     <div style="flex: 1; min-width: 200px;">
-                        <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.35rem;">Filter by Subject</label>
-                        <select id="facGrievanceSubjectFilter" onchange="filterFacultyGrievances()" style="width: 100%; padding: 0.6rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; font-size: 0.9rem; background: white;">
+                        <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.35rem;">Filter by Subject</label>
+                        <select id="facGrievanceSubjectFilter" onchange="filterFacultyGrievances()" style="width: 100%; padding: 0.6rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; font-size: 0.9rem; background: var(--bg-card);">
                             <option value="all">All Subjects</option>
                             <?php foreach ($faculty_subjects as $fs): ?>
                                 <option value="<?php echo htmlspecialchars($fs); ?>"><?php echo htmlspecialchars($fs); ?></option>
@@ -1364,8 +1364,8 @@ $db = get_db();
                         </select>
                     </div>
                     <div style="flex: 1; min-width: 200px;">
-                        <label style="display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 0.35rem;">Filter by Status</label>
-                        <select id="facGrievanceStatusFilter" onchange="filterFacultyGrievances()" style="width: 100%; padding: 0.6rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; font-size: 0.9rem; background: white;">
+                        <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.35rem;">Filter by Status</label>
+                        <select id="facGrievanceStatusFilter" onchange="filterFacultyGrievances()" style="width: 100%; padding: 0.6rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; font-size: 0.9rem; background: var(--bg-card);">
                             <option value="all">All Statuses</option>
                             <option value="Pending">Pending</option>
                             <option value="In Review">In Review</option>
@@ -1375,9 +1375,9 @@ $db = get_db();
                     </div>
                 </div>
 
-                <div style="background: white; border: 1px solid var(--border-color); border-radius: 12px; overflow-x: auto; box-shadow: var(--box-shadow-subtle); margin-bottom: 3rem;">
+                <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; overflow-x: auto; box-shadow: var(--box-shadow-subtle); margin-bottom: 3rem;">
                     <table style="width: 100%; border-collapse: collapse; min-width: 900px;">
-                        <thead style="background: #f8fafc; font-size: 0.85rem; color: #1e293b; font-weight: 600;">
+                        <thead style="background: var(--bg-page); font-size: 0.85rem; color: var(--text-primary); font-weight: 600;">
                             <tr>
                                 <th style="padding: 1.25rem 1.5rem; text-align: left; border-bottom: 1px solid var(--border-color); width: 60px;">#</th>
                                 <th style="padding: 1.25rem 1.5rem; text-align: left; border-bottom: 1px solid var(--border-color); width: 220px;">Student Details</th>
@@ -1435,21 +1435,21 @@ $db = get_db();
                                     $stu_div = $stu ? $stu['division'] : 'N/A';
                             ?>
                             <tr class="assignment-grievance-row" data-subject="<?= htmlspecialchars($subject_name) ?>" data-status="<?= htmlspecialchars($g['status'] ?? 'Pending') ?>" style="border-bottom: 1px solid var(--border-color); vertical-align: top;">
-                                <td style="padding: 1.25rem 1.5rem; font-size: 0.95rem; color: #334155;"><?= $idx + 1 ?></td>
+                                <td style="padding: 1.25rem 1.5rem; font-size: 0.95rem; color: var(--text-primary);"><?= $idx + 1 ?></td>
                                 <td style="padding: 1.25rem 1.5rem;">
-                                    <div style="font-weight: 600; color: #1e293b; font-size: 0.9rem;"><?= htmlspecialchars($g['student_name']) ?></div>
-                                    <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.15rem;">
+                                    <div style="font-weight: 600; color: var(--text-primary); font-size: 0.9rem;"><?= htmlspecialchars($g['student_name']) ?></div>
+                                    <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.15rem;">
                                         PRN: <?= htmlspecialchars($g['student_id']) ?> | Div: <?= htmlspecialchars($stu_div) ?><br>
                                         <?= htmlspecialchars($stu_semester) ?>
                                     </div>
                                 </td>
                                 <td style="padding: 1.25rem 1.5rem;">
-                                    <div style="font-weight: 600; color: #1e293b; font-size: 0.9rem; margin-bottom: 0.15rem;"><?= htmlspecialchars($subject_name) ?></div>
-                                    <div style="font-size: 0.8rem; color: #475569;"><?= htmlspecialchars($assign_title) ?></div>
+                                    <div style="font-weight: 600; color: var(--text-primary); font-size: 0.9rem; margin-bottom: 0.15rem;"><?= htmlspecialchars($subject_name) ?></div>
+                                    <div style="font-size: 0.8rem; color: var(--text-secondary);"><?= htmlspecialchars($assign_title) ?></div>
                                 </td>
                                 <td style="padding: 1.25rem 1.5rem;">
                                     <div style="font-weight: 700; color: #b91c1c; font-size: 0.85rem; margin-bottom: 0.25rem;">Issue: <?= htmlspecialchars($g['issue_type']) ?></div>
-                                    <div style="font-size: 0.85rem; color: #334155; line-height: 1.4; margin-bottom: 0.5rem;"><?= nl2br(htmlspecialchars($g['description'])) ?></div>
+                                    <div style="font-size: 0.85rem; color: var(--text-primary); line-height: 1.4; margin-bottom: 0.5rem;"><?= nl2br(htmlspecialchars($g['description'])) ?></div>
                                     <?php if (!empty($g['screenshot'])): ?>
                                         <div>
                                             <a href="uploads/<?= htmlspecialchars($g['screenshot']) ?>" target="_blank" style="color: #3b82f6; text-decoration: none; font-size: 0.75rem; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
@@ -1459,19 +1459,19 @@ $db = get_db();
                                     <?php endif; ?>
                                 </td>
                                 <td style="padding: 1.25rem 1.5rem; width: 340px;">
-                                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 1rem; display: flex; flex-direction: column; gap: 0.85rem;">
+                                    <div style="background: var(--bg-page); border: 1px solid var(--border-color); border-radius: 10px; padding: 1rem; display: flex; flex-direction: column; gap: 0.85rem;">
                                         <!-- Reply & Status update form -->
                                         <form method="POST" action="faculty_dashboard.php" style="margin: 0; display: flex; flex-direction: column; gap: 0.6rem;">
                                             <input type="hidden" name="action" value="respond_assignment_grievance">
                                             <input type="hidden" name="grievance_id" value="<?= $g['id'] ?>">
                                             
                                             <div>
-                                                <label style="display: block; font-size: 0.75rem; font-weight: 700; color: #475569; margin-bottom: 0.3rem; text-transform: uppercase; letter-spacing: 0.5px;">Faculty Response</label>
-                                                <textarea name="reply" rows="2" placeholder="Write response to student..." style="width: 100%; box-sizing: border-box; padding: 0.5rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; font-family: inherit; resize: vertical; background: white; outline: none; transition: all 0.2s;" required><?= htmlspecialchars($g['reply'] ?? '') ?></textarea>
+                                                <label style="display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 0.3rem; text-transform: uppercase; letter-spacing: 0.5px;">Faculty Response</label>
+                                                <textarea name="reply" rows="2" placeholder="Write response to student..." style="width: 100%; box-sizing: border-box; padding: 0.5rem 0.75rem; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.85rem; font-family: inherit; resize: vertical; background: var(--bg-card); outline: none; transition: all 0.2s;" required><?= htmlspecialchars($g['reply'] ?? '') ?></textarea>
                                             </div>
                                             
                                             <div style="display: flex; gap: 0.5rem; align-items: center; justify-content: space-between;">
-                                                <select name="status" style="flex: 1; padding: 0.45rem 0.6rem; font-size: 0.82rem; font-weight: 600; border-radius: 6px; border: 1px solid #cbd5e1; background: white; color: #1e293b; cursor: pointer; outline: none;">
+                                                <select name="status" style="flex: 1; padding: 0.45rem 0.6rem; font-size: 0.82rem; font-weight: 600; border-radius: 6px; border: 1px solid var(--border-color); background: var(--bg-card); color: var(--text-primary); cursor: pointer; outline: none;">
                                                     <option value="Pending" <?= ($g['status'] === 'Pending') ? 'selected' : '' ?>>🟡 Pending</option>
                                                     <option value="In Review" <?= ($g['status'] === 'In Review') ? 'selected' : '' ?>>🔵 In Review</option>
                                                     <option value="Resolved" <?= ($g['status'] === 'Resolved') ? 'selected' : '' ?>>🟢 Resolved</option>
@@ -1489,12 +1489,12 @@ $db = get_db();
                                             <input type="hidden" name="action" value="replace_question_pdf">
                                             <input type="hidden" name="subject_assignment_id" value="<?= $g['subject_assignment_id'] ?>">
                                             
-                                            <div style="font-size: 0.75rem; font-weight: 700; color: #475569; margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 4px;">
+                                            <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 4px;">
                                                 <i class="fa-solid fa-file-arrow-up" style="color: #6366f1;"></i> Replace Question File
                                             </div>
                                             
                                             <div style="display: flex; gap: 0.4rem; align-items: center;">
-                                                <input type="file" name="new_question_pdf" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif" required style="font-size: 0.75rem; color: #475569; width: 170px; background: white; border: 1px solid #cbd5e1; border-radius: 6px; padding: 0.25rem 0.4rem;">
+                                                <input type="file" name="new_question_pdf" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.gif" required style="font-size: 0.75rem; color: var(--text-secondary); width: 170px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.25rem 0.4rem;">
                                                 <button type="submit" style="background: linear-gradient(135deg, #4f46e5, #4338ca); color: white; border: none; padding: 0.4rem 0.75rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 2px 4px rgba(79,70,229,0.2); transition: all 0.2s;">
                                                     <i class="fa-solid fa-upload"></i> Upload
                                                 </button>
@@ -1515,35 +1515,35 @@ $db = get_db();
 
             <!-- Grievance Details Modal -->
             <div id="grievanceModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 1050; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease;">
-                <div class="modal-content" style="background: #fff; width: 100%; max-width: 500px; border-radius: 16px; padding: 30px; transform: translateY(20px); transition: transform 0.3s ease; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #e2e8f0;">
-                        <h3 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin: 0;">Grievance Details</h3>
-                        <button onclick="closeGrievanceModal()" style="background: none; border: none; font-size: 1.25rem; color: #64748b; cursor: pointer; transition: color 0.2s;"><i class="fa-solid fa-xmark"></i></button>
+                <div class="modal-content" style="background: var(--bg-card); width: 100%; max-width: 500px; border-radius: 16px; padding: 30px; transform: translateY(20px); transition: transform 0.3s ease; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border-color);">
+                        <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin: 0;">Grievance Details</h3>
+                        <button onclick="closeGrievanceModal()" style="background: none; border: none; font-size: 1.25rem; color: var(--text-secondary); cursor: pointer; transition: color 0.2s;"><i class="fa-solid fa-xmark"></i></button>
                     </div>
                     <div style="margin-bottom: 20px;">
-                        <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 4px; letter-spacing: 0.5px;">Student Name & ID</div>
-                        <div id="modal-g-student" style="font-size: 1rem; color: #1e293b; font-weight: 600;"></div>
+                        <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; letter-spacing: 0.5px;">Student Name & ID</div>
+                        <div id="modal-g-student" style="font-size: 1rem; color: var(--text-primary); font-weight: 600;"></div>
                     </div>
                     <div style="display: flex; gap: 20px; margin-bottom: 20px;">
                         <div style="flex: 1;">
-                            <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 4px; letter-spacing: 0.5px;">Category</div>
-                            <div id="modal-g-category" style="font-size: 0.95rem; color: #334155; font-weight: 500;"></div>
+                            <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; letter-spacing: 0.5px;">Category</div>
+                            <div id="modal-g-category" style="font-size: 0.95rem; color: var(--text-primary); font-weight: 500;"></div>
                         </div>
                         <div style="flex: 1;">
-                            <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 4px; letter-spacing: 0.5px;">Date Submitted</div>
-                            <div id="modal-g-date" style="font-size: 0.95rem; color: #334155; font-weight: 500;"></div>
+                            <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; letter-spacing: 0.5px;">Date Submitted</div>
+                            <div id="modal-g-date" style="font-size: 0.95rem; color: var(--text-primary); font-weight: 500;"></div>
                         </div>
                     </div>
                     <div style="margin-bottom: 20px;">
-                        <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 4px; letter-spacing: 0.5px;">Title</div>
-                        <div id="modal-g-title" style="font-size: 0.95rem; color: #1e293b; font-weight: 600;"></div>
+                        <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; letter-spacing: 0.5px;">Title</div>
+                        <div id="modal-g-title" style="font-size: 0.95rem; color: var(--text-primary); font-weight: 600;"></div>
                     </div>
                     <div style="margin-bottom: 20px;">
-                        <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-bottom: 4px; letter-spacing: 0.5px;">Description</div>
-                        <div id="modal-g-desc" style="font-size: 0.95rem; color: #475569; line-height: 1.5; background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; white-space: pre-wrap;"></div>
+                        <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; letter-spacing: 0.5px;">Description</div>
+                        <div id="modal-g-desc" style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.5; background: var(--bg-page); padding: 15px; border-radius: 8px; border: 1px solid var(--border-color); white-space: pre-wrap;"></div>
                     </div>
                     <div style="display: flex; justify-content: flex-end;">
-                        <button onclick="closeGrievanceModal()" style="background: #e2e8f0; color: #475569; border: none; padding: 0.6rem 1.25rem; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background 0.2s;">Close</button>
+                        <button onclick="closeGrievanceModal()" style="background: #e2e8f0; color: var(--text-secondary); border: none; padding: 0.6rem 1.25rem; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background 0.2s;">Close</button>
                     </div>
                 </div>
             </div>
@@ -1744,7 +1744,7 @@ $db = get_db();
                     
                     dynamicBtnArea.innerHTML = `
                         <div style="display: flex; gap: 0.5rem;">
-                            <button type="button" id="btn-change-file" style="background: white; border: 1px solid var(--border-color); padding: 0.5rem 1rem; border-radius: 6px; color: #4f46e5; font-weight: 600; cursor: pointer; font-size: 0.85rem;"><i class="fa-solid fa-arrows-rotate"></i> Change File</button>
+                            <button type="button" id="btn-change-file" style="background: var(--bg-card); border: 1px solid var(--border-color); padding: 0.5rem 1rem; border-radius: 6px; color: #4f46e5; font-weight: 600; cursor: pointer; font-size: 0.85rem;"><i class="fa-solid fa-arrows-rotate"></i> Change File</button>
                             <button type="button" id="btn-remove-file" style="background: #fee2e2; border: 1px solid #fecaca; padding: 0.5rem 1rem; border-radius: 6px; color: #b91c1c; font-weight: 600; cursor: pointer; font-size: 0.85rem;"><i class="fa-solid fa-trash-can"></i> Remove</button>
                         </div>
                     `;
@@ -1767,7 +1767,7 @@ $db = get_db();
                     uploadTitleText.textContent = "Upload Question File *";
                     uploadStatusText.innerHTML = 'Click here to <span style="color: #4f46e5; font-weight: 600;">browse</span> and select a file';
                     dynamicBtnArea.innerHTML = `
-                        <label for="file-upload" style="background: white; border: 1px solid var(--border-color); padding: 0.65rem 1.25rem; border-radius: 6px; color: #4f46e5; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: background 0.2s;">
+                        <label for="file-upload" style="background: var(--bg-card); border: 1px solid var(--border-color); padding: 0.65rem 1.25rem; border-radius: 6px; color: #4f46e5; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: background 0.2s;">
                             <i class="fa-solid fa-arrow-up-from-bracket"></i> Choose File
                         </label>
                     `;
@@ -1913,7 +1913,7 @@ $db = get_db();
                 } else if (ext === 'pdf') {
                     pane.innerHTML = `<iframe src="${path}" style="width:100%; height:200px; border:none; border-radius:4px;"></iframe>`;
                 } else {
-                    pane.innerHTML = `<div style="text-align:center; font-size:0.75rem; color:#64748b; padding:1rem;"><i class="fa-solid fa-file-word" style="font-size:2rem; color:#2b579a; display:block; margin-bottom:0.25rem;"></i> Preview unavailable for ${ext.toUpperCase()}</div>`;
+                    pane.innerHTML = `<div style="text-align:center; font-size:0.75rem; color: var(--text-secondary); padding:1rem;"><i class="fa-solid fa-file-word" style="font-size:2rem; color:#2b579a; display:block; margin-bottom:0.25rem;"></i> Preview unavailable for ${ext.toUpperCase()}</div>`;
                 }
             }
         }
