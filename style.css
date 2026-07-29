@@ -336,7 +336,7 @@ body {
     display: grid;
     grid-template-columns: 1.1fr 0.9fr;
     min-height: 100vh;
-    background: #f8fafc;
+    background: var(--bg-alt);
 }
 
 @media (max-width: 900px) {
@@ -748,7 +748,7 @@ body {
 
 /* Header styling */
 .main-content {
-    background: #f8fafc;
+    background: var(--bg-alt);
     padding: 2rem;
     overflow-y: auto;
     max-height: 100vh;
@@ -942,7 +942,7 @@ body {
 }
 
 .data-table th {
-    background: #f8fafc;
+    background: var(--bg-alt);
     color: var(--text-secondary);
     font-weight: 600;
     font-size: 0.875rem;
@@ -962,7 +962,7 @@ body {
 }
 
 .data-table tr:hover td {
-    background: #f8fafc;
+    background: var(--bg-alt);
 }
 
 .notice-title {
@@ -1872,8 +1872,8 @@ body.dark-mode div[style*="background: var(--bg-card);"],
 body.dark-mode div[style*="background: var(--bg-card);"],
 body.dark-mode div[style*="background: var(--bg-card);"],
 body.dark-mode div[style*="background: var(--bg-card);"],
-body.dark-mode div[style*="background: #f8fafc"],
-body.dark-mode div[style*="background:#f8fafc"],
+body.dark-mode div[style*="background: var(--bg-alt);"],
+body.dark-mode div[style*="background: var(--bg-alt);"],
 body.dark-mode .data-table-container,
 body.dark-mode .settings-form-container,
 body.dark-mode .modal-card,
@@ -2158,6 +2158,12 @@ body.dark-mode .btn-action-upload:hover {
 
 
 /* Luxury Dark Mode Variables */
+
+body.dark-mode .data-table tr:hover td,
+body.dark-mode tbody tr:hover td {
+    background-color: rgba(37, 99, 235, 0.1) !important;
+}
+
 body.dark-mode {
     --bg-page: linear-gradient(135deg, #0f172a 0%, #020617 100%);
     --bg-card: rgba(30, 41, 59, 0.65);
