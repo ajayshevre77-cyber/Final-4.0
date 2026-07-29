@@ -1962,10 +1962,13 @@ if (isset($db['departments'])) {
                 .text-sm { font-size: 0.875rem; } .text-xs { font-size: 0.75rem; } .text-muted { color: var(--text-secondary); }
             </style>
             
-            <div class="overview-header">
+            <div class="overview-header" style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
                     <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.25rem;">Assignment Overview</h2>
                 </div>
+                <button onclick="exportStudentAssignments()" style="background: #10b981; color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: background 0.2s;">
+                    <i class="fa-solid fa-file-excel"></i> Export Excel
+                </button>
             </div>
             
             <div class="overview-filters">
@@ -1995,51 +1998,20 @@ if (isset($db['departments'])) {
                     <i class="fa-solid fa-search" style="color: var(--text-muted);"></i>
                     <input type="text" id="ao-search" placeholder="Search Student..." onkeyup="debounceFetchAO()">
                 </div>
-                <button class="export-btn" onclick="exportAOCSV()">
-                    <i class="fa-solid fa-download"></i> Export Report
-                </button>
             </div>
             
-            <!-- Stat Cards -->
-            <div class="stat-cards" id="ao-stat-cards">
-                <!-- Injected via JS -->
-                <div class="stat-card"><div class="stat-icon gray"><i class="fa-solid fa-spinner fa-spin"></i></div><div class="stat-info"><h3>Loading</h3><p class="value">...</p></div></div>
-            </div>
-            
-            <div class="dashboard-grid">
-                <!-- Left: Subject Table -->
+            <!-- Student List Container -->
+            <div id="ao-student-list-container" style="margin-bottom: 2rem;">
                 <div class="panel">
-                    <div class="panel-header">
-                        <h3 class="panel-title">Subject Wise Assignment Summary</h3>
-                        <p class="panel-subtitle">Overview of all subjects and assignments</p>
-                    </div>
-                    <div class="panel-body" id="ao-subjects-container">
-                        <div style="padding: 2rem; text-align: center; color: var(--text-muted);"><i class="fa-solid fa-circle-notch fa-spin fa-2x"></i></div>
-                    </div>
-                    <div style="padding: 0.75rem 1.5rem; background: #eff6ff; border-top: 1px solid #bfdbfe; font-size: 0.8rem; color: #1d4ed8; display: flex; align-items: center; gap: 0.5rem;">
-                        <i class="fa-solid fa-info-circle"></i> Click on any subject row to view assignment wise details
-                    </div>
-                </div>
-                
-                <!-- Right: Analytics -->
-                <div class="panel">
-                    <div class="panel-header">
-                        <h3 class="panel-title">Overall Assignment Completion</h3>
-                        <p class="panel-subtitle">Visual overview of class performance</p>
-                    </div>
-                    <div class="panel-inner" style="display: flex; flex-direction: column; align-items: center; border-bottom: 1px solid var(--border-color);">
-                        <svg viewBox="0 0 36 36" class="circular-chart" id="ao-doughnut">
-                            <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                            <path class="circle" stroke="#22c55e" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" id="ao-doughnut-path" />
-                            <text x="18" y="19.5" class="percentage" id="ao-doughnut-text" style="font-size: 8px;">0%</text>
-                            <text x="18" y="24" class="percentage" style="font-size: 3px; font-weight: normal; fill: #64748b;">Overall Completion</text>
-                        </svg>
-                    </div>
-                    <div class="panel-inner" id="ao-analytics-stats" style="flex-grow: 1;">
-                        <!-- Injected via JS -->
+                    <div class="panel-body" style="padding: 3rem; text-align: center; color: var(--text-muted);">
+                        <i class="fa-solid fa-users fa-3x" style="margin-bottom: 1rem; color: #cbd5e1;"></i>
+                        <h4>Waiting for Filters</h4>
+                        <p style="font-size: 0.9rem;">Please select filters above to load the student list.</p>
                     </div>
                 </div>
             </div>
+            
+
             
             <div class="panel" style="margin-bottom: 2rem;">
                 <div class="panel-header">
@@ -2143,6 +2115,17 @@ if (isset($db['departments'])) {
                     clearTimeout(aoDebounceTimer);
                     aoDebounceTimer = setTimeout(fetchAOData, 500);
                 }
+
+                function exportStudentAssignments() {
+                    const dept = document.getElementById('ao-dept').value;
+                    const year = document.getElementById('ao-year').value;
+                    const sem = document.getElementById('ao-sem').value;
+                    const div = document.getElementById('ao-div').value;
+                    const search = document.getElementById('ao-search').value;
+                    
+                    const url = `api_admin_assignments.php?action=export_student_assignment_report&dept=${dept}&year=${year}&sem=${sem}&div=${div}&search=${encodeURIComponent(search)}`;
+                    window.location.href = url;
+                }
                 
                 async function fetchAOData() {
                     const dept = document.getElementById('ao-dept').value;
@@ -2151,7 +2134,7 @@ if (isset($db['departments'])) {
                     const div = document.getElementById('ao-div').value;
                     const search = document.getElementById('ao-search').value;
                     
-                    document.getElementById('ao-subjects-container').innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--text-muted);"><i class="fa-solid fa-circle-notch fa-spin fa-2x"></i></div>';
+                    document.getElementById('ao-student-list-container').innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--text-muted);"><i class="fa-solid fa-circle-notch fa-spin fa-2x"></i><p style="margin-top:1rem;">Loading student data...</p></div>';
                     
                     try {
                         const res = await fetch(`api_admin_assignments.php?action=get_dashboard_summary&dept=${dept}&year=${year}&sem=${sem}&div=${div}&search=${search}`);
@@ -2165,160 +2148,179 @@ if (isset($db['departments'])) {
                     }
                 }
                 
+                async function toggleSubjectAssignments(studentId, subjName, event) {
+                    if(event) event.stopPropagation();
+                    
+                    const safeName = subjName.replace(/[^a-zA-Z0-9]/g, '');
+                    const container = document.getElementById(`assign-${studentId}-${safeName}`);
+                    const icon = document.getElementById(`icon-${studentId}-${safeName}`);
+                    
+                    if (!container) return;
+                    
+                    if (container.style.display === 'none') {
+                        container.style.display = 'block';
+                        if(icon) icon.style.transform = 'rotate(180deg)';
+                        
+                        if (container.innerHTML.includes('fa-spinner')) {
+                            const dept = document.getElementById('ao-dept').value;
+                            const div = document.getElementById('ao-div').value;
+                            
+                            try {
+                                const res = await fetch(`api_admin_assignments.php?action=get_student_subject_assignments&student_id=${studentId}&subject_name=${encodeURIComponent(subjName)}&dept=${dept}&div=${div}`);
+                                const data = await res.json();
+                                
+                                if (data.success && data.assignments) {
+                                    if (data.assignments.length === 0) {
+                                        container.innerHTML = '<div style="font-size: 0.8rem; color: var(--text-muted); text-align: center; font-style: italic;">No assignments created yet</div>';
+                                    } else {
+                                        let h = '<ul style="list-style: none; padding: 0; margin: 0;">';
+                                        data.assignments.forEach((a, index) => {
+                                            const isSub = a.status === 'Submitted' || a.status === 'Graded';
+                                            const isPend = a.status.includes('Pending Eval');
+                                            const statusColor = isSub ? '#16a34a' : (isPend ? '#eab308' : '#ef4444');
+                                            
+                                            h += `
+                                                <li style="font-size: 0.8rem; padding: 0.5rem 0; border-bottom: 1px solid #f1f5f9;">
+                                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                                                        <span style="color: var(--text-primary); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 65%;" title="Assignment ${index + 1}">Assignment ${index + 1}</span>
+                                                        <span style="background: ${statusColor}15; color: ${statusColor}; padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: 600; font-size: 0.7rem;">${a.status}</span>
+                                                    </div>
+                                                    <div style="display: flex; justify-content: space-between; color: var(--text-muted); font-size: 0.7rem;">
+                                                        <span>Due: ${a.due_date ? a.due_date : '-'}</span>
+                                                        ${a.marks !== '-' ? `<span style="font-weight: 600; color: var(--text-primary);">Marks: ${a.marks.toString().split('/')[0].trim()}/10</span>` : ''}
+                                                    </div>
+                                                </li>
+                                            `;
+                                        });
+                                        h += '</ul>';
+                                        container.innerHTML = h;
+                                    }
+                                } else {
+                                    container.innerHTML = '<div style="color: #ef4444; font-size:0.8rem; text-align: center;">Failed to load assignments.</div>';
+                                }
+                            } catch (e) {
+                                container.innerHTML = '<div style="color: #ef4444; font-size:0.8rem; text-align: center;">Error loading data.</div>';
+                            }
+                        }
+                    } else {
+                        container.style.display = 'none';
+                        if(icon) icon.style.transform = 'rotate(0deg)';
+                    }
+                }
+
+                async function toggleStudentSubjects(studentId) {
+                    const row = document.getElementById(`ao-student-subjects-${studentId}`);
+                    const icon = document.getElementById(`ao-student-icon-${studentId}`);
+                    const content = document.getElementById(`ao-student-subjects-content-${studentId}`);
+                    
+                    if (row.style.display === 'none') {
+                        row.style.display = 'table-row';
+                        icon.style.transform = 'rotate(180deg)';
+                        
+                        if (content.innerHTML.includes('fa-spinner')) {
+                            const dept = document.getElementById('ao-dept').value;
+                            const div = document.getElementById('ao-div').value;
+                            
+                            try {
+                                const res = await fetch(`api_admin_assignments.php?action=get_student_subjects&student_id=${studentId}&dept=${dept}&div=${div}`);
+                                const data = await res.json();
+                                
+                                if (data.success && data.subjects) {
+                                    if (data.subjects.length === 0) {
+                                        content.innerHTML = '<div style="padding: 1rem;">No subjects assigned.</div>';
+                                        return;
+                                    }
+                                    let html = '<div style="display: flex; flex-direction: column; gap: 0.75rem; padding: 1rem 2rem;">';
+                                    data.subjects.forEach(subj => {
+                                        const safeName = subj.name.replace(/[^a-zA-Z0-9]/g, '');
+                                        html += `
+                                            <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-left: 3px solid var(--primary-color); border-radius: 8px; padding: 1rem; text-align: left; box-shadow: 0 2px 4px rgba(0,0,0,0.02); cursor: pointer; transition: all 0.2s;" onmouseover="this.style.boxShadow='0 4px 6px rgba(0,0,0,0.05)'" onmouseout="this.style.boxShadow='0 2px 4px rgba(0,0,0,0.02)'" onclick="toggleSubjectAssignments('${studentId}', '${subj.name.replace(/'/g, "\\'")}', event)">
+                                                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                                    <div style="flex: 1; overflow: hidden;">
+                                                        <div style="font-weight: 700; color: var(--text-primary); font-size: 0.95rem; margin-bottom: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${subj.name}">${subj.name}</div>
+                                                        <div style="font-size: 0.8rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"><i class="fa-solid fa-chalkboard-user" style="color: var(--primary-light);"></i> ${subj.faculty}</div>
+                                                    </div>
+                                                    <i class="fa-solid fa-chevron-down" id="icon-${studentId}-${safeName}" style="color: var(--text-muted); font-size: 0.8rem; transition: transform 0.2s; padding-top: 0.25rem; margin-left: 0.5rem;"></i>
+                                                </div>
+                                                <div id="assign-${studentId}-${safeName}" style="display: none; margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 0.75rem;">
+                                                    <div style="text-align: center; color: var(--text-muted); font-size: 0.8rem;"><i class="fa-solid fa-spinner fa-spin"></i> Loading...</div>
+                                                </div>
+                                            </div>
+                                        `;
+                                    });
+                                    html += '</div>';
+                                    content.innerHTML = html;
+                                } else {
+                                    content.innerHTML = '<div style="color: #ef4444;">Failed to load subjects.</div>';
+                                }
+                            } catch (e) {
+                                content.innerHTML = '<div style="color: #ef4444;">Error fetching data.</div>';
+                            }
+                        }
+                    } else {
+                        row.style.display = 'none';
+                        icon.style.transform = 'rotate(0deg)';
+                    }
+                }
+
                 function renderAODashboard() {
                     if (!aoData) return;
                     
-                    // Stat Cards
-                    const stats = aoData.stats;
-                    const subPercent = stats.expected > 0 ? Math.round((stats.submitted / stats.expected)*100) : 0;
-                    const penPercent = stats.expected > 0 ? Math.round((stats.pending / stats.expected)*100) : 0;
-                    
-                    document.getElementById('ao-stat-cards').innerHTML = `
-                        <div class="stat-card" style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onclick="openTotalStudentsModal()">
-                            <div class="stat-icon blue"><i class="fa-solid fa-users"></i></div>
-                            <div class="stat-info"><h3>Total Students</h3><p class="value">${stats.total_students}</p></div>
+                    const students = aoData.all_students || [];
+                    let studentHtml = `
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3 class="panel-title">Student List</h3>
+                            <p class="panel-subtitle">Showing ${students.length} students based on filters</p>
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-icon green"><i class="fa-solid fa-book-open"></i></div>
-                            <div class="stat-info"><h3>Total Subjects</h3><p class="value">${stats.total_subjects}</p></div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon purple"><i class="fa-solid fa-file-invoice"></i></div>
-                            <div class="stat-info"><h3>Total Assignments</h3><p class="value">${stats.total_assignments}</p></div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon orange"><i class="fa-regular fa-circle-check"></i></div>
-                            <div class="stat-info"><h3>Submitted</h3><p class="value">${stats.submitted} <span class="sub-value">(${subPercent}%)</span></p></div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-icon red"><i class="fa-regular fa-clock"></i></div>
-                            <div class="stat-info"><h3>Pending</h3><p class="value">${stats.pending} <span class="sub-value">(${penPercent}%)</span></p></div>
-                        </div>
+                        <div class="panel-body" style="overflow-x: auto;">
+                            <table class="data-table" style="width: 100%; border-collapse: collapse; min-width: 700px;">
+                                <thead style="background: var(--bg-page); border-bottom: 1px solid var(--border-color); font-size: 0.85rem; color: var(--text-secondary);">
+                                    <tr>
+                                        <th style="padding: 1rem; text-align: left;">PRN Number</th>
+                                        <th style="padding: 1rem; text-align: left;">Student Name</th>
+                                        <th style="padding: 1rem; text-align: left;">Department</th>
+                                        <th style="padding: 1rem; text-align: center;">Div</th>
+                                        <th style="padding: 1rem; text-align: center;">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody style="font-size: 0.9rem;">
                     `;
-                    
-                    // Subjects Table
-                    let subjHtml = '';
-                    if (aoData.subject_summary.length === 0) {
-                        subjHtml = '<div style="padding: 2rem; text-align: center; color: var(--text-muted);">No data available for these filters.</div>';
+
+                    if (students.length === 0) {
+                        studentHtml += `<tr><td colspan="5" style="padding: 3rem; text-align: center; color: var(--text-muted);"><i class="fa-solid fa-inbox fa-2x" style="margin-bottom:1rem;opacity:0.5;"></i><br>No students found for these filters.</td></tr>`;
                     } else {
-                        aoData.subject_summary.forEach((subj, idx) => {
-                            const badgeColor = subj.status === 'Excellent' ? 'green' : (subj.status === 'Good' ? 'green' : (subj.status === 'Average' ? 'orange' : 'red'));
-                            
-                            subjHtml += `
-                                <div class="subject-row" onclick="toggleAccordion('ao-acc-${idx}')">
-                                    <div style="width: 40px; height: 40px; border-radius: 50%; background: #e0e7ff; color: #4338ca; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem;">
-                                        ${subj.subject_name.substring(0,2).toUpperCase()}
-                                    </div>
-                                    <div class="subject-name-col">
-                                        <div class="subject-name">${subj.subject_name}</div>
-                                        <div class="subject-faculty">${subj.faculty_name}</div>
-                                    </div>
-                                    <div class="subject-stats-col">
-                                        <div class="subject-stat-label">Total Assignments</div>
-                                        <div class="subject-stat-val">${subj.total_assignments}</div>
-                                    </div>
-                                    <div class="subject-stats-col">
-                                        <div class="subject-stat-label">Submitted</div>
-                                        <div class="subject-stat-val">${subj.submitted}</div>
-                                    </div>
-                                    <div class="subject-stats-col">
-                                        <div class="subject-stat-label">Pending</div>
-                                        <div class="subject-stat-val">${subj.pending}</div>
-                                    </div>
-                                    <div class="subject-stats-col">
-                                        <div class="subject-stat-label">Avg Score</div>
-                                        <div class="subject-stat-val"><span style="color: ${subj.avg_score >= 70 ? '#166534' : '#92400e'}">${subj.avg_score}%</span></div>
-                                    </div>
-                                    <div class="subject-stats-col" style="flex: 1.5; display: flex; align-items: center; justify-content: space-between;">
-                                        <span class="badge ${badgeColor}">${subj.status}</span>
-                                        <i class="fa-solid fa-chevron-down" style="color: #cbd5e1; font-size: 0.8rem; margin-left: 1rem;"></i>
-                                    </div>
-                                </div>
-                                <div class="accordion-content" id="ao-acc-${idx}">
-                            `;
-                            
-                            if (subj.assignments.length === 0) {
-                                subjHtml += `<div style="font-size: 0.85rem; color: var(--text-secondary);">No assignments published.</div>`;
-                            } else {
-                                subj.assignments.forEach(ass => {
-                                    subjHtml += `
-                                        <div class="assignment-item">
-                                            <div class="assign-title"><i class="fa-solid fa-file-lines text-muted" style="margin-right: 0.5rem;"></i> ${ass.title}</div>
-                                            <div class="assign-stats">
-                                                <span>Submitted <strong>${ass.submitted}</strong></span>
-                                                <span>Pending <strong>${ass.pending}</strong></span>
-                                                <span>Completion <strong>${ass.completion}%</strong></span>
-                                                <button class="btn-view" onclick="openAODrawer(${ass.id}, '${ass.title.replace(/'/g, "\\'")}', '${subj.subject_name.replace(/'/g, "\\'")}')">View Students</button>
-                                            </div>
+                        students.forEach(s => {
+                            studentHtml += `
+                                <tr style="border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s;" onclick="toggleStudentSubjects('${s.id}')">
+                                    <td style="padding: 1rem; font-weight: 500; color: var(--text-muted);">${s.prn || s.id}</td>
+                                    <td style="padding: 1rem; font-weight: 600; color: var(--text-primary);">
+                                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                            <img src="${s.photo}" alt="${s.name}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+                                            ${s.name}
                                         </div>
-                                    `;
-                                });
-                            }
-                            subjHtml += `</div>`;
-                        });
-                    }
-                    document.getElementById('ao-subjects-container').innerHTML = subjHtml;
-                    
-                    // Doughnut Chart & Analytics
-                    document.getElementById('ao-doughnut-path').style.strokeDasharray = `${subPercent}, 100`;
-                    document.getElementById('ao-doughnut-text').textContent = `${subPercent}%`;
-                    
-                    let analyticsHtml = `
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem; font-size: 0.85rem;">
-                            <span style="color: var(--text-secondary); display: flex; align-items: center; gap: 0.5rem;"><div style="width: 8px; height: 8px; border-radius: 50%; background: #22c55e;"></div> Submitted</span>
-                            <span style="font-weight: 600; color: var(--text-primary);">${subPercent}% <span style="color: var(--text-muted); font-weight: normal; margin-left: 0.5rem;">${stats.submitted} Assignments</span></span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 1.5rem; font-size: 0.85rem;">
-                            <span style="color: var(--text-secondary); display: flex; align-items: center; gap: 0.5rem;"><div style="width: 8px; height: 8px; border-radius: 50%; background: var(--bg-alt); border: 1px solid var(--border-color);"></div> Pending</span>
-                            <span style="font-weight: 600; color: var(--text-primary);">${penPercent}% <span style="color: var(--text-muted); font-weight: normal; margin-left: 0.5rem;">${stats.pending} Assignments</span></span>
-                        </div>
-                    `;
-                    
-                    if (aoData.matched_students && aoData.matched_students.length > 0) {
-                        let msHtml = '<div style="padding: 1rem; background: #f0fdf4; border-radius: 8px; border: 1px solid #bbf7d0;">';
-                        msHtml += '<div style="color: #166534; font-weight: 600; margin-bottom: 0.5rem;"><i class="fa-solid fa-user"></i> Matched Student Profile</div>';
-                        
-                        aoData.matched_students.forEach(st => {
-                            msHtml += `
-                                <div style="font-size: 0.85rem; color: #15803d; margin-bottom: 0.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid #dcfce7;">
-                                    <div style="font-weight: 700; color: #14532d; font-size: 0.95rem;">${st.name}</div>
-                                    <div style="display: flex; justify-content: space-between; margin-top: 0.25rem;">
-                                        <span><strong>PRN:</strong> ${st.prn}</span>
-                                        <span><strong>Year/Sem:</strong> ${st.year} / ${st.semester}</span>
-                                    </div>
-                                    <div style="display: flex; justify-content: space-between; margin-top: 0.25rem;">
-                                        <span><strong>Dept:</strong> ${st.department}</span>
-                                        <span><strong>Div:</strong> ${st.division}</span>
-                                    </div>
-                                </div>
+                                    </td>
+                                    <td style="padding: 1rem; color: var(--text-secondary); text-transform: uppercase;">${s.department}</td>
+                                    <td style="padding: 1rem; text-align: center; font-weight: 600;">${s.division}</td>
+                                    <td style="padding: 1rem; text-align: center;">
+                                        <span style="background: var(--success-light); color: #166534; padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.75rem; font-weight: 600;">Active</span>
+                                        <i class="fa-solid fa-chevron-down" id="ao-student-icon-${s.id}" style="margin-left: 0.75rem; color: var(--text-muted); transition: transform 0.2s;"></i>
+                                    </td>
+                                </tr>
+                                <tr id="ao-student-subjects-${s.id}" style="display: none; background: var(--bg-alt); border-bottom: 2px solid var(--primary-light);">
+                                    <td colspan="5" style="padding: 0;">
+                                        <div id="ao-student-subjects-content-${s.id}" style="padding: 2rem; text-align: center; color: var(--text-muted);">
+                                            <i class="fa-solid fa-spinner fa-spin"></i> Fetching subject details...
+                                        </div>
+                                    </td>
+                                </tr>
                             `;
                         });
-                        msHtml += '</div>';
-                        analyticsHtml += msHtml;
-                    } else {
-                        analyticsHtml += `
-                            <div style="padding: 1rem; background: var(--bg-page); border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                                    <span style="font-size: 0.85rem; color: var(--text-secondary);"><i class="fa-solid fa-ranking-star text-muted" style="margin-right: 0.25rem;"></i> Class Average Score</span>
-                                    <span style="font-weight: 700; color: var(--text-primary);">${aoData.analytics.class_average}%</span>
-                                </div>
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                                    <span style="font-size: 0.85rem; color: var(--text-secondary);"><i class="fa-solid fa-arrow-trend-up text-muted" style="margin-right: 0.25rem;"></i> Highest Subject</span>
-                                    <span style="font-weight: 600; color: #166534; font-size: 0.8rem; text-align: right; max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${aoData.analytics.highest_subject}</span>
-                                </div>
-                                <div style="display: flex; justify-content: space-between;">
-                                    <span style="font-size: 0.85rem; color: var(--text-secondary);"><i class="fa-solid fa-arrow-trend-down text-muted" style="margin-right: 0.25rem;"></i> Lowest Subject</span>
-                                    <span style="font-weight: 600; color: #991b1b; font-size: 0.8rem; text-align: right; max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${aoData.analytics.lowest_subject}</span>
-                                </div>
-                            </div>
-                            <div style="padding: 0.75rem 1rem; background: var(--bg-card);beb; border-radius: 8px; border: 1px solid #fde68a; font-size: 0.85rem; margin-bottom: 1rem;">
-                                <div style="color: #92400e; font-weight: 600; margin-bottom: 0.25rem;"><i class="fa-solid fa-award"></i> Top Faculty</div>
-                                <div style="color: #b45309;">${aoData.analytics.top_faculty}</div>
-                            </div>
-                        `;
                     }
+                    studentHtml += `</tbody></table></div></div>`;
                     
-                    document.getElementById('ao-analytics-stats').innerHTML = analyticsHtml;
+                    document.getElementById('ao-student-list-container').innerHTML = studentHtml;
+                    // Removed old analytics UI per user request
                     
                     // Recent Table
                     let rtHtml = '';
@@ -2463,7 +2465,7 @@ if (isset($db['departments'])) {
                     } else {
                         filtered.forEach(s => {
                             html += `
-                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s; border-radius: 8px; margin-bottom: 0.5rem;" onclick="openStudentSubjectsModal('${s.id}', '${s.name.replace(/'/g, "\\'")}', '${s.prn}', '${s.department}', '${s.year}', '${s.division}')" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s; border-radius: 8px; margin-bottom: 0.5rem;" onclick="openStudentSubjectsModal('${s.id}', '${s.name.replace(/'/g, "\\'")}', '${s.prn}', '${s.department}', '${s.year}', '${s.division}')" onmouseover="this.style.background='var(--bg-alt)'" onmouseout="this.style.background='transparent'">
                                     <div style="display: flex; align-items: center; gap: 1rem;">
                                         <img src="${s.photo}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border-color);">
                                         <div>

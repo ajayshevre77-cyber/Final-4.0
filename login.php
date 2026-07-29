@@ -113,16 +113,7 @@ switch ($role) {
             
             <div class="login-illustration-box">
                 <!-- Using the generated premium 3D student illustration -->
-                <img src="assets/images/login_illustration.png" alt="Portal Login Illustration">
-                <div class="login-left-text">
-                    <h2><?php echo $role_title; ?> Login</h2>
-                    <p><?php echo $role_description; ?></p>
-                </div>
-            </div>
-            
-            <div class="login-footer">
-                <i class="fa-solid fa-shield-halved"></i>
-                <span>Your data is protected with enterprise-grade SSL security.</span>
+                <img src="assets/images/login_illustration.png?v=<?php echo time(); ?>" alt="Portal Login Illustration">
             </div>
         </div>
 

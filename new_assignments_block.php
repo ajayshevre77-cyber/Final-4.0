@@ -148,9 +148,6 @@
                     <i class="fa-solid fa-search" style="color: #94a3b8;"></i>
                     <input type="text" id="ao-search" placeholder="Search Student..." onkeyup="debounceFetchAO()">
                 </div>
-                <button class="export-btn" onclick="exportAOCSV()">
-                    <i class="fa-solid fa-download"></i> Export Report
-                </button>
             </div>
             
             <!-- Stat Cards -->

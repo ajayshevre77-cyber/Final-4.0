@@ -586,26 +586,6 @@ if ($action === 'get_student_subjects') {
     $reqDept = trim(strtolower($_GET['dept'] ?? 'ALL'));
     $reqDiv = trim(strtoupper($_GET['div'] ?? 'A'));
 
-    $requiredAssignments = [];
-    foreach ($db['subject_assignments'] ?? [] as $sa) {
-        $saDept = strtolower($sa['department'] ?? '');
-        $saDiv = strtoupper($sa['division'] ?? '');
-        
-        $matchDept = ($saDept === '' || $saDept === 'all');
-        if (!$matchDept && $reqDept !== 'all') {
-            $matchDept = (strpos($reqDept, $saDept) !== false || strpos($saDept, $reqDept) !== false);
-            if (!$matchDept) {
-                if ((strpos($reqDept, 'it') !== false || strpos($reqDept, 'information')) && (strpos($saDept, 'it') !== false || strpos($saDept, 'information'))) $matchDept = true;
-                if ((strpos($reqDept, 'ce') !== false || strpos($reqDept, 'computer')) && (strpos($saDept, 'ce') !== false || strpos($saDept, 'computer'))) $matchDept = true;
-            }
-        }
-        $matchDiv = ($saDiv === '' || $saDiv === 'ALL' || $saDiv === $reqDiv);
-        
-        if ($matchDept && $matchDiv) {
-            $requiredAssignments[] = $sa;
-        }
-    }
-
     $subjects = [];
     $facultyMap = [];
     foreach ($db['faculty'] ?? [] as $f) {
@@ -615,65 +595,37 @@ if ($action === 'get_student_subjects') {
         }
     }
 
-    foreach ($requiredAssignments as $sa) {
-        $subjName = $sa['subject_name'] ?? 'Unknown Subject';
-        if (!isset($subjects[$subjName])) {
-            $subjects[$subjName] = [
+    // Fetch subjects directly from the database based on the student's department
+    global $pdo;
+    $sDept = strtolower($student['department'] ?? $student['dept'] ?? 'it');
+    $deptId = 1; // default to IT
+    
+    try {
+        $stmt = $pdo->prepare("SELECT id FROM departments WHERE LOWER(name) LIKE ? OR LOWER(code) LIKE ? LIMIT 1");
+        $stmt->execute(["%$sDept%", "%$sDept%"]);
+        if ($row = $stmt->fetch()) {
+            $deptId = $row['id'];
+        }
+        
+        $stmt = $pdo->prepare("SELECT name FROM subjects WHERE department_id = ?");
+        $stmt->execute([$deptId]);
+        $dbSubjects = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        foreach ($dbSubjects as $ds) {
+            $subjName = $ds['name'];
+            $subjects[] = [
                 'name' => $subjName,
-                'faculty' => $facultyMap[$subjName] ?? 'Various Faculty',
-                'total_assignments' => 0,
-                'submitted' => 0,
-                'pending' => 0,
-                'graded_count' => 0,
-                'total_score' => 0,
-                'assignments' => []
+                'faculty' => $facultyMap[$subjName] ?? 'Faculty TBD'
             ];
         }
-        $subjects[$subjName]['total_assignments']++;
-        
-        $sname = $student['name'] ?? '';
-        $foundSub = null;
-        foreach ($db['assignment_submissions'] ?? [] as $sub) {
-            if (($sub['student_id'] == $sid || $sub['student_name'] === $sname) && $sub['subject_assignment_id'] == $sa['id']) {
-                $subjects[$subjName]['submitted']++;
-                if ($sub['marks'] !== 'Pending' && intval($sub['marks']) >= 0) {
-                    $subjects[$subjName]['total_score'] += intval($sub['marks']);
-                    $subjects[$subjName]['graded_count']++;
-                }
-                $foundSub = $sub;
-                break;
-            }
-        }
-        if (!$foundSub) {
-            $subjects[$subjName]['pending']++;
-        }
-
-        $subjects[$subjName]['assignments'][] = [
-            'title' => $sa['title'] ?? 'Untitled',
-            'due_date' => $sa['due_date'] ?? '-',
-            'status' => $foundSub ? ($foundSub['marks'] === 'Pending' ? 'Pending Eval' : 'Graded') : 'Pending',
-            'marks' => $foundSub ? $foundSub['marks'] : '-',
-            'submitted_at' => $foundSub['submitted_at'] ?? '-'
-        ];
+    } catch (PDOException $e) {
+        // Fallback
     }
 
-    $resSubjects = [];
-    foreach ($subjects as $name => $data) {
-        $comp = $data['total_assignments'] > 0 ? round(($data['submitted'] / $data['total_assignments']) * 100) : 0;
-        $data['completion'] = $comp;
-        $data['avg_marks'] = $data['graded_count'] > 0 ? round($data['total_score'] / $data['graded_count'], 2) : 0;
-        
-        $status = 'Good';
-        if ($comp < 50) $status = 'Needs Attention';
-        elseif ($comp >= 80) $status = 'Excellent';
-        $data['status'] = $status;
-        unset($data['total_score']);
-        unset($data['graded_count']);
-        
-        $resSubjects[] = $data;
-    }
-
-    echo json_encode(['success' => true, 'subjects' => $resSubjects]);
+    echo json_encode([
+        'success' => true,
+        'subjects' => $subjects
+    ]);
     exit;
 }
 
@@ -823,50 +775,309 @@ if ($action === 'export_student_assignment_report') {
         }
     }
 
-    header('Content-Type: text/csv');
-    header('Content-Disposition: attachment; filename="Student_Assignment_Report.csv"');
-    $output = fopen('php://output', 'w');
-    fputcsv($output, ['Student Name', 'PRN', 'Subject', 'Assignment', 'Marks', 'Percentage', 'Status', 'Submission Date']);
+    header('Content-Type: application/vnd.ms-excel');
+    header('Content-Disposition: attachment; filename="Student_Assignment_Report.xls"');
+    
+    // Generate HTML for Excel styling
+    $html = '<html xmlns:x="urn:schemas-microsoft-com:office:excel">';
+    $html .= '<head><meta charset="UTF-8"><style>';
+    $html .= 'table { border-collapse: collapse; font-family: Calibri, sans-serif; }';
+    $html .= 'th, td { border: 1px solid #d1d5db; padding: 5px; text-align: center; vertical-align: middle; }';
+    $html .= '.header-dark { background-color: #0f172a; color: white; font-weight: bold; }';
+    $html .= '.title-row { font-size: 16pt; }';
+    $html .= '.section-header { color: white; font-weight: bold; font-size: 11pt; text-align: left; padding: 8px !important; }';
+    $html .= '.section-badge { display: inline-block; width: 20px; height: 20px; line-height: 20px; text-align: center; color: white; margin-right: 8px; font-weight: bold; }';
+    $html .= '.filter-header { background-color: #f1f5f9; font-weight: bold; font-size: 10pt; }';
+    $html .= '.grade-a { background-color: #dcfce7; color: #166534; font-weight: bold; }';
+    $html .= '.grade-b { background-color: #fef3c7; color: #92400e; font-weight: bold; }';
+    $html .= '.grade-c { background-color: #ffedd5; color: #c2410c; font-weight: bold; }';
+    $html .= '.grade-f { background-color: #fee2e2; color: #991b1b; font-weight: bold; }';
+    $html .= '</style></head><body>';
+    $html .= '<table>';
+    
+    // Unique subjects logic
+    $uniqueSubjects = [];
+    $subjectFaculty = [];
+    foreach ($requiredAssignments as $sa) {
+        $subjName = $sa['subject_name'] ?? 'Unknown Subject';
+        if (!in_array($subjName, $uniqueSubjects)) {
+            $uniqueSubjects[] = $subjName;
+            $facName = 'Various Faculty';
+            foreach ($db['faculty'] ?? [] as $f) {
+                $fSubjs = explode(',', $f['subjects'] ?? '');
+                if (in_array($subjName, array_map('trim', $fSubjs))) {
+                    $facName = $f['name'];
+                    break;
+                }
+            }
+            $subjectFaculty[$subjName] = $facName;
+        }
+    }
 
+    $cols = max(11, count($uniqueSubjects) + 4); // ensure header spans enough
+
+    // Title
+    $html .= '<tr><td colspan="' . $cols . '" class="header-dark title-row" style="padding: 10px;">STUDENT ASSIGNMENT REPORT</td></tr>';
+    
+    // Filters Header
+    $html .= '<tr class="filter-header" style="background-color: #e2e8f0;">';
+    $html .= '<td colspan="3">Department</td>';
+    $html .= '<td colspan="2">Academic Year</td>';
+    $html .= '<td colspan="2">Semester</td>';
+    $html .= '<td colspan="2">Division</td>';
+    $html .= '<td colspan="' . ($cols - 9) . '">Generated On</td>';
+    $html .= '</tr>';
+    
+    // Filters Data
+    $html .= '<tr>';
+    $html .= '<td colspan="3">' . ucwords(strtolower($reqDept === 'all' ? 'Information Technology' : $reqDept)) . '</td>';
+    $html .= '<td colspan="2">2025-26</td>'; // format similar to image
+    $html .= '<td colspan="2">Semester ' . $reqSem . '</td>';
+    $html .= '<td colspan="2">Div ' . $reqDiv . '</td>';
+    $html .= '<td colspan="' . ($cols - 9) . '">' . date('d-M-Y h:i A') . '</td>';
+    $html .= '</tr>';
+    $html .= '<tr><td colspan="' . $cols . '"></td></tr>';
+
+    // Pre-calculate data for all students to avoid repeated loops
+    $studentData = [];
+    
     foreach ($filteredStudents as $s) {
         $sid = $s['id'] ?? $s['username'] ?? $s['prn'];
         $sname = $s['name'] ?? '';
         $sprn = $s['prn'] ?? $sid;
+        $sroll = $s['roll_no'] ?? '-';
+        if ($sroll === '-') $sroll = $sid;
 
-        foreach ($requiredAssignments as $sa) {
-            $subjName = $sa['subject_name'] ?? 'Unknown Subject';
-            $title = !empty($sa['assignment_title']) ? $sa['assignment_title'] : (!empty($sa['unit']) ? 'Unit ' . $sa['unit'] : 'Assignment');
-            
-            $submission = null;
-            foreach ($db['assignment_submissions'] ?? [] as $sub) {
-                if (($sub['student_id'] == $sid || $sub['student_name'] === $sname) && $sub['subject_assignment_id'] == $sa['id']) {
-                    $submission = $sub;
-                    break;
-                }
-            }
+        $totalAssign = count($requiredAssignments);
+        $submittedCount = 0;
+        $totalMarks = 0;
+        $gradedCount = 0;
+        
+        $assignmentsDetailed = [];
+        $subjectScores = []; // to track pivot scores
 
-            $marks = '-';
-            $percent = '-';
-            $status = 'Pending';
-            $subDate = '-';
-            
-            if ($submission) {
-                $status = 'Submitted';
-                $subDate = $submission['submitted_at'] ?? '-';
-                if ($submission['marks'] !== 'Pending') {
-                    $marks = $submission['marks'];
-                    $m = intval($marks);
-                    $percent = ($m >= 0) ? round(($m / 10) * 100) . '%' : '-';
-                } else {
-                    $status = 'Pending Evaluation';
-                }
-            }
-
-            fputcsv($output, [$sname, $sprn, $subjName, $title, $marks, $percent, $status, $subDate]);
+        foreach ($uniqueSubjects as $usubj) {
+            $subjectScores[$usubj] = ['total' => 0, 'submitted' => 0, 'marks' => 0, 'graded' => 0];
         }
+        
+        // Count assignment index per subject for "Assignment 1", "Assignment 2" formatting
+        $subjAssignIndex = [];
+
+        if ($totalAssign > 0) {
+            foreach ($requiredAssignments as $sa) {
+                $subjName = $sa['subject_name'] ?? 'Unknown Subject';
+                if (!isset($subjAssignIndex[$subjName])) $subjAssignIndex[$subjName] = 1;
+                else $subjAssignIndex[$subjName]++;
+                
+                $assignTitle = 'Assignment ' . $subjAssignIndex[$subjName];
+                
+                $subjectScores[$subjName]['total']++;
+
+                $submission = null;
+                foreach ($db['assignment_submissions'] ?? [] as $sub) {
+                    if (($sub['student_id'] == $sid || $sub['student_name'] === $sname) && $sub['subject_assignment_id'] == $sa['id']) {
+                        $submission = $sub;
+                        $submittedCount++;
+                        $subjectScores[$subjName]['submitted']++;
+                        
+                        if (isset($sub['marks']) && $sub['marks'] !== 'Pending') {
+                            $m = intval($sub['marks']);
+                            $totalMarks += $m;
+                            $gradedCount++;
+                            $subjectScores[$subjName]['marks'] += $m;
+                            $subjectScores[$subjName]['graded']++;
+                        }
+                        break;
+                    }
+                }
+                
+                $marksObtained = '-';
+                $percentObtained = '-';
+                $status = 'Pending';
+                $subDate = '-';
+                
+                if ($submission) {
+                    $status = 'Submitted';
+                    $subDate = $submission['submitted_at'] ?? '-';
+                    if (isset($submission['marks']) && $submission['marks'] !== 'Pending') {
+                        $marksObtained = intval($submission['marks']); 
+                        $percentObtained = number_format(($marksObtained / 10) * 100, 2) . '%';
+                    } else {
+                        $status = 'Pending Eval';
+                    }
+                }
+
+                $assignmentsDetailed[] = [
+                    'subjName' => $subjName,
+                    'assignTitle' => $assignTitle,
+                    'marksObtained' => $marksObtained,
+                    'totalMarks' => 10,
+                    'percentage' => $percentObtained,
+                    'status' => $status,
+                    'subDate' => $subDate,
+                    'faculty' => $subjectFaculty[$subjName] ?? '-'
+                ];
+            }
+        }
+        
+        $pendingCount = $totalAssign - $submittedCount;
+        
+        $avgPercentNum = 0;
+        $avgPercent = '-';
+        $grade = '-';
+        $comments = '-';
+        $gradeClass = '';
+        
+        // pivot calculations first to get mean of subjects
+        $pivotCols = [];
+        $sumPercentages = 0;
+        $validSubjects = 0;
+        foreach ($uniqueSubjects as $usubj) {
+            $pMarks = $subjectScores[$usubj]['marks'];
+            $pTotal = $subjectScores[$usubj]['total'];
+            if ($pTotal > 0) {
+                $validSubjects++;
+                $pAvg = ($pMarks / ($pTotal * 10)) * 100;
+                $pivotCols[$usubj] = number_format($pAvg, 2) . '%';
+                $sumPercentages += $pAvg;
+            } else {
+                $pivotCols[$usubj] = '-';
+            }
+        }
+
+        if ($validSubjects > 0) {
+            $avgPercentNum = $sumPercentages / $validSubjects;
+            $avgPercent = number_format($avgPercentNum, 2) . '%';
+            if ($avgPercentNum >= 90) { $grade = 'A+'; $gradeClass = 'grade-a'; }
+            elseif ($avgPercentNum >= 80) { $grade = 'A'; $gradeClass = 'grade-a'; }
+            elseif ($avgPercentNum >= 70) { $grade = 'B+'; $gradeClass = 'grade-b'; }
+            elseif ($avgPercentNum >= 60) { $grade = 'B'; $gradeClass = 'grade-b'; }
+            elseif ($avgPercentNum >= 50) { $grade = 'C'; $gradeClass = 'grade-c'; }
+            elseif ($avgPercentNum >= 40) { $grade = 'D'; $gradeClass = 'grade-c'; }
+            else { $grade = 'F'; $gradeClass = 'grade-f'; }
+            
+            // New Faculty Comments Logic based on submission completion
+            if ($submittedCount === 0) {
+                $comments = 'Critical attention needed';
+            } elseif ($submittedCount === $totalAssign) {
+                $comments = 'Excellent work, all assignments submitted';
+            } else {
+                $completionRatio = $submittedCount / $totalAssign;
+                if ($completionRatio < 0.5) {
+                    $comments = 'Needs immediate improvement';
+                } else {
+                    $comments = 'Good progress, complete remaining assignment' . ($pendingCount > 1 ? 's' : '');
+                }
+            }
+        } else {
+            $comments = 'No assignments';
+        }
+
+        $studentData[] = [
+            'roll' => $sroll,
+            'prn' => $sprn,
+            'name' => $sname,
+            'totalAssign' => $totalAssign,
+            'submitted' => $submittedCount,
+            'pending' => $pendingCount,
+            'avgPercent' => $avgPercent,
+            'avgPercentNum' => $avgPercentNum,
+            'grade' => $grade,
+            'gradeClass' => $gradeClass,
+            'comments' => $comments,
+            'detailed' => $assignmentsDetailed,
+            'pivot' => $pivotCols
+        ];
     }
 
-    fclose($output);
+
+    // =====================================
+    // 1. SUMMARY SHEET
+    // =====================================
+    $html .= '<tr><td colspan="' . $cols . '" class="section-header" style="background-color: #064e3b;"><span class="section-badge" style="background-color: #22c55e;">1</span> SUMMARY SHEET (OVERVIEW)</td></tr>';
+    $html .= '<tr class="filter-header">';
+    $html .= '<th>ZPRN</th><th>Roll No</th><th style="min-width:200px;">Student Name</th><th>Total Assignments</th><th>Submitted</th>';
+    $html .= '<th>Pending</th><th colspan="' . ($cols - 6) . '">Faculty Comments</th>';
+    $html .= '</tr>';
+    
+    foreach ($studentData as $sd) {
+        $subColor = $sd['submitted'] > 0 ? '#16a34a' : 'black';
+        $penColor = $sd['pending'] > 0 ? '#dc2626' : 'black';
+        
+        $html .= '<tr>';
+        $html .= "<td>{$sd['roll']}</td>";
+        $html .= "<td>{$sd['prn']}</td>";
+        $html .= "<td style='text-align:left;'>{$sd['name']}</td>";
+        $html .= "<td>{$sd['totalAssign']}</td>";
+        $html .= "<td style='color:{$subColor}; font-weight:bold;'>{$sd['submitted']}</td>";
+        $html .= "<td style='color:{$penColor}; font-weight:bold;'>{$sd['pending']}</td>";
+        $html .= "<td colspan='" . ($cols - 6) . "'>{$sd['comments']}</td>";
+        $html .= '</tr>';
+    }
+    $html .= '<tr><td colspan="' . $cols . '"></td></tr>';
+    $html .= '<tr><td colspan="' . $cols . '"></td></tr>';
+
+
+    // =====================================
+    // 2. DETAILED ASSIGNMENT MARKS
+    // =====================================
+    $html .= '<tr><td colspan="' . $cols . '" class="section-header" style="background-color: #1e3a8a;"><span class="section-badge" style="background-color: #3b82f6;">2</span> DETAILED ASSIGNMENT MARKS (SUBJECT WISE)</td></tr>';
+    $html .= '<tr class="filter-header">';
+    $html .= '<th>ZPRN</th><th>Roll No</th><th>Student Name</th><th>Subject Name</th><th>Assignment Name</th><th>Marks Obtained</th><th>Total Marks</th><th>Percentage</th><th>Submission Status</th><th>Submission Date</th><th colspan="' . ($cols - 10) . '">Faculty Name</th>';
+    $html .= '</tr>';
+
+    foreach ($studentData as $sd) {
+        foreach ($sd['detailed'] as $det) {
+            $statusColor = 'black';
+            $statusBg = 'transparent';
+            if ($det['status'] === 'Submitted') { $statusColor = '#16a34a'; $statusBg = '#dcfce7'; }
+            if ($det['status'] === 'Pending') { $statusColor = '#dc2626'; $statusBg = '#fee2e2'; }
+            
+            $html .= '<tr>';
+            $html .= "<td>{$sd['roll']}</td>";
+            $html .= "<td>{$sd['prn']}</td>";
+            $html .= "<td style='text-align:left;'>{$sd['name']}</td>";
+            $html .= "<td>{$det['subjName']}</td>";
+            $html .= "<td>{$det['assignTitle']}</td>";
+            $html .= "<td>{$det['marksObtained']}</td>";
+            $html .= "<td>{$det['totalMarks']}</td>";
+            $html .= "<td>{$det['percentage']}</td>";
+            $html .= "<td style='color:{$statusColor}; background-color:{$statusBg}; font-weight:bold;'>{$det['status']}</td>";
+            $html .= "<td>{$det['subDate']}</td>";
+            $html .= "<td colspan='" . ($cols - 10) . "'>{$det['faculty']}</td>";
+            $html .= '</tr>';
+        }
+    }
+    $html .= '<tr><td colspan="' . $cols . '"></td></tr>';
+    $html .= '<tr><td colspan="' . $cols . '"></td></tr>';
+
+
+    // =====================================
+    // 3. PIVOT SUMMARY
+    // =====================================
+    $html .= '<tr><td colspan="' . $cols . '" class="section-header" style="background-color: #4c1d95;"><span class="section-badge" style="background-color: #8b5cf6;">3</span> PIVOT SUMMARY (SUBJECT WISE PERFORMANCE)</td></tr>';
+    $html .= '<tr class="filter-header">';
+    $html .= '<th>ZPRN</th><th style="min-width:200px;">Student Name</th>';
+    foreach ($uniqueSubjects as $subj) {
+        $html .= "<th>{$subj}<br>%</th>";
+    }
+    $html .= '<th>Average Percentage</th><th colspan="' . ($cols - 3 - count($uniqueSubjects)) . '">Overall Grade</th>';
+    $html .= '</tr>';
+
+    foreach ($studentData as $sd) {
+        $html .= '<tr>';
+        $html .= "<td>{$sd['roll']}</td>";
+        $html .= "<td style='text-align:left;'>{$sd['name']}</td>";
+        foreach ($uniqueSubjects as $subj) {
+            $html .= "<td>{$sd['pivot'][$subj]}</td>";
+        }
+        $html .= "<td style='background-color:#fef3c7; font-weight:bold;'>{$sd['avgPercent']}</td>";
+        $html .= "<td class='{$sd['gradeClass']}' colspan='" . ($cols - 3 - count($uniqueSubjects)) . "'>{$sd['grade']}</td>";
+        $html .= '</tr>';
+    }
+
+    $html .= '</table></body></html>';
+    echo $html;
     exit;
 }
 
