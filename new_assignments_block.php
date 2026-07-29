@@ -83,6 +83,35 @@
                 .mb-1 { margin-bottom: 0.25rem; } .mb-2 { margin-bottom: 0.5rem; } .mb-4 { margin-bottom: 1rem; }
                 .flex { display: flex; } .items-center { align-items: center; } .gap-2 { gap: 0.5rem; } .gap-4 { gap: 1rem; }
                 .text-sm { font-size: 0.875rem; } .text-xs { font-size: 0.75rem; } .text-muted { color: #64748b; }
+
+                /* Student Report Modal */
+                .sr-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 200; display: none; opacity: 0; transition: opacity 0.3s; }
+                .sr-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -45%) scale(0.95); width: 95%; height: 90vh; max-width: 1400px; background: white; z-index: 201; border-radius: 12px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); display: none; opacity: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); flex-direction: column; overflow: hidden; }
+                .sr-modal-overlay.active { display: block; opacity: 1; }
+                .sr-modal.active { display: flex; opacity: 1; transform: translate(-50%, -50%) scale(1); }
+                .sr-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: #f8fafc; }
+                .sr-body { flex-grow: 1; overflow-y: auto; padding: 0; }
+                .sr-table { width: 100%; border-collapse: collapse; }
+                .sr-table th { background: #f1f5f9; position: sticky; top: 0; padding: 1rem; text-align: left; font-size: 0.85rem; color: #475569; font-weight: 600; z-index: 10; border-bottom: 2px solid #e2e8f0; }
+                .sr-table td { padding: 1rem; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem; color: #334155; }
+                .sr-table tbody tr { transition: background 0.15s; }
+                .sr-table tbody tr.main-row:hover { background: #f8fafc; }
+                .expand-btn { background: none; border: none; cursor: pointer; color: #94a3b8; font-size: 0.8rem; padding: 0.5rem; transition: transform 0.2s; }
+                .expand-btn.expanded { transform: rotate(90deg); color: var(--primary-color); }
+                .nested-row { display: none; background: #fafafa; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+                .nested-row.active { display: table-row; }
+                .nested-content { padding: 1rem 1rem 1rem 3rem; }
+                .subject-card { background: white; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 0.5rem; overflow: hidden; }
+                .subject-card-header { padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: background 0.2s; }
+                .subject-card-header:hover { background: #f8fafc; }
+                .subject-assignments { display: none; padding: 1rem 1.5rem; background: #f8fafc; border-top: 1px solid #e2e8f0; }
+                .subject-assignments.active { display: block; }
+                .assignment-pill { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: white; border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 0.5rem; }
+                .assignment-pill:last-child { margin-bottom: 0; }
+                .pagination { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; border-top: 1px solid var(--border-color); background: white; }
+                .page-btn { padding: 0.5rem 1rem; border: 1px solid var(--border-color); border-radius: 6px; background: white; cursor: pointer; }
+                .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+                .sr-toolbar { display: flex; gap: 1rem; align-items: center; }
             </style>
             
             <div class="overview-header">
@@ -220,6 +249,54 @@
                 </div>
             </div>
             
+            <!-- Student Report Modal -->
+            <div class="sr-modal-overlay" id="sr-modal-overlay" onclick="closeStudentReportModal()"></div>
+            <div class="sr-modal" id="sr-modal">
+                <div class="sr-header">
+                    <div>
+                        <h3 class="panel-title">Student Assignment Report</h3>
+                        <p class="panel-subtitle" id="sr-subtitle">Filter by Dept, Year, Sem, Div</p>
+                    </div>
+                    <div class="sr-toolbar">
+                        <div class="search-box">
+                            <i class="fa-solid fa-search" style="color: #94a3b8;"></i>
+                            <input type="text" id="sr-search" placeholder="Search Report..." onkeyup="debounceFetchSR()">
+                        </div>
+                        <button class="export-btn" onclick="exportSRCSV()" style="background: #10b981; color: white; border: none;">
+                            <i class="fa-solid fa-file-excel"></i> Export to Excel
+                        </button>
+                        <button class="drawer-close" onclick="closeStudentReportModal()" style="margin-left: 1rem;"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                </div>
+                <div class="sr-body" id="sr-body-container">
+                    <table class="sr-table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Roll No / PRN</th>
+                                <th>Student Name</th>
+                                <th>Div</th>
+                                <th>Overall %</th>
+                                <th>Submitted</th>
+                                <th>Pending</th>
+                                <th>Avg Marks</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sr-table-body">
+                            <!-- Injected -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="sr-pagination">
+                    <div class="text-sm text-muted" id="sr-page-info">Showing 0 to 0 of 0 entries</div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="page-btn" id="sr-prev-btn" onclick="changeSRPage(-1)">Previous</button>
+                        <button class="page-btn" id="sr-next-btn" onclick="changeSRPage(1)">Next</button>
+                    </div>
+                </div>
+            </div>
+            
             <script>
                 let aoData = null;
                 let aoDrawerData = [];
@@ -260,7 +337,7 @@
                     const penPercent = stats.expected > 0 ? Math.round((stats.pending / stats.expected)*100) : 0;
                     
                     document.getElementById('ao-stat-cards').innerHTML = `
-                        <div class="stat-card">
+                        <div class="stat-card" style="cursor: pointer;" onclick="openStudentReportModal()">
                             <div class="stat-icon blue"><i class="fa-solid fa-users"></i></div>
                             <div class="stat-info"><h3>Total Students</h3><p class="value">${stats.total_students}</p></div>
                         </div>
@@ -530,5 +607,235 @@
 
                 // Initial fetch
                 setTimeout(fetchAOData, 100);
+
+                // --- Student Report Logic ---
+                let srCurrentPage = 1;
+                let srDebounceTimer;
+                
+                function openStudentReportModal() {
+                    const dept = document.getElementById('ao-dept').value;
+                    const year = document.getElementById('ao-year').value;
+                    const sem = document.getElementById('ao-sem').value;
+                    const div = document.getElementById('ao-div').value;
+                    document.getElementById('sr-subtitle').textContent = `${dept !== 'ALL' ? dept : 'All Depts'} | Yr ${year} | Sem ${sem} | Div ${div}`;
+                    
+                    document.getElementById('sr-modal-overlay').classList.add('active');
+                    document.getElementById('sr-modal').classList.add('active');
+                    
+                    srCurrentPage = 1;
+                    fetchStudentReport();
+                }
+                
+                function closeStudentReportModal() {
+                    document.getElementById('sr-modal-overlay').classList.remove('active');
+                    document.getElementById('sr-modal').classList.remove('active');
+                }
+                
+                function debounceFetchSR() {
+                    clearTimeout(srDebounceTimer);
+                    srDebounceTimer = setTimeout(() => { srCurrentPage = 1; fetchStudentReport(); }, 500);
+                }
+                
+                async function fetchStudentReport() {
+                    const dept = document.getElementById('ao-dept').value;
+                    const year = document.getElementById('ao-year').value;
+                    const sem = document.getElementById('ao-sem').value;
+                    const div = document.getElementById('ao-div').value;
+                    const search = document.getElementById('sr-search').value;
+                    
+                    document.getElementById('sr-table-body').innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 2rem;"><i class="fa-solid fa-circle-notch fa-spin fa-2x text-muted"></i></td></tr>';
+                    
+                    try {
+                        const res = await fetch(`api_admin_assignments.php?action=get_student_assignment_report&dept=${dept}&year=${year}&sem=${sem}&div=${div}&search=${search}&page=${srCurrentPage}&limit=15`);
+                        const result = await res.json();
+                        
+                        if (result.success) {
+                            renderStudentReport(result.data, result.pagination);
+                        }
+                    } catch (e) {
+                        console.error('Error fetching student report', e);
+                    }
+                }
+                
+                function renderStudentReport(data, pagination) {
+                    let html = '';
+                    if (data.length === 0) {
+                        html = '<tr><td colspan="9" style="text-align: center; padding: 2rem; color: #64748b;">No students found matching your criteria.</td></tr>';
+                    } else {
+                        data.forEach(s => {
+                            let badgeClass = s.status === 'Excellent' ? 'green' : (s.status === 'Good' ? 'blue' : (s.status === 'Needs Attention' ? 'red' : 'orange'));
+                            html += `
+                                <tr class="main-row">
+                                    <td style="width: 40px; text-align: center;">
+                                        <button class="expand-btn" id="btn-exp-${s.id}" onclick="toggleStudentRow('${s.id}')"><i class="fa-solid fa-chevron-right"></i></button>
+                                    </td>
+                                    <td style="font-weight: 500;">${s.roll}</td>
+                                    <td style="font-weight: 600; color: #0f172a;">${s.name}</td>
+                                    <td>${s.division}</td>
+                                    <td>
+                                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                            <span style="font-weight: 600;">${s.completion}%</span>
+                                            <div style="flex-grow: 1; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; min-width: 60px;">
+                                                <div style="width: ${s.completion}%; height: 100%; background: ${s.completion >= 80 ? '#10b981' : (s.completion >= 50 ? '#3b82f6' : '#ef4444')};"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td style="color: #166534; font-weight: 600;">${s.submitted}</td>
+                                    <td style="color: #991b1b; font-weight: 600;">${s.pending}</td>
+                                    <td style="font-weight: 600;">${s.avg_marks > 0 ? s.avg_marks : '-'}</td>
+                                    <td><span class="badge ${badgeClass}">${s.status}</span></td>
+                                </tr>
+                                <tr class="nested-row" id="nested-row-${s.id}">
+                                    <td colspan="9" class="nested-content" id="nested-content-${s.id}">
+                                        <div style="text-align: center; padding: 1rem;"><i class="fa-solid fa-spinner fa-spin text-muted"></i> Loading subjects...</div>
+                                    </td>
+                                </tr>
+                            `;
+                        });
+                    }
+                    
+                    document.getElementById('sr-table-body').innerHTML = html;
+                    
+                    // Update pagination
+                    document.getElementById('sr-page-info').textContent = `Showing Page ${pagination.page} of ${pagination.pages} (${pagination.total} entries)`;
+                    document.getElementById('sr-prev-btn').disabled = pagination.page <= 1;
+                    document.getElementById('sr-next-btn').disabled = pagination.page >= pagination.pages;
+                }
+                
+                function changeSRPage(dir) {
+                    srCurrentPage += dir;
+                    fetchStudentReport();
+                }
+                
+                async function toggleStudentRow(studentId) {
+                    const btn = document.getElementById(`btn-exp-${studentId}`);
+                    const row = document.getElementById(`nested-row-${studentId}`);
+                    const content = document.getElementById(`nested-content-${studentId}`);
+                    
+                    if (btn.classList.contains('expanded')) {
+                        btn.classList.remove('expanded');
+                        row.classList.remove('active');
+                        return;
+                    }
+                    
+                    // Close others
+                    document.querySelectorAll('.expand-btn.expanded').forEach(b => {
+                        if (b.id !== `btn-exp-${studentId}`) {
+                            b.classList.remove('expanded');
+                            document.getElementById(b.id.replace('btn-exp-', 'nested-row-')).classList.remove('active');
+                        }
+                    });
+                    
+                    btn.classList.add('expanded');
+                    row.classList.add('active');
+                    
+                    // Fetch subjects
+                    const dept = document.getElementById('ao-dept').value;
+                    const div = document.getElementById('ao-div').value;
+                    
+                    try {
+                        const res = await fetch(`api_admin_assignments.php?action=get_student_subjects&student_id=${studentId}&dept=${dept}&div=${div}`);
+                        const result = await res.json();
+                        
+                        if (result.success) {
+                            let sHtml = '<div style="margin-bottom: 0.5rem; font-weight: 600; color: #475569; font-size: 0.85rem; text-transform: uppercase;">Subject Breakdown</div>';
+                            if (result.subjects.length === 0) {
+                                sHtml += '<div style="color: #64748b; font-size: 0.9rem;">No subjects found.</div>';
+                            } else {
+                                result.subjects.forEach((subj, idx) => {
+                                    sHtml += `
+                                        <div class="subject-card">
+                                            <div class="subject-card-header" onclick="toggleSubjectRow('${studentId}', '${subj.name.replace(/'/g, "\\'")}', this)">
+                                                <div style="display: flex; align-items: center; gap: 1rem; width: 40%;">
+                                                    <i class="fa-solid fa-chevron-right text-muted" style="font-size: 0.75rem; transition: transform 0.2s;"></i>
+                                                    <div>
+                                                        <div style="font-weight: 600; color: #1e293b; font-size: 0.9rem;">${subj.name}</div>
+                                                        <div style="font-size: 0.75rem; color: #64748b;">${subj.faculty}</div>
+                                                    </div>
+                                                </div>
+                                                <div style="display: flex; align-items: center; justify-content: space-between; width: 60%; padding-right: 1rem;">
+                                                    <div style="font-size: 0.85rem; color: #475569;"><span style="color:#166534;font-weight:600;">${subj.submitted}</span> Sub / <span style="color:#991b1b;font-weight:600;">${subj.pending}</span> Pend</div>
+                                                    <div style="font-weight: 600; font-size: 0.85rem;">Avg: ${subj.avg_marks > 0 ? subj.avg_marks : '-'}</div>
+                                                    <div><span class="badge ${subj.completion >= 80 ? 'green' : (subj.completion >= 50 ? 'blue' : 'red')}">${subj.completion}%</span></div>
+                                                </div>
+                                            </div>
+                                            <div class="subject-assignments" id="assign-${studentId}-${idx}">
+                                                <div style="text-align: center; padding: 1rem;"><i class="fa-solid fa-spinner fa-spin text-muted"></i> Loading assignments...</div>
+                                            </div>
+                                        </div>
+                                    `;
+                                });
+                            }
+                            content.innerHTML = sHtml;
+                        }
+                    } catch (e) {
+                        content.innerHTML = '<div style="color: red;">Error loading subjects.</div>';
+                    }
+                }
+                
+                async function toggleSubjectRow(studentId, subjectName, headerEl) {
+                    const icon = headerEl.querySelector('.fa-chevron-right');
+                    const body = headerEl.nextElementSibling;
+                    
+                    if (body.classList.contains('active')) {
+                        body.classList.remove('active');
+                        icon.style.transform = 'rotate(0deg)';
+                        return;
+                    }
+                    
+                    body.classList.add('active');
+                    icon.style.transform = 'rotate(90deg)';
+                    
+                    const dept = document.getElementById('ao-dept').value;
+                    const div = document.getElementById('ao-div').value;
+                    
+                    try {
+                        const res = await fetch(`api_admin_assignments.php?action=get_student_subject_assignments&student_id=${studentId}&subject_name=${encodeURIComponent(subjectName)}&dept=${dept}&div=${div}`);
+                        const result = await res.json();
+                        
+                        if (result.success) {
+                            let aHtml = '';
+                            if (result.assignments.length === 0) {
+                                aHtml = '<div style="color: #64748b; font-size: 0.85rem;">No assignments published.</div>';
+                            } else {
+                                result.assignments.forEach(ass => {
+                                    const bClass = ass.status === 'Submitted' ? 'green' : (ass.status === 'Pending Evaluation' ? 'orange' : 'red');
+                                    aHtml += `
+                                        <div class="assignment-pill">
+                                            <div style="width: 30%;">
+                                                <div style="font-weight: 600; color: #334155; font-size: 0.85rem;">${ass.title}</div>
+                                                <div style="font-size: 0.75rem; color: #94a3b8;"><i class="fa-regular fa-clock"></i> ${ass.submission_date}</div>
+                                            </div>
+                                            <div style="width: 20%; text-align: center;">
+                                                <span class="badge ${bClass}">${ass.status}</span>
+                                            </div>
+                                            <div style="width: 20%; text-align: center; font-size: 0.85rem; font-weight: 600; color: #0f172a;">
+                                                ${ass.marks !== '-' ? \`\${ass.marks}/\${ass.total_marks}\` : '-'}
+                                                <span style="color: #64748b; font-size: 0.75rem; margin-left: 0.5rem;">(\${ass.percentage})</span>
+                                            </div>
+                                            <div style="width: 30%; font-size: 0.8rem; color: #64748b; padding-left: 1rem; border-left: 1px solid #e2e8f0;">
+                                                <div style="font-weight: 600; margin-bottom: 0.2rem;">Remarks:</div>
+                                                <div style="font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${ass.remarks}</div>
+                                            </div>
+                                        </div>
+                                    `;
+                                });
+                            }
+                            body.innerHTML = aHtml;
+                        }
+                    } catch (e) {
+                        body.innerHTML = '<div style="color: red;">Error loading assignments.</div>';
+                    }
+                }
+                
+                function exportSRCSV() {
+                    const dept = document.getElementById('ao-dept').value;
+                    const year = document.getElementById('ao-year').value;
+                    const sem = document.getElementById('ao-sem').value;
+                    const div = document.getElementById('ao-div').value;
+                    const search = document.getElementById('sr-search').value;
+                    
+                    window.location.href = \`api_admin_assignments.php?action=export_student_assignment_report&dept=\${dept}&year=\${year}&sem=\${sem}&div=\${div}&search=\${search}\`;
+                }
             </script>
         </div>

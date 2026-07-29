@@ -2096,6 +2096,44 @@ if (isset($db['departments'])) {
                 </div>
             </div>
             
+            <!-- Total Students Modal -->
+            <div class="modal" id="total-students-modal" style="z-index: 10000; padding: 0; background: var(--bg-page);">
+                <div class="modal-content" style="max-width: 100vw; width: 100vw; height: 100vh; max-height: 100vh; border-radius: 0; display: flex; flex-direction: column; margin: 0; box-shadow: none;">
+                    <div class="modal-header" style="justify-content: flex-start; gap: 20px;">
+                        <button class="close-modal" onclick="closeTotalStudentsModal()" style="border-radius: 8px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: var(--bg-card); border: 1px solid var(--border-color);"><i class="fa-solid fa-arrow-left"></i></button>
+                        <h3 style="margin: 0; font-size: 1.5rem;">Total Students</h3>
+                    </div>
+                    <div class="search-box" style="flex: none; margin-bottom: 15px; display: flex; align-items: center; background: var(--bg-page); padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
+                        <i class="fa-solid fa-search" style="color: var(--text-muted); margin-right: 10px;"></i>
+                        <input type="text" id="ts-search" placeholder="Search students..." oninput="renderTotalStudentsList()" style="border: none; background: transparent; outline: none; width: 100%; color: var(--text-primary); font-size: 0.9rem;">
+                    </div>
+                    <div id="ts-list" style="overflow-y: auto; flex: 1; padding-right: 5px;">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Subjects Modal -->
+            <div class="modal" id="student-subjects-modal" style="z-index: 10001; padding: 0; background: var(--bg-page);">
+                <div class="modal-content" style="max-width: 100vw; width: 100vw; height: 100vh; max-height: 100vh; border-radius: 0; display: flex; flex-direction: column; margin: 0; box-shadow: none;">
+                    <div class="modal-header">
+                        <div style="display: flex; align-items: center; gap: 20px;">
+                            <button class="close-modal" onclick="closeStudentSubjectsModal()" style="border-radius: 8px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: var(--bg-card); border: 1px solid var(--border-color);"><i class="fa-solid fa-arrow-left"></i></button>
+                            <div>
+                                <h3 id="ssm-name" style="margin-bottom: 0.25rem; font-size: 1.5rem;">Student Name</h3>
+                                <p id="ssm-prn" style="font-size: 13px; color: var(--text-secondary); margin: 0;">PRN</p>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <button class="export-btn" onclick="downloadStudentExcel()"><i class="fa-solid fa-file-excel" style="color: #10b981;"></i> Download Excel</button>
+                        </div>
+                    </div>
+                    <div id="ssm-body" style="overflow-y: auto; flex: 1; padding-right: 5px; margin-top: 15px;">
+                        <!-- Injected via JS -->
+                    </div>
+                </div>
+            </div>
+            
             <script>
                 let aoData = null;
                 let aoDrawerData = [];
@@ -2136,7 +2174,7 @@ if (isset($db['departments'])) {
                     const penPercent = stats.expected > 0 ? Math.round((stats.pending / stats.expected)*100) : 0;
                     
                     document.getElementById('ao-stat-cards').innerHTML = `
-                        <div class="stat-card">
+                        <div class="stat-card" style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onclick="openTotalStudentsModal()">
                             <div class="stat-icon blue"><i class="fa-solid fa-users"></i></div>
                             <div class="stat-info"><h3>Total Students</h3><p class="value">${stats.total_students}</p></div>
                         </div>
@@ -2378,8 +2416,8 @@ if (isset($db['departments'])) {
                             if (s.status === 'Pending' || s.status === 'Pending Evaluation') badgeClass = 'orange';
                             
                             html += `
-                                <div class="student-card">
-                                    <div class="info">
+                                <div class="student-card" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-bottom: 1px solid var(--border-color);">
+                                    <div class="info" style="display: flex; align-items: center; gap: 1rem;">
                                         <img src="${s.photo}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">
                                         <div>
                                             <div style="font-weight: 600; color: var(--text-primary); font-size: 0.95rem; margin-bottom: 0.2rem;">${s.name}</div>
@@ -2395,6 +2433,189 @@ if (isset($db['departments'])) {
                         });
                     }
                     document.getElementById('drawer-student-list').innerHTML = html;
+                }
+
+                // Total Students Modal functions
+                function openTotalStudentsModal() {
+                    document.getElementById('total-students-modal').classList.add('active');
+                    document.getElementById('ts-search').value = '';
+                    renderTotalStudentsList();
+                }
+
+                function closeTotalStudentsModal() {
+                    document.getElementById('total-students-modal').classList.remove('active');
+                }
+
+                function renderTotalStudentsList() {
+                    if (!aoData || !aoData.all_students) return;
+                    const search = document.getElementById('ts-search').value.toLowerCase();
+                    const listEl = document.getElementById('ts-list');
+                    let html = '';
+                    
+                    const filtered = aoData.all_students.filter(s => 
+                        String(s.name).toLowerCase().includes(search) || 
+                        String(s.prn).toLowerCase().includes(search) ||
+                        String(s.id).toLowerCase().includes(search)
+                    );
+                    
+                    if (filtered.length === 0) {
+                        html = '<div style="padding: 2rem; text-align: center; color: var(--text-muted);">No students found.</div>';
+                    } else {
+                        filtered.forEach(s => {
+                            html += `
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s; border-radius: 8px; margin-bottom: 0.5rem;" onclick="openStudentSubjectsModal('${s.id}', '${s.name.replace(/'/g, "\\'")}', '${s.prn}', '${s.department}', '${s.year}', '${s.division}')" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                                    <div style="display: flex; align-items: center; gap: 1rem;">
+                                        <img src="${s.photo}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid var(--border-color);">
+                                        <div>
+                                            <div style="font-weight: 600; color: var(--text-primary); font-size: 0.95rem; margin-bottom: 0.2rem;">${s.name}</div>
+                                            <div style="font-size: 0.8rem; color: var(--text-secondary);">${s.prn} • ${s.department} (Div ${s.division})</div>
+                                        </div>
+                                    </div>
+                                    <div><i class="fa-solid fa-chevron-right" style="color: var(--text-muted);"></i></div>
+                                </div>
+                            `;
+                        });
+                    }
+                    listEl.innerHTML = html;
+                }
+
+                let currentStudentSubjects = [];
+                let currentStudentDetails = {};
+
+                async function openStudentSubjectsModal(studentId, studentName, studentPrn, studentDept, studentYear, studentDiv) {
+                    currentStudentDetails = { name: studentName, prn: studentPrn, dept: studentDept, year: studentYear, div: studentDiv };
+                    document.getElementById('ssm-name').textContent = studentName;
+                    document.getElementById('ssm-prn').innerHTML = `ZPRN: <strong>${studentId}</strong> &nbsp;|&nbsp; Dept: <strong>${studentDept}</strong> &nbsp;|&nbsp; Year: <strong>${studentYear}</strong> &nbsp;|&nbsp; Div: <strong>${studentDiv}</strong>`;
+                    document.getElementById('student-subjects-modal').classList.add('active');
+                    
+                    const bodyEl = document.getElementById('ssm-body');
+                    bodyEl.innerHTML = '<div style="padding: 3rem; text-align: center; color: var(--text-muted);"><i class="fa-solid fa-circle-notch fa-spin fa-2x"></i></div>';
+                    
+                    const dept = document.getElementById('ao-dept').value;
+                    const div = document.getElementById('ao-div').value;
+                    
+                    try {
+                        const res = await fetch(`api_admin_assignments.php?action=get_student_subjects&student_id=${studentId}&dept=${dept}&div=${div}`);
+                        const data = await res.json();
+                        if (data.success) {
+                            renderStudentSubjects(data.subjects);
+                        } else {
+                            bodyEl.innerHTML = `<div style="color: red; padding: 1rem; text-align: center;">${data.error || 'Failed to load subjects'}</div>`;
+                        }
+                    } catch (e) {
+                        bodyEl.innerHTML = '<div style="color: red; padding: 1rem; text-align: center;">Error communicating with server.</div>';
+                    }
+                }
+
+                function closeStudentSubjectsModal() {
+                    document.getElementById('student-subjects-modal').classList.remove('active');
+                }
+                
+                function renderStudentSubjects(subjects) {
+                    currentStudentSubjects = subjects;
+                    const bodyEl = document.getElementById('ssm-body');
+                    if (!subjects || subjects.length === 0) {
+                        bodyEl.innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--text-muted);">No subjects found for this student.</div>';
+                        return;
+                    }
+                    
+                    let html = '';
+                    subjects.forEach((sub, index) => {
+                        let badgeColor = 'gray';
+                        if (sub.status === 'Excellent' || sub.status === 'Good') badgeColor = 'green';
+                        if (sub.status === 'Needs Attention') badgeColor = 'red';
+                        
+                        // Set progress bar color class names based on standard admin CSS
+                        let pbColor = '#3b82f6';
+                        if (sub.completion >= 80) pbColor = '#22c55e';
+                        else if (sub.completion < 50) pbColor = '#ef4444';
+                        
+                        html += `
+                            <div style="background: var(--bg-page); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; transition: box-shadow 0.2s;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; cursor: pointer;" onclick="document.getElementById('ssm-assign-${index}').style.display = document.getElementById('ssm-assign-${index}').style.display === 'none' ? 'block' : 'none'; const icon = document.getElementById('ssm-icon-${index}'); if(icon.style.transform === 'rotate(180deg)'){icon.style.transform='rotate(0deg)';}else{icon.style.transform='rotate(180deg)';}">
+                                    <div>
+                                        <div style="font-weight: 700; color: var(--text-primary); font-size: 1.05rem; margin-bottom: 0.25rem;">${sub.name}</div>
+                                        <div style="font-size: 0.85rem; color: var(--text-secondary);"><i class="fa-solid fa-chalkboard-user"></i> ${sub.faculty}</div>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 15px;">
+                                        <span class="badge badge-${badgeColor}" style="padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; background: ${badgeColor==='green'?'#dcfce7':(badgeColor==='red'?'#ffe4e6':'#f1f5f9')}; color: ${badgeColor==='green'?'#166534':(badgeColor==='red'?'#991b1b':'#475569')};">${sub.status}</span>
+                                        <i id="ssm-icon-${index}" class="fa-solid fa-chevron-down" style="color: var(--text-muted); transition: transform 0.2s;"></i>
+                                    </div>
+                                </div>
+                                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; background: #fff; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color);">
+                                    <div style="text-align: center;">
+                                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Assignments</div>
+                                        <div style="font-weight: 700; color: var(--text-primary); font-size: 1.1rem;">${sub.total_assignments}</div>
+                                    </div>
+                                    <div style="text-align: center;">
+                                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Submitted</div>
+                                        <div style="font-weight: 700; color: #166534; font-size: 1.1rem;">${sub.submitted}</div>
+                                    </div>
+                                    <div style="text-align: center;">
+                                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Pending</div>
+                                        <div style="font-weight: 700; color: #991b1b; font-size: 1.1rem;">${sub.pending}</div>
+                                    </div>
+                                    <div style="text-align: center;">
+                                        <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">Avg Marks</div>
+                                        <div style="font-weight: 700; color: #3b82f6; font-size: 1.1rem;">${sub.avg_marks}</div>
+                                    </div>
+                                </div>
+                                <div style="margin-top: 1rem; font-size: 0.85rem; display: flex; align-items: center; justify-content: space-between;">
+                                    <span style="color: var(--text-secondary);">Completion</span>
+                                    <span style="font-weight: 600; color: var(--text-primary);">${sub.completion}%</span>
+                                </div>
+                                <div style="width: 100%; height: 6px; background: #e2e8f0; border-radius: 3px; margin-top: 0.5rem; overflow: hidden; margin-bottom: 1rem;">
+                                    <div style="height: 100%; width: ${sub.completion}%; background: ${pbColor}; border-radius: 3px;"></div>
+                                </div>
+                                <div id="ssm-assign-${index}" style="border-top: 1px solid var(--border-color); padding-top: 1rem; display: none; margin-top: 1rem;">
+                                    <h4 style="font-size: 0.9rem; color: var(--text-primary); margin-bottom: 0.5rem;">Assignments</h4>
+                                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                        ${sub.assignments && sub.assignments.length > 0 ? sub.assignments.map(a => `
+                                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border-color);">
+                                                <div style="flex: 1;">
+                                                    <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">${a.title}</div>
+                                                    <div style="font-size: 0.75rem; color: var(--text-secondary);">Due: ${a.due_date}</div>
+                                                </div>
+                                                <div style="text-align: right; margin-right: 1rem;">
+                                                    <div style="font-size: 0.8rem; font-weight: 600; color: ${a.marks !== '-' && a.marks !== 'Pending' ? '#166534' : '#64748b'};">Marks: ${a.marks}</div>
+                                                    <div style="font-size: 0.75rem; color: var(--text-muted);">${a.submitted_at !== '-' ? a.submitted_at : 'Not Submitted'}</div>
+                                                </div>
+                                                <span class="badge ${a.status === 'Graded' ? 'badge-green' : (a.status === 'Pending Eval' ? 'badge-orange' : 'badge-red')}" style="font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; background: ${a.status === 'Graded' ? '#dcfce7' : (a.status === 'Pending Eval' ? '#fef3c7' : '#fee2e2')}; color: ${a.status === 'Graded' ? '#166534' : (a.status === 'Pending Eval' ? '#92400e' : '#991b1b')};">${a.status}</span>
+                                            </div>
+                                        `).join('') : '<div style="font-size: 0.85rem; color: var(--text-muted);">No assignments found.</div>'}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    bodyEl.innerHTML = html;
+                }
+
+                function downloadStudentExcel() {
+                    if (!currentStudentSubjects || currentStudentSubjects.length === 0) return;
+                    let csv = 'Subject,Faculty,Total Assignments,Submitted,Pending,Avg Marks,Completion %,Assignment Title,Due Date,Status,Marks,Submitted At\n';
+                    
+                    currentStudentSubjects.forEach(sub => {
+                        const baseRow = `"${sub.name}","${sub.faculty}",${sub.total_assignments},${sub.submitted},${sub.pending},${sub.avg_marks},${sub.completion}%`;
+                        if (sub.assignments && sub.assignments.length > 0) {
+                            sub.assignments.forEach(a => {
+                                csv += `${baseRow},"${a.title}","${a.due_date}","${a.status}","${a.marks}","${a.submitted_at}"\n`;
+                            });
+                        } else {
+                            csv += `${baseRow},None,-,-,-,-\n`;
+                        }
+                    });
+                    
+                    const blob = new Blob([csv], { type: 'text/csv' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${currentStudentDetails.name}_Assignments.csv`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
                 }
                 
                 function exportAOCSV() {

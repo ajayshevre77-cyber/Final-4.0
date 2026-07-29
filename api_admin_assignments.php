@@ -286,16 +286,22 @@ if ($action === 'get_dashboard_summary') {
         ];
     }
     $matchedStudentsData = [];
-    if ($search !== '') {
-        foreach ($filteredStudents as $fs) {
-            $matchedStudentsData[] = [
-                'name' => $fs['name'] ?? 'Unknown',
-                'prn' => $fs['prn'] ?? $fs['id'] ?? 'N/A',
-                'year' => isset($fs['semester']) ? ceil(getAbsoluteSem($fs['semester']) / 2) : 'N/A',
-                'semester' => $fs['semester'] ?? 'N/A',
-                'division' => $fs['division'] ?? 'N/A',
-                'department' => $fs['department'] ?? $fs['dept'] ?? 'N/A'
-            ];
+    $allStudentsData = [];
+    foreach ($filteredStudents as $fs) {
+        $studentObj = [
+            'id' => $fs['id'] ?? $fs['username'] ?? $fs['prn'] ?? 'N/A',
+            'name' => $fs['name'] ?? 'Unknown',
+            'prn' => $fs['prn'] ?? $fs['id'] ?? 'N/A',
+            'year' => isset($fs['semester']) ? ceil(getAbsoluteSem($fs['semester']) / 2) : 'N/A',
+            'semester' => $fs['semester'] ?? 'N/A',
+            'division' => $fs['division'] ?? 'N/A',
+            'department' => $fs['department'] ?? $fs['dept'] ?? 'N/A',
+            'photo' => $fs['avatar'] ?? 'https://ui-avatars.com/api/?name=' . urlencode($fs['name'] ?? 'Unknown')
+        ];
+        $allStudentsData[] = $studentObj;
+        
+        if ($search !== '') {
+            $matchedStudentsData[] = $studentObj;
         }
     }
 
@@ -318,7 +324,8 @@ if ($action === 'get_dashboard_summary') {
         ],
         'recent_activity' => $recentActivity,
         'recent_assignments' => $recentAssignments,
-        'matched_students' => $matchedStudentsData
+        'matched_students' => $matchedStudentsData,
+        'all_students' => $allStudentsData
     ]);
     exit;
 }
@@ -424,8 +431,6 @@ if ($action === 'get_assignment_students') {
 }
 
 if ($action === 'export_csv') {
-    // Generate CSV code placeholder
-    // A quick simple CSV export logic
     $data = $_POST['data'] ?? '[]';
     $decoded = json_decode($data, true) ?? [];
     
@@ -438,6 +443,429 @@ if ($action === 'export_csv') {
             fputcsv($output, array_values($row));
         }
     }
+    fclose($output);
+    exit;
+}
+
+if ($action === 'get_student_assignment_report') {
+    $reqDept = trim(strtolower($_GET['dept'] ?? 'ALL'));
+    $reqYear = intval($_GET['year'] ?? 1);
+    $reqSem = intval($_GET['sem'] ?? 1);
+    $reqDiv = trim(strtoupper($_GET['div'] ?? 'A'));
+    $search = trim(strtolower($_GET['search'] ?? ''));
+    $page = max(1, intval($_GET['page'] ?? 1));
+    $limit = max(1, intval($_GET['limit'] ?? 10));
+
+    $absoluteSem = ($reqYear - 1) * 2 + $reqSem;
+
+    // Filter Students
+    $filteredStudents = [];
+    foreach ($db['students'] ?? [] as $s) {
+        $sDept = strtolower($s['department'] ?? $s['dept'] ?? 'it');
+        $sDiv = strtoupper($s['division'] ?? 'A');
+        
+        if (empty($s['division']) && preg_match('/Div\s*([A-Z])/i', $sDept, $m)) {
+            $sDiv = strtoupper($m[1]);
+        }
+
+        $matchDept = ($reqDept === 'all' || $sDept === $reqDept || strpos($sDept, $reqDept) !== false);
+        $sSemVal = getAbsoluteSem($s['semester'] ?? '');
+        $matchSem = ($sSemVal === $absoluteSem);
+        $matchDiv = ($sDiv === $reqDiv);
+
+        if ($search !== '') {
+            $q = $search;
+            $prn = strtolower($s['prn'] ?? '');
+            $id = strtolower($s['id'] ?? '');
+            $name = strtolower($s['name'] ?? '');
+            if (strpos($prn, $q) !== false || strpos($id, $q) !== false || strpos($name, $q) !== false) {
+                $filteredStudents[] = $s;
+            }
+        } else {
+            if ($matchSem && $matchDiv && $matchDept) {
+                $filteredStudents[] = $s;
+            }
+        }
+    }
+
+    $totalRecords = count($filteredStudents);
+    $offset = ($page - 1) * $limit;
+    $paginatedStudents = array_slice($filteredStudents, $offset, $limit);
+
+    // Get assignments required for this cohort
+    $requiredAssignments = [];
+    foreach ($db['subject_assignments'] ?? [] as $sa) {
+        $saDept = strtolower($sa['department'] ?? '');
+        $saDiv = strtoupper($sa['division'] ?? '');
+        
+        $matchDept = ($saDept === '' || $saDept === 'all');
+        if (!$matchDept && $reqDept !== 'all') {
+            $matchDept = (strpos($reqDept, $saDept) !== false || strpos($saDept, $reqDept) !== false);
+            if (!$matchDept) {
+                if ((strpos($reqDept, 'it') !== false || strpos($reqDept, 'information')) && (strpos($saDept, 'it') !== false || strpos($saDept, 'information'))) $matchDept = true;
+                if ((strpos($reqDept, 'ce') !== false || strpos($reqDept, 'computer')) && (strpos($saDept, 'ce') !== false || strpos($saDept, 'computer'))) $matchDept = true;
+            }
+        }
+
+        $matchDiv = ($saDiv === '' || $saDiv === 'ALL' || $saDiv === $reqDiv);
+        
+        if ($matchDept && $matchDiv) {
+            $requiredAssignments[] = $sa;
+        }
+    }
+    
+    $totalAssignments = count($requiredAssignments);
+
+    $studentData = [];
+    foreach ($paginatedStudents as $s) {
+        $sid = $s['id'] ?? $s['username'] ?? $s['prn'];
+        $sname = $s['name'] ?? '';
+        
+        $submitted = 0;
+        $gradedCount = 0;
+        $totalMarks = 0;
+        
+        foreach ($db['assignment_submissions'] ?? [] as $sub) {
+            if (($sub['student_id'] == $sid || $sub['student_name'] === $sname) && in_array($sub['subject_assignment_id'], array_column($requiredAssignments, 'id'))) {
+                $submitted++;
+                if ($sub['marks'] !== 'Pending' && intval($sub['marks']) >= 0) {
+                    $totalMarks += intval($sub['marks']);
+                    $gradedCount++;
+                }
+            }
+        }
+        
+        $pending = max(0, $totalAssignments - $submitted);
+        $completion = $totalAssignments > 0 ? round(($submitted / $totalAssignments) * 100) : 0;
+        $avgMarks = $gradedCount > 0 ? round($totalMarks / $gradedCount, 2) : 0;
+        
+        $status = 'Good';
+        if ($completion < 50) $status = 'Needs Attention';
+        elseif ($completion >= 80) $status = 'Excellent';
+
+        $studentData[] = [
+            'id' => $sid,
+            'roll' => $s['prn'] ?? $sid,
+            'prn' => $s['prn'] ?? $sid,
+            'name' => $s['name'],
+            'division' => $s['division'] ?? 'A',
+            'completion' => $completion,
+            'submitted' => $submitted,
+            'pending' => $pending,
+            'avg_marks' => $avgMarks,
+            'status' => $status
+        ];
+    }
+
+    echo json_encode([
+        'success' => true,
+        'data' => $studentData,
+        'pagination' => [
+            'total' => $totalRecords,
+            'page' => $page,
+            'limit' => $limit,
+            'pages' => ceil($totalRecords / $limit)
+        ]
+    ]);
+    exit;
+}
+
+if ($action === 'get_student_subjects') {
+    $sid = $_GET['student_id'] ?? '';
+    if (!$sid) { echo json_encode(['success' => false, 'error' => 'Missing student ID']); exit; }
+
+    $student = null;
+    foreach ($db['students'] ?? [] as $s) {
+        if (($s['id'] ?? $s['username'] ?? $s['prn']) == $sid) {
+            $student = $s;
+            break;
+        }
+    }
+    if (!$student) { echo json_encode(['success' => false, 'error' => 'Student not found']); exit; }
+    
+    $reqDept = trim(strtolower($_GET['dept'] ?? 'ALL'));
+    $reqDiv = trim(strtoupper($_GET['div'] ?? 'A'));
+
+    $requiredAssignments = [];
+    foreach ($db['subject_assignments'] ?? [] as $sa) {
+        $saDept = strtolower($sa['department'] ?? '');
+        $saDiv = strtoupper($sa['division'] ?? '');
+        
+        $matchDept = ($saDept === '' || $saDept === 'all');
+        if (!$matchDept && $reqDept !== 'all') {
+            $matchDept = (strpos($reqDept, $saDept) !== false || strpos($saDept, $reqDept) !== false);
+            if (!$matchDept) {
+                if ((strpos($reqDept, 'it') !== false || strpos($reqDept, 'information')) && (strpos($saDept, 'it') !== false || strpos($saDept, 'information'))) $matchDept = true;
+                if ((strpos($reqDept, 'ce') !== false || strpos($reqDept, 'computer')) && (strpos($saDept, 'ce') !== false || strpos($saDept, 'computer'))) $matchDept = true;
+            }
+        }
+        $matchDiv = ($saDiv === '' || $saDiv === 'ALL' || $saDiv === $reqDiv);
+        
+        if ($matchDept && $matchDiv) {
+            $requiredAssignments[] = $sa;
+        }
+    }
+
+    $subjects = [];
+    $facultyMap = [];
+    foreach ($db['faculty'] ?? [] as $f) {
+        $fSubjs = explode(',', $f['subjects'] ?? '');
+        foreach ($fSubjs as $fs) {
+            $facultyMap[trim($fs)] = $f['name'];
+        }
+    }
+
+    foreach ($requiredAssignments as $sa) {
+        $subjName = $sa['subject_name'] ?? 'Unknown Subject';
+        if (!isset($subjects[$subjName])) {
+            $subjects[$subjName] = [
+                'name' => $subjName,
+                'faculty' => $facultyMap[$subjName] ?? 'Various Faculty',
+                'total_assignments' => 0,
+                'submitted' => 0,
+                'pending' => 0,
+                'graded_count' => 0,
+                'total_score' => 0,
+                'assignments' => []
+            ];
+        }
+        $subjects[$subjName]['total_assignments']++;
+        
+        $sname = $student['name'] ?? '';
+        $foundSub = null;
+        foreach ($db['assignment_submissions'] ?? [] as $sub) {
+            if (($sub['student_id'] == $sid || $sub['student_name'] === $sname) && $sub['subject_assignment_id'] == $sa['id']) {
+                $subjects[$subjName]['submitted']++;
+                if ($sub['marks'] !== 'Pending' && intval($sub['marks']) >= 0) {
+                    $subjects[$subjName]['total_score'] += intval($sub['marks']);
+                    $subjects[$subjName]['graded_count']++;
+                }
+                $foundSub = $sub;
+                break;
+            }
+        }
+        if (!$foundSub) {
+            $subjects[$subjName]['pending']++;
+        }
+
+        $subjects[$subjName]['assignments'][] = [
+            'title' => $sa['title'] ?? 'Untitled',
+            'due_date' => $sa['due_date'] ?? '-',
+            'status' => $foundSub ? ($foundSub['marks'] === 'Pending' ? 'Pending Eval' : 'Graded') : 'Pending',
+            'marks' => $foundSub ? $foundSub['marks'] : '-',
+            'submitted_at' => $foundSub['submitted_at'] ?? '-'
+        ];
+    }
+
+    $resSubjects = [];
+    foreach ($subjects as $name => $data) {
+        $comp = $data['total_assignments'] > 0 ? round(($data['submitted'] / $data['total_assignments']) * 100) : 0;
+        $data['completion'] = $comp;
+        $data['avg_marks'] = $data['graded_count'] > 0 ? round($data['total_score'] / $data['graded_count'], 2) : 0;
+        
+        $status = 'Good';
+        if ($comp < 50) $status = 'Needs Attention';
+        elseif ($comp >= 80) $status = 'Excellent';
+        $data['status'] = $status;
+        unset($data['total_score']);
+        unset($data['graded_count']);
+        
+        $resSubjects[] = $data;
+    }
+
+    echo json_encode(['success' => true, 'subjects' => $resSubjects]);
+    exit;
+}
+
+if ($action === 'get_student_subject_assignments') {
+    $sid = $_GET['student_id'] ?? '';
+    $subjName = $_GET['subject_name'] ?? '';
+    if (!$sid || !$subjName) { echo json_encode(['success' => false, 'error' => 'Missing student ID or subject name']); exit; }
+
+    $reqDept = trim(strtolower($_GET['dept'] ?? 'ALL'));
+    $reqDiv = trim(strtoupper($_GET['div'] ?? 'A'));
+
+    $student = null;
+    foreach ($db['students'] ?? [] as $s) {
+        if (($s['id'] ?? $s['username'] ?? $s['prn']) == $sid) {
+            $student = $s;
+            break;
+        }
+    }
+
+    $facultyMap = [];
+    foreach ($db['faculty'] ?? [] as $f) {
+        $fSubjs = explode(',', $f['subjects'] ?? '');
+        foreach ($fSubjs as $fs) {
+            $facultyMap[trim($fs)] = $f['name'];
+        }
+    }
+
+    $assignments = [];
+    foreach ($db['subject_assignments'] ?? [] as $sa) {
+        if (($sa['subject_name'] ?? '') === $subjName) {
+            $saDept = strtolower($sa['department'] ?? '');
+            $saDiv = strtoupper($sa['division'] ?? '');
+            $matchDept = ($saDept === '' || $saDept === 'all');
+            if (!$matchDept && $reqDept !== 'all') {
+                $matchDept = (strpos($reqDept, $saDept) !== false || strpos($saDept, $reqDept) !== false);
+                if (!$matchDept) {
+                    if ((strpos($reqDept, 'it') !== false || strpos($reqDept, 'information')) && (strpos($saDept, 'it') !== false || strpos($saDept, 'information'))) $matchDept = true;
+                    if ((strpos($reqDept, 'ce') !== false || strpos($reqDept, 'computer')) && (strpos($saDept, 'ce') !== false || strpos($saDept, 'computer'))) $matchDept = true;
+                }
+            }
+            $matchDiv = ($saDiv === '' || $saDiv === 'ALL' || $saDiv === $reqDiv);
+            
+            if ($matchDept && $matchDiv) {
+                $sname = $student['name'] ?? '';
+                $submission = null;
+                foreach ($db['assignment_submissions'] ?? [] as $sub) {
+                    if (($sub['student_id'] == $sid || $sub['student_name'] === $sname) && $sub['subject_assignment_id'] == $sa['id']) {
+                        $submission = $sub;
+                        break;
+                    }
+                }
+
+                $title = !empty($sa['assignment_title']) ? $sa['assignment_title'] : (!empty($sa['unit']) ? 'Unit ' . $sa['unit'] : 'Assignment');
+                
+                $marks = '-';
+                $percent = '-';
+                $status = 'Pending';
+                $subDate = '-';
+                $remarks = $submission['feedback'] ?? '-';
+                
+                if ($submission) {
+                    $status = 'Submitted';
+                    $subDate = $submission['submitted_at'] ?? '-';
+                    if ($submission['marks'] !== 'Pending') {
+                        $marks = $submission['marks'];
+                        $m = intval($marks);
+                        $percent = ($m >= 0) ? round(($m / 10) * 100) . '%' : '-';
+                    } else {
+                        $status = 'Pending Evaluation';
+                    }
+                }
+
+                $assignments[] = [
+                    'id' => $sa['id'],
+                    'title' => $title,
+                    'faculty' => $facultyMap[$subjName] ?? 'Various Faculty',
+                    'status' => $status,
+                    'marks' => $marks,
+                    'total_marks' => 10,
+                    'percentage' => $percent,
+                    'submission_date' => $subDate,
+                    'remarks' => $remarks
+                ];
+            }
+        }
+    }
+
+    echo json_encode(['success' => true, 'assignments' => $assignments]);
+    exit;
+}
+
+if ($action === 'export_student_assignment_report') {
+    $reqDept = trim(strtolower($_GET['dept'] ?? 'ALL'));
+    $reqYear = intval($_GET['year'] ?? 1);
+    $reqSem = intval($_GET['sem'] ?? 1);
+    $reqDiv = trim(strtoupper($_GET['div'] ?? 'A'));
+    $search = trim(strtolower($_GET['search'] ?? ''));
+
+    $absoluteSem = ($reqYear - 1) * 2 + $reqSem;
+
+    $filteredStudents = [];
+    foreach ($db['students'] ?? [] as $s) {
+        $sDept = strtolower($s['department'] ?? $s['dept'] ?? 'it');
+        $sDiv = strtoupper($s['division'] ?? 'A');
+        
+        if (empty($s['division']) && preg_match('/Div\s*([A-Z])/i', $sDept, $m)) {
+            $sDiv = strtoupper($m[1]);
+        }
+
+        $matchDept = ($reqDept === 'all' || $sDept === $reqDept || strpos($sDept, $reqDept) !== false);
+        $sSemVal = getAbsoluteSem($s['semester'] ?? '');
+        $matchSem = ($sSemVal === $absoluteSem);
+        $matchDiv = ($sDiv === $reqDiv);
+
+        if ($search !== '') {
+            $q = $search;
+            $prn = strtolower($s['prn'] ?? '');
+            $id = strtolower($s['id'] ?? '');
+            $name = strtolower($s['name'] ?? '');
+            if (strpos($prn, $q) !== false || strpos($id, $q) !== false || strpos($name, $q) !== false) {
+                $filteredStudents[] = $s;
+            }
+        } else {
+            if ($matchSem && $matchDiv && $matchDept) {
+                $filteredStudents[] = $s;
+            }
+        }
+    }
+
+    $requiredAssignments = [];
+    foreach ($db['subject_assignments'] ?? [] as $sa) {
+        $saDept = strtolower($sa['department'] ?? '');
+        $saDiv = strtoupper($sa['division'] ?? '');
+        
+        $matchDept = ($saDept === '' || $saDept === 'all');
+        if (!$matchDept && $reqDept !== 'all') {
+            $matchDept = (strpos($reqDept, $saDept) !== false || strpos($saDept, $reqDept) !== false);
+            if (!$matchDept) {
+                if ((strpos($reqDept, 'it') !== false || strpos($reqDept, 'information')) && (strpos($saDept, 'it') !== false || strpos($saDept, 'information'))) $matchDept = true;
+                if ((strpos($reqDept, 'ce') !== false || strpos($reqDept, 'computer')) && (strpos($saDept, 'ce') !== false || strpos($saDept, 'computer'))) $matchDept = true;
+            }
+        }
+        $matchDiv = ($saDiv === '' || $saDiv === 'ALL' || $saDiv === $reqDiv);
+        
+        if ($matchDept && $matchDiv) {
+            $requiredAssignments[] = $sa;
+        }
+    }
+
+    header('Content-Type: text/csv');
+    header('Content-Disposition: attachment; filename="Student_Assignment_Report.csv"');
+    $output = fopen('php://output', 'w');
+    fputcsv($output, ['Student Name', 'PRN', 'Subject', 'Assignment', 'Marks', 'Percentage', 'Status', 'Submission Date']);
+
+    foreach ($filteredStudents as $s) {
+        $sid = $s['id'] ?? $s['username'] ?? $s['prn'];
+        $sname = $s['name'] ?? '';
+        $sprn = $s['prn'] ?? $sid;
+
+        foreach ($requiredAssignments as $sa) {
+            $subjName = $sa['subject_name'] ?? 'Unknown Subject';
+            $title = !empty($sa['assignment_title']) ? $sa['assignment_title'] : (!empty($sa['unit']) ? 'Unit ' . $sa['unit'] : 'Assignment');
+            
+            $submission = null;
+            foreach ($db['assignment_submissions'] ?? [] as $sub) {
+                if (($sub['student_id'] == $sid || $sub['student_name'] === $sname) && $sub['subject_assignment_id'] == $sa['id']) {
+                    $submission = $sub;
+                    break;
+                }
+            }
+
+            $marks = '-';
+            $percent = '-';
+            $status = 'Pending';
+            $subDate = '-';
+            
+            if ($submission) {
+                $status = 'Submitted';
+                $subDate = $submission['submitted_at'] ?? '-';
+                if ($submission['marks'] !== 'Pending') {
+                    $marks = $submission['marks'];
+                    $m = intval($marks);
+                    $percent = ($m >= 0) ? round(($m / 10) * 100) . '%' : '-';
+                } else {
+                    $status = 'Pending Evaluation';
+                }
+            }
+
+            fputcsv($output, [$sname, $sprn, $subjName, $title, $marks, $percent, $status, $subDate]);
+        }
+    }
+
     fclose($output);
     exit;
 }
