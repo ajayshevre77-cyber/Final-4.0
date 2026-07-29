@@ -1806,6 +1806,7 @@ body.dark-mode .content-area {
 }
 
 body.dark-mode .dashboard-header,
+body.dark-mode .top-banner,
 body.dark-mode .top-header,
 body.dark-mode .header {
     background-color: #1e293b !important;
@@ -1829,6 +1830,14 @@ body.dark-mode span:not(.badge):not(.status-pill):not(.status-badge) {
     color: #cbd5e1;
 }
 
+body.dark-mode .profile-name {
+    color: #f8fafc !important;
+}
+
+body.dark-mode .profile-role {
+    color: #94a3b8 !important;
+}
+
 /* Cards & Containers in Dark Mode */
 body.dark-mode div[style*="background: white"],
 body.dark-mode div[style*="background:white"],
@@ -1841,6 +1850,7 @@ body.dark-mode .settings-form-container,
 body.dark-mode .modal-card,
 body.dark-mode .modal-content,
 body.dark-mode .card,
+body.dark-mode .dashboard-card,
 body.dark-mode .stat-card,
 body.dark-mode .overview-card,
 body.dark-mode .notice-hero {
