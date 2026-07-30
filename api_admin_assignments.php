@@ -814,7 +814,7 @@ if ($action === 'export_student_assignment_report') {
         }
     }
 
-    $cols = max(11, count($uniqueSubjects) + 4); // ensure header spans enough
+    $cols = 17 + count($uniqueSubjects); // For flattened table headers
 
     // Title
     $html .= '<tr><td colspan="' . $cols . '" class="header-dark title-row" style="padding: 10px;">STUDENT ASSIGNMENT REPORT</td></tr>';
@@ -992,88 +992,73 @@ if ($action === 'export_student_assignment_report') {
 
 
     // =====================================
-    // 1. SUMMARY SHEET
+    // CONSOLIDATED FLAT DATA SHEET
     // =====================================
-    $html .= '<tr><td colspan="' . $cols . '" class="section-header" style="background-color: #064e3b;"><span class="section-badge" style="background-color: #22c55e;">1</span> SUMMARY SHEET (OVERVIEW)</td></tr>';
     $html .= '<tr class="filter-header">';
-    $html .= '<th>ZPRN</th><th>Roll No</th><th style="min-width:200px;">Student Name</th><th>Total Assignments</th><th>Submitted</th>';
-    $html .= '<th>Pending</th><th colspan="' . ($cols - 6) . '">Faculty Comments</th>';
+    $html .= '<th>ZPRN</th><th>Roll No</th><th style="min-width:200px;">Student Name</th>';
+    $html .= '<th>Total Assignments</th><th>Submitted</th><th>Pending</th><th>Faculty Comments</th>';
+    foreach ($uniqueSubjects as $subj) {
+        $html .= "<th>{$subj}<br>%</th>";
+    }
+    $html .= '<th>Average Percentage</th><th>Overall Grade</th>';
+    $html .= '<th>Subject Name</th><th>Assignment Name</th><th>Marks Obtained</th><th>Total Marks</th><th>Percentage</th><th>Submission Status</th><th>Submission Date</th><th>Faculty Name</th>';
     $html .= '</tr>';
-    
+
     foreach ($studentData as $sd) {
         $subColor = $sd['submitted'] > 0 ? '#16a34a' : 'black';
         $penColor = $sd['pending'] > 0 ? '#dc2626' : 'black';
         
-        $html .= '<tr>';
-        $html .= "<td>{$sd['roll']}</td>";
-        $html .= "<td>{$sd['prn']}</td>";
-        $html .= "<td style='text-align:left;'>{$sd['name']}</td>";
-        $html .= "<td>{$sd['totalAssign']}</td>";
-        $html .= "<td style='color:{$subColor}; font-weight:bold;'>{$sd['submitted']}</td>";
-        $html .= "<td style='color:{$penColor}; font-weight:bold;'>{$sd['pending']}</td>";
-        $html .= "<td colspan='" . ($cols - 6) . "'>{$sd['comments']}</td>";
-        $html .= '</tr>';
-    }
-    $html .= '<tr><td colspan="' . $cols . '"></td></tr>';
-    $html .= '<tr><td colspan="' . $cols . '"></td></tr>';
-
-
-    // =====================================
-    // 2. DETAILED ASSIGNMENT MARKS
-    // =====================================
-    $html .= '<tr><td colspan="' . $cols . '" class="section-header" style="background-color: #1e3a8a;"><span class="section-badge" style="background-color: #3b82f6;">2</span> DETAILED ASSIGNMENT MARKS (SUBJECT WISE)</td></tr>';
-    $html .= '<tr class="filter-header">';
-    $html .= '<th>ZPRN</th><th>Roll No</th><th>Student Name</th><th>Subject Name</th><th>Assignment Name</th><th>Marks Obtained</th><th>Total Marks</th><th>Percentage</th><th>Submission Status</th><th>Submission Date</th><th colspan="' . ($cols - 10) . '">Faculty Name</th>';
-    $html .= '</tr>';
-
-    foreach ($studentData as $sd) {
-        foreach ($sd['detailed'] as $det) {
-            $statusColor = 'black';
-            $statusBg = 'transparent';
-            if ($det['status'] === 'Submitted') { $statusColor = '#16a34a'; $statusBg = '#dcfce7'; }
-            if ($det['status'] === 'Pending') { $statusColor = '#dc2626'; $statusBg = '#fee2e2'; }
-            
+        if (empty($sd['detailed'])) {
             $html .= '<tr>';
             $html .= "<td>{$sd['roll']}</td>";
             $html .= "<td>{$sd['prn']}</td>";
             $html .= "<td style='text-align:left;'>{$sd['name']}</td>";
-            $html .= "<td>{$det['subjName']}</td>";
-            $html .= "<td>{$det['assignTitle']}</td>";
-            $html .= "<td>{$det['marksObtained']}</td>";
-            $html .= "<td>{$det['totalMarks']}</td>";
-            $html .= "<td>{$det['percentage']}</td>";
-            $html .= "<td style='color:{$statusColor}; background-color:{$statusBg}; font-weight:bold;'>{$det['status']}</td>";
-            $html .= "<td>{$det['subDate']}</td>";
-            $html .= "<td colspan='" . ($cols - 10) . "'>{$det['faculty']}</td>";
+            $html .= "<td>{$sd['totalAssign']}</td>";
+            $html .= "<td style='color:{$subColor}; font-weight:bold;'>{$sd['submitted']}</td>";
+            $html .= "<td style='color:{$penColor}; font-weight:bold;'>{$sd['pending']}</td>";
+            $html .= "<td>{$sd['comments']}</td>";
+            foreach ($uniqueSubjects as $subj) {
+                $html .= "<td>{$sd['pivot'][$subj]}</td>";
+            }
+            $html .= "<td style='background-color:#fef3c7; font-weight:bold;'>{$sd['avgPercent']}</td>";
+            $html .= "<td class='{$sd['gradeClass']}'>{$sd['grade']}</td>";
+            
+            // Empty columns for detailed part
+            $html .= "<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>";
             $html .= '</tr>';
+        } else {
+            foreach ($sd['detailed'] as $det) {
+                $statusColor = 'black';
+                $statusBg = 'transparent';
+                if ($det['status'] === 'Submitted') { $statusColor = '#16a34a'; $statusBg = '#dcfce7'; }
+                if ($det['status'] === 'Pending') { $statusColor = '#dc2626'; $statusBg = '#fee2e2'; }
+                
+                $html .= '<tr>';
+                $html .= "<td>{$sd['roll']}</td>";
+                $html .= "<td>{$sd['prn']}</td>";
+                $html .= "<td style='text-align:left;'>{$sd['name']}</td>";
+                $html .= "<td>{$sd['totalAssign']}</td>";
+                $html .= "<td style='color:{$subColor}; font-weight:bold;'>{$sd['submitted']}</td>";
+                $html .= "<td style='color:{$penColor}; font-weight:bold;'>{$sd['pending']}</td>";
+                $html .= "<td>{$sd['comments']}</td>";
+                
+                foreach ($uniqueSubjects as $subj) {
+                    $html .= "<td>{$sd['pivot'][$subj]}</td>";
+                }
+                $html .= "<td style='background-color:#fef3c7; font-weight:bold;'>{$sd['avgPercent']}</td>";
+                $html .= "<td class='{$sd['gradeClass']}'>{$sd['grade']}</td>";
+                
+                $html .= "<td>{$det['subjName']}</td>";
+                $html .= "<td>{$det['assignTitle']}</td>";
+                $html .= "<td>{$det['marksObtained']}</td>";
+                $html .= "<td>{$det['totalMarks']}</td>";
+                $html .= "<td>{$det['percentage']}</td>";
+                $html .= "<td style='color:{$statusColor}; background-color:{$statusBg}; font-weight:bold;'>{$det['status']}</td>";
+                $html .= "<td>{$det['subDate']}</td>";
+                $html .= "<td>{$det['faculty']}</td>";
+                $html .= '</tr>';
+            }
         }
-    }
-    $html .= '<tr><td colspan="' . $cols . '"></td></tr>';
-    $html .= '<tr><td colspan="' . $cols . '"></td></tr>';
-
-
-    // =====================================
-    // 3. PIVOT SUMMARY
-    // =====================================
-    $html .= '<tr><td colspan="' . $cols . '" class="section-header" style="background-color: #4c1d95;"><span class="section-badge" style="background-color: #8b5cf6;">3</span> PIVOT SUMMARY (SUBJECT WISE PERFORMANCE)</td></tr>';
-    $html .= '<tr class="filter-header">';
-    $html .= '<th>ZPRN</th><th style="min-width:200px;">Student Name</th>';
-    foreach ($uniqueSubjects as $subj) {
-        $html .= "<th>{$subj}<br>%</th>";
-    }
-    $html .= '<th>Average Percentage</th><th colspan="' . ($cols - 3 - count($uniqueSubjects)) . '">Overall Grade</th>';
-    $html .= '</tr>';
-
-    foreach ($studentData as $sd) {
-        $html .= '<tr>';
-        $html .= "<td>{$sd['roll']}</td>";
-        $html .= "<td style='text-align:left;'>{$sd['name']}</td>";
-        foreach ($uniqueSubjects as $subj) {
-            $html .= "<td>{$sd['pivot'][$subj]}</td>";
-        }
-        $html .= "<td style='background-color:#fef3c7; font-weight:bold;'>{$sd['avgPercent']}</td>";
-        $html .= "<td class='{$sd['gradeClass']}' colspan='" . ($cols - 3 - count($uniqueSubjects)) . "'>{$sd['grade']}</td>";
-        $html .= '</tr>';
     }
 
     $html .= '</table></body></html>';
