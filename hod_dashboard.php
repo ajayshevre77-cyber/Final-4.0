@@ -254,6 +254,7 @@ $pending_approvals = $pending_leaves + $unresolved_grievances;
                     <li><a class="sidebar-nav-item" data-tab="notices" onclick="switchTab('notices')"><i class="fa-solid fa-bullhorn"></i><span>Notices</span></a></li>
                     <li><a class="sidebar-nav-item" data-tab="students" onclick="switchTab('students')"><i class="fa-solid fa-user-graduate"></i><span>Students</span></a></li>
                     <li><a class="sidebar-nav-item" data-tab="approvals" onclick="switchTab('approvals')"><i class="fa-solid fa-check-double"></i><span>Approvals</span> <span class="notification-badge" style="background: var(--primary-color); color: white; padding: 2px 6px; border-radius: 12px; font-size: 0.75rem; margin-left: auto;"><?= $pending_approvals ?></span></a></li>
+                    <li><a class="sidebar-nav-item" data-tab="notifications" onclick="switchTab('notifications')"><i class="fa-solid fa-bell"></i><span>Notifications</span></a></li>
                 </ul>
             </div>
             <div class="sidebar-footer">
@@ -316,6 +317,9 @@ $pending_approvals = $pending_leaves + $unresolved_grievances;
                                     </div>
                                     <?php endforeach; ?>
                                 <?php endif; ?>
+                            </div>
+                            <div style="padding: 0.75rem; text-align: center; border-top: 1px solid var(--border-color); background: var(--bg-alt); cursor: pointer; font-size: 0.8rem; font-weight: 600; color: var(--primary-color);" onclick="switchTab('notifications')">
+                                View all notifications
                             </div>
 
                         </div>
@@ -397,6 +401,38 @@ $pending_approvals = $pending_leaves + $unresolved_grievances;
                     <span><?php echo $error_message; ?></span>
                 </div>
             <?php endif; ?>
+
+            <!-- Notifications View -->
+            <div id="view-notifications" class="app-view">
+                <div class="card" style="padding: 1.5rem; max-width: 800px; margin: 0 auto;">
+                    <h3 style="margin-top:0; margin-bottom:1.5rem; display:flex; align-items:center; gap:0.5rem;"><i class="fa-solid fa-bell" style="color:var(--primary-color);"></i> All Notifications</h3>
+                    <?php if (empty($db['recent_activity'])): ?>
+                        <div style="padding: 3rem 1rem; text-align: center; color: var(--text-secondary); background: var(--bg-alt); border-radius: 12px; border: 1px dashed var(--border-color);">
+                            <i class="fa-regular fa-bell-slash" style="font-size: 2.5rem; margin-bottom: 1rem; color: #cbd5e1;"></i><br>
+                            <span style="font-size: 1.1rem; font-weight: 500;">No notifications available</span>
+                        </div>
+                    <?php else: ?>
+                        <div style="display:flex; flex-direction:column; gap:1rem;">
+                            <?php foreach($db['recent_activity'] as $activity): ?>
+                            <div style="padding: 1.25rem; border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-alt); display: flex; gap: 1rem; align-items: flex-start; transition: transform 0.2s; cursor: default;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                                <div style="width: 42px; height: 42px; border-radius: 50%; background: rgba(37, 99, 235, 0.1); color: #3b82f6; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.1rem;">
+                                    <i class="fa-solid fa-bell"></i>
+                                </div>
+                                <div style="flex-grow: 1;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                                        <h4 style="margin: 0; color: var(--text-primary); font-size: 1.05rem; font-weight: 600;"><?php echo htmlspecialchars($activity['title'] ?? 'Notification'); ?></h4>
+                                        <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-muted); background: var(--bg-card); padding: 0.2rem 0.6rem; border-radius: 20px; border: 1px solid var(--border-color);"><i class="fa-regular fa-clock" style="margin-right: 4px;"></i><?php echo htmlspecialchars($activity['time'] ?? 'Just now'); ?></span>
+                                    </div>
+                                    <p style="margin: 0; color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5;">
+                                        <?php echo htmlspecialchars($activity['desc'] ?? ''); ?>
+                                    </p>
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
 
             <!-- Dashboard View -->
             <div id="view-dashboard" class="app-view active">
@@ -1135,7 +1171,8 @@ $pending_approvals = $pending_leaves + $unresolved_grievances;
             'faculty': { title: 'Faculty Directory', sub: 'Manage teaching staff and workload' },
             'reports': { title: 'Reports & Analytics', sub: 'Generate and download department reports' },
             'approvals': { title: 'Pending Approvals', sub: 'Consolidated view of all pending actions' },
-            'settings': { title: 'Settings', sub: 'Configure department preferences' }
+            'settings': { title: 'Settings', sub: 'Configure department preferences' },
+            'notifications': { title: 'Notifications', sub: 'View all your recent alerts and activities.' }
         };
 
         function switchTab(tabId) {

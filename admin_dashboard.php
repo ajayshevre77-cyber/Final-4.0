@@ -64,12 +64,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $phone = $_POST['phone'] ?? '';
         $department = $_POST['department'] ?? 'Information Technology';
         
+        if (!preg_match('/@gmail\.com$/i', trim($email))) {
+            $_SESSION['error_message'] = "Error: Email must be a valid @gmail.com address.";
+            $_SESSION['active_tab'] = 'user-management';
+            header("Location: admin_dashboard.php");
+            exit;
+        }
+        
         if ($role === 'student') {
             $new_id = '125UIT' . rand(1000, 9999);
             $prn = trim($_POST['prn'] ?? '');
-            if (empty($prn)) {
-                $prn = generate_next_prn($db, $department);
-            }
             $db['students'][] = [
                 'id' => $new_id,
                 'prn' => $prn,
@@ -117,6 +121,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             if ($handle !== FALSE) {
                 // Read header row
                 $header = fgetcsv($handle, 1000, ",");
+                $expected_headers = ['student name', 'prn', 'department', 'year semester', 'division'];
+                $actual_headers = array_map(function($h) { return strtolower(trim($h)); }, $header ?: []);
+                
+                if ($actual_headers !== $expected_headers) {
+                    fclose($handle);
+                    $_SESSION['error_message'] = "Invalid CSV format. Expected columns: Student Name, PRN, Department, Year Semester, Division";
+                    $_SESSION['active_tab'] = 'user-management';
+                    header("Location: admin_dashboard.php");
+                    exit;
+                }
                 
                 $count = 0;
                 $duplicates = 0;
@@ -126,9 +140,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     if (count($data) >= 5) {
                         $student_name = trim($data[0]);
                         $zprn = trim($data[1]);
-                        $division = trim($data[2]);
+                        $department = trim($data[2]);
                         $semester = trim($data[3]);
-                        $department = trim($data[4]);
+                        $division = trim($data[4]);
                         
                         if (empty($zprn) || empty($student_name)) {
                             continue;
@@ -1024,6 +1038,12 @@ if (isset($db['departments'])) {
                     Student Marks
                 </a>
             </li>
+            <li class="nav-item">
+                <a onclick="switchTab('notifications')" class="nav-link" id="nav-notifications">
+                    <i class="fa-solid fa-bell"></i>
+                    Notifications
+                </a>
+            </li>
         </ul>
 
         <div class="logout-container">
@@ -1089,6 +1109,9 @@ if (isset($db['departments'])) {
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </div>
+                        <div style="padding: 0.75rem; text-align: center; border-top: 1px solid var(--border-color); background: var(--bg-alt); cursor: pointer; font-size: 0.8rem; font-weight: 600; color: var(--primary-color);" onclick="triggerTab('notifications')">
+                            View all notifications
+                        </div>
 
                     </div>
                     <script>
@@ -1112,12 +1135,11 @@ if (isset($db['departments'])) {
                             
                             document.getElementById('notificationDropdown').style.display = 'none';
                             
-                            let items = document.querySelectorAll('.sidebar-nav-item');
+                            let items = document.querySelectorAll('.nav-link');
                             let targetEl = null;
                             for (let i=0; i<items.length; i++) {
                                 let onclick = items[i].getAttribute('onclick') || '';
-                                let dataTab = items[i].getAttribute('data-tab') || '';
-                                if (onclick.includes("'" + tabName + "'") || dataTab === tabName) {
+                                if (onclick.includes("'" + tabName + "'")) {
                                     targetEl = items[i];
                                     break;
                                 }
@@ -1168,6 +1190,38 @@ if (isset($db['departments'])) {
             <span><?php echo htmlspecialchars($error_message); ?></span>
         </div>
         <?php endif; ?>
+
+        <!-- Notifications View -->
+        <div id="view-notifications" class="app-view">
+            <div class="card" style="padding: 1.5rem; max-width: 800px; margin: 0 auto;">
+                <h3 style="margin-top:0; margin-bottom:1.5rem; display:flex; align-items:center; gap:0.5rem;"><i class="fa-solid fa-bell" style="color:var(--primary-color);"></i> All Notifications</h3>
+                <?php if (empty($db['recent_activity'])): ?>
+                    <div style="padding: 3rem 1rem; text-align: center; color: var(--text-secondary); background: var(--bg-alt); border-radius: 12px; border: 1px dashed var(--border-color);">
+                        <i class="fa-regular fa-bell-slash" style="font-size: 2.5rem; margin-bottom: 1rem; color: #cbd5e1;"></i><br>
+                        <span style="font-size: 1.1rem; font-weight: 500;">No notifications available</span>
+                    </div>
+                <?php else: ?>
+                    <div style="display:flex; flex-direction:column; gap:1rem;">
+                        <?php foreach($db['recent_activity'] as $activity): ?>
+                        <div style="padding: 1.25rem; border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-alt); display: flex; gap: 1rem; align-items: flex-start; transition: transform 0.2s; cursor: default;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                            <div style="width: 42px; height: 42px; border-radius: 50%; background: rgba(37, 99, 235, 0.1); color: #3b82f6; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.1rem;">
+                                <i class="fa-solid fa-bell"></i>
+                            </div>
+                            <div style="flex-grow: 1;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                                    <h4 style="margin: 0; color: var(--text-primary); font-size: 1.05rem; font-weight: 600;"><?php echo htmlspecialchars($activity['title'] ?? 'Notification'); ?></h4>
+                                    <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-muted); background: var(--bg-card); padding: 0.2rem 0.6rem; border-radius: 20px; border: 1px solid var(--border-color);"><i class="fa-regular fa-clock" style="margin-right: 4px;"></i><?php echo htmlspecialchars($activity['time'] ?? 'Just now'); ?></span>
+                                </div>
+                                <p style="margin: 0; color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5;">
+                                    <?php echo htmlspecialchars($activity['desc'] ?? ''); ?>
+                                </p>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
 
         <!-- Dashboard View -->
         <div id="view-dashboard" class="app-view active">
@@ -1579,11 +1633,11 @@ if (isset($db['departments'])) {
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 1.5rem;">
                         <div>
                             <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">Start Date (Optional)</label>
-                            <input type="date" name="start_date" min="<?= date('Y-m-d') ?>" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; font-size: 1rem;">
+                            <input type="date" name="start_date" max="<?= date('Y-m-d') ?>" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; font-size: 1rem;">
                         </div>
                         <div>
                             <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">End Date (Optional)</label>
-                            <input type="date" name="end_date" min="<?= date('Y-m-d') ?>" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; font-size: 1rem;">
+                            <input type="date" name="end_date" max="<?= date('Y-m-d') ?>" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 6px; font-family: inherit; font-size: 1rem;">
                         </div>
                     </div>
                     <div style="margin-bottom: 2rem;">
@@ -2857,12 +2911,12 @@ if (isset($db['departments'])) {
 
                 <div class="form-group">
                     <label>Email Address</label>
-                    <input type="email" name="email" required placeholder="Enter email address">
+                    <input type="email" name="email" required placeholder="Enter email address" pattern=".*@gmail\.com" title="Please enter a valid @gmail.com address">
                 </div>
 
                 <div class="form-group">
                     <label>Phone Number</label>
-                    <input type="text" name="phone" required placeholder="Enter phone number">
+                    <input type="tel" name="phone" required placeholder="Enter phone number" pattern="[0-9]{10}" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 </div>
 
                 <div class="form-group">
@@ -2877,17 +2931,8 @@ if (isset($db['departments'])) {
                 </div>
 
                 <div class="form-group" id="prnGroup">
-                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">
-                        Automatic Student PRN
-                    </label>
-                    <div style="display: flex; align-items: center; gap: 0.6rem; background: var(--bg-page); border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 0.6rem 0.75rem; margin-bottom: 0.5rem;">
-                        <input type="checkbox" id="autoPrnToggle" checked onchange="toggleAutoPrnMode(this)" style="width: 18px; height: 18px; accent-color: #4f46e5; cursor: pointer;">
-                        <label for="autoPrnToggle" style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); cursor: pointer; margin: 0; user-select: none;">Auto-generate PRN by Department</label>
-                        <span style="margin-left: auto; font-size: 0.75rem; color: #4f46e5; font-weight: 700; background: #e0e7ff; padding: 2px 8px; border-radius: 12px;">Active</span>
-                    </div>
-                    <div>
-                        <input type="text" name="prn" id="prnInput" readonly value="<?= htmlspecialchars(generate_next_prn($db, 'Information Technology')) ?>" style="background-color: #e0e7ff; font-weight: 700; color: #3730a3; border: 1.5px solid #6366f1; cursor: not-allowed; font-size: 1rem; letter-spacing: 0.5px; width: 100%; padding: 0.65rem 0.75rem; border-radius: 8px;" placeholder="Auto-generated PRN">
-                    </div>
+                    <label>Student PRN</label>
+                    <input type="text" name="prn" required placeholder="Enter student PRN">
                 </div>
 
                 <!-- Faculty specific fields -->
@@ -2930,7 +2975,7 @@ if (isset($db['departments'])) {
                 
                 <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.4;">
                     <strong>CSV Columns expected:</strong><br>
-                    Student Name, ZPRN, Division, Semester, Department
+                    Student Name, PRN, Department, Year Semester, Division
                 </div>
 
                 <button type="submit" class="submit-btn" style="background-color: #10b981;">Import Students</button>
@@ -3057,8 +3102,11 @@ if (isset($db['departments'])) {
             });
 
             // Show selected view
-            document.getElementById('view-' + tabId).classList.add('active');
-            document.getElementById('nav-' + tabId).classList.add('active');
+            const targetView = document.getElementById('view-' + tabId);
+            if (targetView) targetView.classList.add('active');
+            
+            const targetNav = document.getElementById('nav-' + tabId);
+            if (targetNav) targetNav.classList.add('active');
 
             // Update top banner dynamically
             const title = document.getElementById('banner-title');
@@ -3067,6 +3115,9 @@ if (isset($db['departments'])) {
             if(tabId === 'dashboard') {
                 title.innerText = 'Dashboard';
                 desc.innerText = 'Welcome to the Admin Panel.';
+            } else if (tabId === 'notifications') {
+                title.innerText = 'Notifications';
+                desc.innerText = 'View all your recent alerts and activities.';
             } else if (tabId === 'user-management') {
                 title.innerText = 'User Management';
                 desc.innerText = 'Manage IT Department students and faculty.';

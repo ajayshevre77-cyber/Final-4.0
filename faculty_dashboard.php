@@ -390,8 +390,9 @@ $db = get_db();
 
                     <li><a class="sidebar-nav-item" onclick="switchTab('leaves', this)"><i class="fa-solid fa-envelope-open-text"></i><span>Leave Approvals</span></a></li>
                     <li><a class="sidebar-nav-item" onclick="switchTab('assignments', this)"><i class="fa-solid fa-file-invoice"></i><span>Manage Assignments</span></a></li>
-                    <li><a class="sidebar-nav-item" onclick="switchTab('notices', this)"><i class="fa-solid fa-bullhorn"></i><span>Publish Notices</span></a></li>
-                    <li><a class="sidebar-nav-item" onclick="switchTab('grievances', this)"><i class="fa-solid fa-circle-exclamation"></i><span>Grievance</span></a></li>
+                    <li><a class="sidebar-nav-item" onclick="switchTab('notices', this)"><i class="fa-solid fa-bullhorn"></i><span>Notices</span></a></li>
+                    <li><a class="sidebar-nav-item" onclick="switchTab('grievances', this)"><i class="fa-solid fa-circle-exclamation"></i><span>Grievance Management</span></a></li>
+                    <li><a class="sidebar-nav-item" onclick="switchTab('notifications', this)"><i class="fa-solid fa-bell"></i><span>Notifications</span></a></li>
                 </ul>
             </div>
             <div class="sidebar-footer">
@@ -436,7 +437,7 @@ $db = get_db();
                                     $targetTab = 'dashboard';
                                     $t = strtolower($activity['title'] ?? '');
                                     if (strpos($t, 'leave') !== false) $targetTab = 'leaves';
-                                    elseif (strpos($t, 'grievance') !== false) $targetTab = 'grievance';
+                                    elseif (strpos($t, 'grievance') !== false) $targetTab = 'grievances';
                                     elseif (strpos($t, 'assignment') !== false) $targetTab = 'assignments';
                                     elseif (strpos($t, 'notice') !== false) $targetTab = 'notices';
                                     ?>
@@ -455,26 +456,14 @@ $db = get_db();
                                     <?php endforeach; ?>
                                 <?php endif; ?>
                             </div>
+                            <div style="padding: 0.75rem; text-align: center; border-top: 1px solid var(--border-color); background: var(--bg-alt); cursor: pointer; font-size: 0.8rem; font-weight: 600; color: var(--primary-color);" onclick="triggerTab('notifications')">
+                                View all notifications
+                            </div>
 
                         </div>
                         <script>
                             function triggerTab(tabName) {
                                 if (!tabName) return;
-                                if (tabName === 'grievance') {
-                                    let hasGrievances = false;
-                                    document.querySelectorAll('.sidebar-nav-item').forEach(el => {
-                                        if ((el.getAttribute('onclick')||'').includes("'grievances'") || el.getAttribute('data-tab') === 'grievances') hasGrievances = true;
-                                    });
-                                    if (hasGrievances) tabName = 'grievances';
-                                }
-                                if (tabName === 'grievances') {
-                                    let hasGrievance = false;
-                                    document.querySelectorAll('.sidebar-nav-item').forEach(el => {
-                                        if ((el.getAttribute('onclick')||'').includes("'grievance'") && !(el.getAttribute('onclick')||'').includes("'grievances'")) hasGrievance = true;
-                                        if (el.getAttribute('data-tab') === 'grievance') hasGrievance = true;
-                                    });
-                                    if (hasGrievance) tabName = 'grievance';
-                                }
                                 
                                 document.getElementById('notificationDropdown').style.display = 'none';
                                 
@@ -482,19 +471,14 @@ $db = get_db();
                                 let targetEl = null;
                                 for (let i=0; i<items.length; i++) {
                                     let onclick = items[i].getAttribute('onclick') || '';
-                                    let dataTab = items[i].getAttribute('data-tab') || '';
-                                    if (onclick.includes("'" + tabName + "'") || dataTab === tabName) {
+                                    if (onclick.includes("'" + tabName + "'")) {
                                         targetEl = items[i];
                                         break;
                                     }
                                 }
                                 
                                 if (typeof switchTab === 'function') {
-                                    if (targetEl && switchTab.length === 2) {
-                                        switchTab(tabName, targetEl);
-                                    } else {
-                                        try { switchTab(tabName); } catch(e) {}
-                                    }
+                                    switchTab(tabName, targetEl);
                                 }
                             }
 
@@ -535,6 +519,38 @@ $db = get_db();
                     <span><?php echo $error_message; ?></span>
                 </div>
             <?php endif; ?>
+
+            <!-- Notifications View -->
+            <div id="tab-notifications" class="app-view">
+                <div class="card" style="padding: 1.5rem; max-width: 800px; margin: 0 auto;">
+                    <h3 style="margin-top:0; margin-bottom:1.5rem; display:flex; align-items:center; gap:0.5rem;"><i class="fa-solid fa-bell" style="color:var(--primary-color);"></i> All Notifications</h3>
+                    <?php if (empty($db['recent_activity'])): ?>
+                        <div style="padding: 3rem 1rem; text-align: center; color: var(--text-secondary); background: var(--bg-alt); border-radius: 12px; border: 1px dashed var(--border-color);">
+                            <i class="fa-regular fa-bell-slash" style="font-size: 2.5rem; margin-bottom: 1rem; color: #cbd5e1;"></i><br>
+                            <span style="font-size: 1.1rem; font-weight: 500;">No notifications available</span>
+                        </div>
+                    <?php else: ?>
+                        <div style="display:flex; flex-direction:column; gap:1rem;">
+                            <?php foreach($db['recent_activity'] as $activity): ?>
+                            <div style="padding: 1.25rem; border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-alt); display: flex; gap: 1rem; align-items: flex-start; transition: transform 0.2s; cursor: default;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                                <div style="width: 42px; height: 42px; border-radius: 50%; background: rgba(37, 99, 235, 0.1); color: #3b82f6; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.1rem;">
+                                    <i class="fa-solid fa-bell"></i>
+                                </div>
+                                <div style="flex-grow: 1;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                                        <h4 style="margin: 0; color: var(--text-primary); font-size: 1.05rem; font-weight: 600;"><?php echo htmlspecialchars($activity['title'] ?? 'Notification'); ?></h4>
+                                        <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-muted); background: var(--bg-card); padding: 0.2rem 0.6rem; border-radius: 20px; border: 1px solid var(--border-color);"><i class="fa-regular fa-clock" style="margin-right: 4px;"></i><?php echo htmlspecialchars($activity['time'] ?? 'Just now'); ?></span>
+                                    </div>
+                                    <p style="margin: 0; color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5;">
+                                        <?php echo htmlspecialchars($activity['desc'] ?? ''); ?>
+                                    </p>
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
 
             <!-- ============================================ -->
             <!-- 0. DASHBOARD PAGE                            -->
@@ -1584,9 +1600,18 @@ $db = get_db();
             }
         });
         function switchTab(tabName, element) {
+            // Update active states in navigation
             const items = document.querySelectorAll('.sidebar-nav-item');
             items.forEach(item => item.classList.remove('active'));
-            element.classList.add('active');
+            if (element) {
+                element.classList.add('active');
+            } else {
+                items.forEach(item => {
+                    if ((item.getAttribute('onclick') || '').includes("'" + tabName + "'")) {
+                        item.classList.add('active');
+                    }
+                });
+            }
 
             const panels = document.querySelectorAll('.app-view');
             panels.forEach(p => p.classList.remove('active'));
@@ -1614,7 +1639,11 @@ $db = get_db();
             } else if (tabName === 'dashboard') {
                 document.getElementById('tab-dashboard').classList.add('active');
                 headerTitle.textContent = "Dashboard";
-                headerSubtitle.textContent = "Quick access to all essential faculty services.";
+                headerSubtitle.textContent = "Overview of faculty activities and quick stats.";
+            } else if (tabName === 'notifications') {
+                document.getElementById('tab-notifications').classList.add('active');
+                headerTitle.textContent = "Notifications";
+                headerSubtitle.textContent = "View all your recent alerts and activities.";
             } else if (tabName === 'attendance') {
                 document.getElementById('tab-attendance').classList.add('active');
                 headerTitle.textContent = "Mark Attendance";

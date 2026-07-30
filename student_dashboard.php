@@ -184,12 +184,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ];
         }
 
+        $target_sub_id = null;
+        foreach ($db['subjects'] ?? [] as $sub) {
+            $n1 = trim($sub['name']);
+            $n2 = trim($sa_item['subject_name'] ?? '');
+            if (!empty($n1) && !empty($n2) && (strcasecmp($n1, $n2) === 0 || strpos($n1, $n2) !== false || strpos($n2, $n1) !== false)) {
+                $target_sub_id = $sub['id'];
+                break;
+            }
+        }
+        
         // Log upload action in notifications (recent activity)
         $db['recent_activity'] = array_merge([
             [
                 'title' => 'Assignment Uploaded',
                 'desc' => $user['name'] . ' submitted ' . $sa_item['assignment_title'],
-                'time' => 'Just now'
+                'time' => 'Just now',
+                'target_subject_id' => $target_sub_id
             ]
         ], array_slice($db['recent_activity'] ?? [], 0, 4));
 
@@ -303,12 +314,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'screenshot' => $screenshot_name
         ];
 
+        $target_sub_id = null;
+        foreach ($db['subjects'] ?? [] as $sub) {
+            $n1 = trim($sub['name']);
+            $n2 = trim($sa_subject_name);
+            if (!empty($n1) && !empty($n2) && (strcasecmp($n1, $n2) === 0 || strpos($n1, $n2) !== false || strpos($n2, $n1) !== false)) {
+                $target_sub_id = $sub['id'];
+                break;
+            }
+        }
+        
         // Log grievance action
         $db['recent_activity'] = array_merge([
             [
                 'title' => 'Grievance Raised',
-                'desc' => $user['name'] . ' raised assignment issue: ' . $issue_type,
-                'time' => 'Just now'
+                'desc' => $user['name'] . ' raised Issue: ' . $issue_type,
+                'time' => 'Just now',
+                'target_subject_id' => $target_sub_id
             ]
         ], array_slice($db['recent_activity'] ?? [], 0, 4));
 
@@ -667,8 +689,9 @@ foreach ($db['leaves'] ?? [] as $leave) {
                     <!-- <li><a class="sidebar-nav-item" onclick="switchTab('attendance', this)"><i class="fa-solid fa-calendar-check"></i><span>Attendance</span></a></li> -->
                     <li><a class="sidebar-nav-item" onclick="switchTab('assignments', this)"><i class="fa-solid fa-file-invoice"></i><span>Assignments</span></a></li>
                     <li><a class="sidebar-nav-item" onclick="switchTab('leaves', this)"><i class="fa-solid fa-envelope-open-text"></i><span>Leave Requests</span></a></li>
-                    <!-- <li><a class="sidebar-nav-item" onclick="switchTab('grievance', this)"><i class="fa-solid fa-circle-question"></i><span>Grievance</span></a></li> -->
+                    <li><a class="sidebar-nav-item" onclick="switchTab('grievance', this)"><i class="fa-solid fa-circle-question"></i><span>Grievance</span></a></li>
                     <li><a class="sidebar-nav-item" onclick="switchTab('notices', this)"><i class="fa-solid fa-bullhorn"></i><span>Notices</span></a></li>
+                    <li><a class="sidebar-nav-item" onclick="switchTab('notifications', this)"><i class="fa-solid fa-bell"></i><span>Notifications</span></a></li>
                 </ul>
             </div>
             <div class="sidebar-footer">
@@ -711,13 +734,56 @@ foreach ($db['leaves'] ?? [] as $leave) {
                                     <?php foreach(array_slice($db['recent_activity'], 0, 5) as $idx => $activity): ?>
                                     <?php
                                     $targetTab = 'dashboard';
+                                    $targetId = isset($activity['target_subject_id']) ? $activity['target_subject_id'] : 'null';
                                     $t = strtolower($activity['title'] ?? '');
-                                    if (strpos($t, 'leave') !== false) $targetTab = 'leaves';
-                                    elseif (strpos($t, 'grievance') !== false) $targetTab = 'grievance';
-                                    elseif (strpos($t, 'assignment') !== false) $targetTab = 'assignments';
-                                    elseif (strpos($t, 'notice') !== false) $targetTab = 'notices';
+                                    
+                                    // Helper function for fuzzy subject matching
+                                    if (!function_exists('is_subject_match')) {
+                                        function is_subject_match($name1, $name2) {
+                                            $n1 = trim($name1);
+                                            $n2 = trim($name2);
+                                            if (empty($n1) || empty($n2)) return false;
+                                            return (strcasecmp($n1, $n2) === 0 || strpos($n1, $n2) !== false || strpos($n2, $n1) !== false);
+                                        }
+                                    }
+
+                                    if (strpos($t, 'leave') !== false) {
+                                        $targetTab = 'leaves';
+                                    } elseif (strpos($t, 'grievance') !== false) {
+                                        $targetTab = 'assignments';
+                                        if ($targetId === 'null') {
+                                            $desc_text = $activity['desc'] ?? '';
+                                            foreach ($db['assignment_grievances'] ?? [] as $ag) {
+                                                if (!empty($ag['issue_type']) && strpos($desc_text, $ag['issue_type']) !== false) {
+                                                    foreach ($db['subjects'] ?? [] as $sub) {
+                                                        if (is_subject_match($sub['name'], $ag['subject_name'] ?? '')) {
+                                                            $targetId = $sub['id'];
+                                                            break 2;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    } elseif (strpos($t, 'assignment') !== false) {
+                                        $targetTab = 'assignments';
+                                        if ($targetId === 'null') {
+                                            $desc_text = $activity['desc'] ?? '';
+                                            foreach ($db['subject_assignments'] ?? [] as $sa) {
+                                                if (!empty($sa['assignment_title']) && strpos($desc_text, $sa['assignment_title']) !== false) {
+                                                    foreach ($db['subjects'] ?? [] as $sub) {
+                                                        if (is_subject_match($sub['name'], $sa['subject_name'] ?? '')) {
+                                                            $targetId = $sub['id'];
+                                                            break 2;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    } elseif (strpos($t, 'notice') !== false) {
+                                        $targetTab = 'notices';
+                                    }
                                     ?>
-                                    <div onclick="triggerTab('<?php echo $targetTab; ?>')" style="padding: 1rem; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s; <?php echo $idx === 0 ? 'background: #f0f9ff;' : ''; ?>" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='<?php echo $idx === 0 ? '#f0f9ff' : 'transparent'; ?>'">
+                                    <div onclick="triggerTab('<?php echo $targetTab; ?>', <?php echo $targetId; ?>)" style="padding: 1rem; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s; <?php echo $idx === 0 ? 'background: #f0f9ff;' : ''; ?>" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='<?php echo $idx === 0 ? '#f0f9ff' : 'transparent'; ?>'">
                                         <div style="display: flex; gap: 0.75rem;">
                                             <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--bg-alt); color: #0284c7; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                                                 <i class="fa-solid fa-bolt"></i>
@@ -732,26 +798,14 @@ foreach ($db['leaves'] ?? [] as $leave) {
                                     <?php endforeach; ?>
                                 <?php endif; ?>
                             </div>
+                            <div style="padding: 0.75rem; text-align: center; border-top: 1px solid var(--border-color); background: var(--bg-alt); cursor: pointer; font-size: 0.8rem; font-weight: 600; color: var(--primary-color);" onclick="triggerTab('notifications')">
+                                View all notifications
+                            </div>
 
                         </div>
                         <script>
-                            function triggerTab(tabName) {
+                            function triggerTab(tabName, targetId = null) {
                                 if (!tabName) return;
-                                if (tabName === 'grievance') {
-                                    let hasGrievances = false;
-                                    document.querySelectorAll('.sidebar-nav-item').forEach(el => {
-                                        if ((el.getAttribute('onclick')||'').includes("'grievances'") || el.getAttribute('data-tab') === 'grievances') hasGrievances = true;
-                                    });
-                                    if (hasGrievances) tabName = 'grievances';
-                                }
-                                if (tabName === 'grievances') {
-                                    let hasGrievance = false;
-                                    document.querySelectorAll('.sidebar-nav-item').forEach(el => {
-                                        if ((el.getAttribute('onclick')||'').includes("'grievance'") && !(el.getAttribute('onclick')||'').includes("'grievances'")) hasGrievance = true;
-                                        if (el.getAttribute('data-tab') === 'grievance') hasGrievance = true;
-                                    });
-                                    if (hasGrievance) tabName = 'grievance';
-                                }
                                 
                                 document.getElementById('notificationDropdown').style.display = 'none';
                                 
@@ -772,6 +826,30 @@ foreach ($db['leaves'] ?? [] as $leave) {
                                     } else {
                                         try { switchTab(tabName); } catch(e) {}
                                     }
+                                }
+
+                                if (tabName === 'assignments' && targetId !== null && targetId !== 'null') {
+                                    setTimeout(() => {
+                                        const detailsRow = document.getElementById(`subject-body-${targetId}-0`);
+                                        const unitRow = document.querySelector(`.assignment-unit-row[data-unit="${targetId}"]`);
+                                        
+                                        if (detailsRow && detailsRow.style.display === 'none') {
+                                            if (unitRow) {
+                                                unitRow.click();
+                                            } else if (typeof toggleSubjectDetails === 'function') {
+                                                toggleSubjectDetails(targetId, 0);
+                                            }
+                                        } else if (!detailsRow && unitRow) {
+                                            unitRow.click();
+                                        }
+                                        
+                                        // Scroll to it gently
+                                        if (unitRow) {
+                                            setTimeout(() => {
+                                                unitRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                            }, 100);
+                                        }
+                                    }, 250);
                                 }
                             }
 
@@ -1409,7 +1487,7 @@ foreach ($db['leaves'] ?? [] as $leave) {
             <!-- ============================================ -->
             <!-- 4. GRIEVANCES PAGE                           -->
             <!-- ============================================ -->
-            <div id="tab-grievance" class="app-view" style="display: none !important;">
+            <div id="tab-grievance" class="app-view">
                 <div class="leave-grid">
                     <!-- Submit Request card -->
                     <div class="leave-form-container">
@@ -1978,14 +2056,14 @@ foreach ($db['leaves'] ?? [] as $leave) {
                                 <label>Primary Email (Personal) <span style="color:red;">*</span></label>
                                 <div class="input-with-icon">
                                     <i class="fa-solid fa-envelope"></i>
-                                    <input type="email" id="primary_email" name="primary_email" required value="<?= htmlspecialchars($profile_details['primary_email'] ?? '') ?>" oninput="validateEmails()">
+                                    <input type="email" id="primary_email" name="primary_email" required pattern=".*@gmail\.com$" title="Email must end with @gmail.com" value="<?= htmlspecialchars($profile_details['primary_email'] ?? '') ?>" oninput="validateEmails()">
                                 </div>
                             </div>
                             <div class="form-group-col">
                                 <label>Alternate Email <span style="color:red;">*</span></label>
                                 <div class="input-with-icon">
                                     <i class="fa-solid fa-envelope"></i>
-                                    <input type="email" id="alternate_email" name="alternate_email" required value="<?= htmlspecialchars($profile_details['alternate_email'] ?? '') ?>" oninput="validateEmails()">
+                                    <input type="email" id="alternate_email" name="alternate_email" required pattern=".*@gmail\.com$" title="Email must end with @gmail.com" value="<?= htmlspecialchars($profile_details['alternate_email'] ?? '') ?>" oninput="validateEmails()">
                                 </div>
                             </div>
                             <div class="form-group-col">
@@ -2130,7 +2208,39 @@ foreach ($db['leaves'] ?? [] as $leave) {
                     <button type="button" onclick="removeSelectedFile()" style="background: none; border: none; color: #ef4444; font-weight: 700; cursor: pointer; font-size: 0.85rem;">Remove File</button>
                 </div>
 
-                <!-- Preview Box (For PDF / Images) -->
+            <!-- Notifications View -->
+            <div id="tab-notifications" class="app-view">
+                <div class="card" style="padding: 1.5rem; max-width: 800px; margin: 0 auto;">
+                    <h3 style="margin-top:0; margin-bottom:1.5rem; display:flex; align-items:center; gap:0.5rem;"><i class="fa-solid fa-bell" style="color:var(--primary-color);"></i> All Notifications</h3>
+                    <?php if (empty($db['recent_activity'])): ?>
+                        <div style="padding: 3rem 1rem; text-align: center; color: var(--text-secondary); background: var(--bg-alt); border-radius: 12px; border: 1px dashed var(--border-color);">
+                            <i class="fa-regular fa-bell-slash" style="font-size: 2.5rem; margin-bottom: 1rem; color: #cbd5e1;"></i><br>
+                            <span style="font-size: 1.1rem; font-weight: 500;">No notifications available</span>
+                        </div>
+                    <?php else: ?>
+                        <div style="display:flex; flex-direction:column; gap:1rem;">
+                            <?php foreach($db['recent_activity'] as $activity): ?>
+                            <div style="padding: 1.25rem; border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-alt); display: flex; gap: 1rem; align-items: flex-start; transition: transform 0.2s; cursor: default;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                                <div style="width: 42px; height: 42px; border-radius: 50%; background: rgba(37, 99, 235, 0.1); color: #3b82f6; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.1rem;">
+                                    <i class="fa-solid fa-bell"></i>
+                                </div>
+                                <div style="flex-grow: 1;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                                        <h4 style="margin: 0; color: var(--text-primary); font-size: 1.05rem; font-weight: 600;"><?php echo htmlspecialchars($activity['title'] ?? 'Notification'); ?></h4>
+                                        <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-muted); background: var(--bg-card); padding: 0.2rem 0.6rem; border-radius: 20px; border: 1px solid var(--border-color);"><i class="fa-regular fa-clock" style="margin-right: 4px;"></i><?php echo htmlspecialchars($activity['time'] ?? 'Just now'); ?></span>
+                                    </div>
+                                    <p style="margin: 0; color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5;">
+                                        <?php echo htmlspecialchars($activity['desc'] ?? ''); ?>
+                                    </p>
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <!-- Preview Box (For PDF / Images) -->
                 <div id="submissionPreviewContainer" style="display: none; margin-bottom: 1.25rem; border: 1px solid var(--border-color); border-radius: 8px; padding: 0.5rem; background: var(--bg-alt);">
                     <span style="display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 0.5rem;">File Preview</span>
                     <div id="previewPane" style="display: flex; justify-content: center; align-items: center; max-height: 250px; overflow: hidden; border-radius: 6px;">
@@ -2364,7 +2474,15 @@ foreach ($db['leaves'] ?? [] as $leave) {
             // Update active states in navigation
             const items = document.querySelectorAll('.sidebar-nav-item');
             items.forEach(item => item.classList.remove('active'));
-            element.classList.add('active');
+            if (element) {
+                element.classList.add('active');
+            } else {
+                items.forEach(item => {
+                    if ((item.getAttribute('onclick') || '').includes("'" + tabName + "'")) {
+                        item.classList.add('active');
+                    }
+                });
+            }
 
             // Hide all panels
             const panels = document.querySelectorAll('.app-view');
@@ -2378,6 +2496,10 @@ foreach ($db['leaves'] ?? [] as $leave) {
                 document.getElementById('tab-notices').classList.add('active');
                 headerTitle.textContent = "Notices";
                 headerSubtitle.textContent = "Stay updated with the latest announcements and important information.";
+            } else if (tabName === 'notifications') {
+                document.getElementById('tab-notifications').classList.add('active');
+                headerTitle.textContent = "Notifications";
+                headerSubtitle.textContent = "View all your recent alerts and activities.";
             } else if (tabName === 'assignments') {
                 document.getElementById('tab-assignments').classList.add('active');
                 headerTitle.textContent = "Assignments";
@@ -2994,9 +3116,21 @@ foreach ($db['leaves'] ?? [] as $leave) {
             const alternate = document.getElementById('alternate_email');
             
             if (primary && alternate) {
+                if (primary.value && !primary.value.trim().toLowerCase().endsWith('@gmail.com')) {
+                    primary.setCustomValidity('Please enter a valid @gmail.com address.');
+                } else {
+                    primary.setCustomValidity('');
+                }
+                
+                if (alternate.value && !alternate.value.trim().toLowerCase().endsWith('@gmail.com')) {
+                    alternate.setCustomValidity('Please enter a valid @gmail.com address.');
+                } else {
+                    alternate.setCustomValidity('');
+                }
+
                 if (primary.value && alternate.value && primary.value.trim().toLowerCase() === alternate.value.trim().toLowerCase()) {
                     alternate.setCustomValidity('Alternate Email cannot be the same as Primary Email.');
-                } else {
+                } else if (alternate.value && alternate.value.trim().toLowerCase().endsWith('@gmail.com')) {
                     alternate.setCustomValidity('');
                 }
             }
