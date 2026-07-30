@@ -2281,7 +2281,6 @@ if (isset($db['departments'])) {
                                         <th style="padding: 1rem; text-align: left;">Student Name</th>
                                         <th style="padding: 1rem; text-align: left;">Department</th>
                                         <th style="padding: 1rem; text-align: center;">Div</th>
-                                        <th style="padding: 1rem; text-align: center;">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody style="font-size: 0.9rem;">
@@ -2301,14 +2300,13 @@ if (isset($db['departments'])) {
                                         </div>
                                     </td>
                                     <td style="padding: 1rem; color: var(--text-secondary); text-transform: uppercase;">${s.department}</td>
-                                    <td style="padding: 1rem; text-align: center; font-weight: 600;">${s.division}</td>
-                                    <td style="padding: 1rem; text-align: center;">
-                                        <span style="background: var(--success-light); color: #166534; padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.75rem; font-weight: 600;">Active</span>
+                                    <td style="padding: 1rem; text-align: center; font-weight: 600;">
+                                        ${s.division}
                                         <i class="fa-solid fa-chevron-down" id="ao-student-icon-${s.id}" style="margin-left: 0.75rem; color: var(--text-muted); transition: transform 0.2s;"></i>
                                     </td>
                                 </tr>
                                 <tr id="ao-student-subjects-${s.id}" style="display: none; background: var(--bg-alt); border-bottom: 2px solid var(--primary-light);">
-                                    <td colspan="5" style="padding: 0;">
+                                    <td colspan="4" style="padding: 0;">
                                         <div id="ao-student-subjects-content-${s.id}" style="padding: 2rem; text-align: center; color: var(--text-muted);">
                                             <i class="fa-solid fa-spinner fa-spin"></i> Fetching subject details...
                                         </div>

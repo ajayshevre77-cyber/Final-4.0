@@ -20,19 +20,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $table = '';
     
     if ($role === 'student') {
-        $stmt = $pdo->prepare("SELECT * FROM students WHERE zprn = ?");
+        $stmt = $pdo->prepare("SELECT * FROM students WHERE BINARY zprn = ?");
         $stmt->execute([$username]);
         $user = $stmt->fetch();
     } elseif ($role === 'faculty') {
-        $stmt = $pdo->prepare("SELECT * FROM faculty WHERE username = ?");
+        $stmt = $pdo->prepare("SELECT * FROM faculty WHERE BINARY username = ?");
         $stmt->execute([$username]);
         $user = $stmt->fetch();
     } elseif ($role === 'hod') {
-        $stmt = $pdo->prepare("SELECT * FROM hod WHERE username = ?");
+        $stmt = $pdo->prepare("SELECT * FROM hod WHERE BINARY username = ?");
         $stmt->execute([$username]);
         $user = $stmt->fetch();
     } elseif ($role === 'admin') {
-        $stmt = $pdo->prepare("SELECT * FROM admin WHERE username = ?");
+        $stmt = $pdo->prepare("SELECT * FROM admin WHERE BINARY username = ?");
         $stmt->execute([$username]);
         $user = $stmt->fetch();
     }

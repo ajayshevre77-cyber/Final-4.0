@@ -488,6 +488,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $s['name'] = $full_name;
                 }
                 $s['phone'] = trim($_POST['mobile_number'] ?? $s['phone']);
+                if (isset($_POST['official_email'])) {
+                    $s['email'] = trim($_POST['official_email']);
+                    $_SESSION['user']['email'] = $s['email']; // Keep session in sync if needed
+                }
                 $s['profile_details'] = $profile_data;
                 
                 // Update session variables
@@ -1778,12 +1782,7 @@ foreach ($db['leaves'] ?? [] as $leave) {
                     <!-- Custom Tab Bar -->
                     <div class="profile-details-tabs-bar" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.75rem;">
                         <button type="button" class="profile-details-tab-btn active" data-tab-target="personal" onclick="switchProfileTab('personal')">PERSONAL DETAILS</button>
-                        <button type="button" class="profile-details-tab-btn" data-tab-target="identity" onclick="switchProfileTab('identity')">IDENTITY</button>
-                        <button type="button" class="profile-details-tab-btn" data-tab-target="religion" onclick="switchProfileTab('religion')">RELIGION</button>
-                        <button type="button" class="profile-details-tab-btn" data-tab-target="handicap" onclick="switchProfileTab('handicap')">PHYSICALLY HANDICAPPED</button>
-                        <button type="button" class="profile-details-tab-btn" data-tab-target="minority" onclick="switchProfileTab('minority')">MINORITY DETAILS</button>
-                        <button type="button" class="profile-details-tab-btn" data-tab-target="passport" onclick="switchProfileTab('passport')">PASSPORT DETAILS</button>
-                        <button type="button" class="profile-details-tab-btn" data-tab-target="exams" onclick="switchProfileTab('exams')">EXAMINATION DETAILS</button>
+
                     </div>
 
                     <!-- 1. PERSONAL DETAILS -->
@@ -1817,7 +1816,7 @@ foreach ($db['leaves'] ?? [] as $leave) {
                                 <label>Email(Official) <span style="color:red;">*</span></label>
                                 <div class="input-with-icon">
                                     <i class="fa-solid fa-envelope"></i>
-                                    <input type="email" readonly value="<?= htmlspecialchars($current_student['email']) ?>" style="background: var(--bg-alt); cursor: not-allowed;">
+                                    <input type="email" id="official_email" name="official_email" required value="<?= htmlspecialchars($current_student['email'] ?? '') ?>" onblur="validateOfficialEmail()">
                                 </div>
                             </div>
                             <div class="form-group-col">
@@ -2064,263 +2063,7 @@ foreach ($db['leaves'] ?? [] as $leave) {
                             <button type="submit" class="btn-login" style="width: auto; padding: 0.75rem 2rem; font-size: 0.95rem; margin-top: 0; background: var(--primary-color);">
                                 <i class="fa-solid fa-floppy-disk" style="margin-right: 6px;"></i>Save Details
                             </button>
-                            <button type="button" class="btn-login" onclick="switchProfileTab('identity')" style="width: auto; padding: 0.75rem 2rem; font-size: 0.95rem; margin-top: 0; background: #10b981; border-color: #10b981;">
-                                Next Tab <i class="fa-solid fa-arrow-right" style="margin-left: 6px;"></i>
-                            </button>
-                        </div>
-                    </div>
 
-                    <!-- 2. IDENTITY -->
-                    <div class="profile-details-section" id="profile-details-sec-identity" style="display: none;">
-                        <div class="form-grid-2">
-                            <div class="form-group-col">
-                                <label>Aadhaar Card Number</label>
-                                <div class="input-with-icon">
-                                    <i class="fa-solid fa-address-card"></i>
-                                    <input type="text" id="identity_aadhaar" name="identity_details[aadhaar_no]" value="<?= htmlspecialchars($profile_details['identity_details']['aadhaar_no'] ?? '') ?>">
-                                </div>
-                                <span class="error-msg-span" id="err_identity_aadhaar" style="color: #ef4444; font-size: 0.8rem; display: none; margin-top: 0.25rem; font-weight: 500;"></span>
-                            </div>
-                            <div class="form-group-col">
-                                <label>PAN Card Number</label>
-                                <div class="input-with-icon">
-                                    <i class="fa-solid fa-id-card-clip"></i>
-                                    <input type="text" id="identity_pan" name="identity_details[pan_no]" value="<?= htmlspecialchars($profile_details['identity_details']['pan_no'] ?? '') ?>">
-                                </div>
-                                <span class="error-msg-span" id="err_identity_pan" style="color: #ef4444; font-size: 0.8rem; display: none; margin-top: 0.25rem; font-weight: 500;"></span>
-                            </div>
-                        </div>
-                        <div class="form-grid-2" style="margin-top: 1rem;">
-                            <div class="form-group-col">
-                                <label>Voter ID Card Number</label>
-                                <div class="input-with-icon">
-                                    <i class="fa-solid fa-check-to-slot"></i>
-                                    <input type="text" id="identity_voter_id" name="identity_details[voter_id]" value="<?= htmlspecialchars($profile_details['identity_details']['voter_id'] ?? '') ?>">
-                                </div>
-                                <span class="error-msg-span" id="err_identity_voter_id" style="color: #ef4444; font-size: 0.8rem; display: none; margin-top: 0.25rem; font-weight: 500;"></span>
-                            </div>
-                            <div class="form-group-col">
-                                <label>Driving License Number</label>
-                                <div class="input-with-icon">
-                                    <i class="fa-solid fa-car"></i>
-                                    <input type="text" id="identity_driving_license" name="identity_details[driving_license]" value="<?= htmlspecialchars($profile_details['identity_details']['driving_license'] ?? '') ?>">
-                                </div>
-                                <span class="error-msg-span" id="err_identity_driving_license" style="color: #ef4444; font-size: 0.8rem; display: none; margin-top: 0.25rem; font-weight: 500;"></span>
-                            </div>
-                        </div>
-                        <div style="display: flex; justify-content: flex-end; margin-top: 2rem; gap: 1rem;">
-                            <button type="button" class="btn-secondary" onclick="switchProfileTab('personal')" style="padding: 0.75rem 2rem;">Back</button>
-                            <button type="submit" class="btn-login" style="width: auto; padding: 0.75rem 2rem; font-size: 0.95rem; margin-top: 0; background: var(--primary-color);">
-                                <i class="fa-solid fa-floppy-disk" style="margin-right: 6px;"></i>Save Details
-                            </button>
-                            <button type="button" class="btn-login" onclick="switchProfileTab('religion')" style="width: auto; padding: 0.75rem 2rem; font-size: 0.95rem; margin-top: 0; background: #10b981; border-color: #10b981;">
-                                Next Tab <i class="fa-solid fa-arrow-right" style="margin-left: 6px;"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- 3. RELIGION -->
-                    <div class="profile-details-section" id="profile-details-sec-religion" style="display: none;">
-                        <div class="form-grid-3">
-                            <div class="form-group-col">
-                                <label>Religion</label>
-                                <div class="input-with-icon">
-                                    <i class="fa-solid fa-place-of-worship"></i>
-                                    <input type="text" name="religion_details[religion]" value="<?= htmlspecialchars($profile_details['religion_details']['religion'] ?? '') ?>">
-                                </div>
-                            </div>
-                            <div class="form-group-col">
-                                <label>Mother Tongue</label>
-                                <div class="input-with-icon">
-                                    <i class="fa-solid fa-language"></i>
-                                    <input type="text" name="religion_details[mother_tongue]" value="<?= htmlspecialchars($profile_details['religion_details']['mother_tongue'] ?? '') ?>">
-                                </div>
-                            </div>
-                            <div class="form-group-col">
-                                <label>Caste Category</label>
-                                <div class="input-with-icon">
-                                    <i class="fa-solid fa-layer-group"></i>
-                                    <input type="text" name="religion_details[caste_category]" value="<?= htmlspecialchars($profile_details['religion_details']['caste_category'] ?? '') ?>">
-                                </div>
-                            </div>
-                        </div>
-                        <div style="display: flex; justify-content: flex-end; margin-top: 2rem; gap: 1rem;">
-                            <button type="button" class="btn-secondary" onclick="switchProfileTab('identity')" style="padding: 0.75rem 2rem;">Back</button>
-                            <button type="submit" class="btn-login" style="width: auto; padding: 0.75rem 2rem; font-size: 0.95rem; margin-top: 0; background: var(--primary-color);">
-                                <i class="fa-solid fa-floppy-disk" style="margin-right: 6px;"></i>Save Details
-                            </button>
-                            <button type="button" class="btn-login" onclick="switchProfileTab('handicap')" style="width: auto; padding: 0.75rem 2rem; font-size: 0.95rem; margin-top: 0; background: #10b981; border-color: #10b981;">
-                                Next Tab <i class="fa-solid fa-arrow-right" style="margin-left: 6px;"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- 4. PHYSICALLY HANDICAPPED -->
-                    <div class="profile-details-section" id="profile-details-sec-handicap" style="display: none;">
-                        <div class="form-grid-3">
-                            <div class="form-group-col">
-                                <label>Is Physically Handicapped?</label>
-                                <select name="handicap_details[is_handicapped]">
-                                    <option value="No" <?= ($profile_details['handicap_details']['is_handicapped'] ?? '') === 'No' ? 'selected' : '' ?>>No</option>
-                                    <option value="Yes" <?= ($profile_details['handicap_details']['is_handicapped'] ?? '') === 'Yes' ? 'selected' : '' ?>>Yes</option>
-                                </select>
-                            </div>
-                            <div class="form-group-col">
-                                <label>Disability Type</label>
-                                <div class="input-with-icon">
-                                    <i class="fa-solid fa-wheelchair"></i>
-                                    <input type="text" name="handicap_details[disability_type]" value="<?= htmlspecialchars($profile_details['handicap_details']['disability_type'] ?? '') ?>">
-                                </div>
-                            </div>
-                            <div class="form-group-col">
-                                <label>Disability Percentage (%)</label>
-                                <div class="input-with-icon">
-                                    <i class="fa-solid fa-percent"></i>
-                                    <input type="text" id="handicap_percentage" name="handicap_details[disability_percentage]" value="<?= htmlspecialchars($profile_details['handicap_details']['disability_percentage'] ?? '') ?>">
-                                </div>
-                                <span class="error-msg-span" id="err_handicap_percentage" style="color: #ef4444; font-size: 0.8rem; display: none; margin-top: 0.25rem; font-weight: 500;"></span>
-                            </div>
-                        </div>
-                        <div style="display: flex; justify-content: flex-end; margin-top: 2rem; gap: 1rem;">
-                            <button type="button" class="btn-secondary" onclick="switchProfileTab('religion')" style="padding: 0.75rem 2rem;">Back</button>
-                            <button type="submit" class="btn-login" style="width: auto; padding: 0.75rem 2rem; font-size: 0.95rem; margin-top: 0; background: var(--primary-color);">
-                                <i class="fa-solid fa-floppy-disk" style="margin-right: 6px;"></i>Save Details
-                            </button>
-                            <button type="button" class="btn-login" onclick="switchProfileTab('minority')" style="width: auto; padding: 0.75rem 2rem; font-size: 0.95rem; margin-top: 0; background: #10b981; border-color: #10b981;">
-                                Next Tab <i class="fa-solid fa-arrow-right" style="margin-left: 6px;"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- 5. MINORITY DETAILS -->
-                    <div class="profile-details-section" id="profile-details-sec-minority" style="display: none;">
-                        <div class="form-grid-2">
-                            <div class="form-group-col">
-                                <label>Is Minority?</label>
-                                <select name="minority_details[is_minority]">
-                                    <option value="No" <?= ($profile_details['minority_details']['is_minority'] ?? '') === 'No' ? 'selected' : '' ?>>No</option>
-                                    <option value="Yes" <?= ($profile_details['minority_details']['is_minority'] ?? '') === 'Yes' ? 'selected' : '' ?>>Yes</option>
-                                </select>
-                            </div>
-                            <div class="form-group-col">
-                                <label>Minority Type</label>
-                                <div class="input-with-icon">
-                                    <i class="fa-solid fa-users-viewfinder"></i>
-                                    <input type="text" name="minority_details[minority_type]" value="<?= htmlspecialchars($profile_details['minority_details']['minority_type'] ?? '') ?>">
-                                </div>
-                            </div>
-                        </div>
-                        <div style="display: flex; justify-content: flex-end; margin-top: 2rem; gap: 1rem;">
-                            <button type="button" class="btn-secondary" onclick="switchProfileTab('handicap')" style="padding: 0.75rem 2rem;">Back</button>
-                            <button type="submit" class="btn-login" style="width: auto; padding: 0.75rem 2rem; font-size: 0.95rem; margin-top: 0; background: var(--primary-color);">
-                                <i class="fa-solid fa-floppy-disk" style="margin-right: 6px;"></i>Save Details
-                            </button>
-                            <button type="button" class="btn-login" onclick="switchProfileTab('passport')" style="width: auto; padding: 0.75rem 2rem; font-size: 0.95rem; margin-top: 0; background: #10b981; border-color: #10b981;">
-                                Next Tab <i class="fa-solid fa-arrow-right" style="margin-left: 6px;"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- 6. PASSPORT DETAILS -->
-                    <div class="profile-details-section" id="profile-details-sec-passport" style="display: none;">
-                        <div class="form-grid-2">
-                            <div class="form-group-col">
-                                <label>Passport Number <span style="color:red;">*</span></label>
-                                <div class="input-with-icon">
-                                    <i class="fa-solid fa-passport"></i>
-                                    <input type="text" id="passport_number" name="passport_details[passport_no]" required maxlength="9" value="<?= htmlspecialchars($profile_details['passport_details']['passport_no'] ?? '') ?>">
-                                </div>
-                                <span class="error-msg-span" id="err_passport_number" style="color: #ef4444; font-size: 0.8rem; display: none; margin-top: 0.25rem; font-weight: 500;"></span>
-                            </div>
-                            <div class="form-group-col">
-                                <label>Place of Issue <span style="color:red;">*</span></label>
-                                <div class="input-with-icon">
-                                    <i class="fa-solid fa-location-arrow"></i>
-                                    <input type="text" id="passport_place_of_issue" name="passport_details[place_of_issue]" required value="<?= htmlspecialchars($profile_details['passport_details']['place_of_issue'] ?? '') ?>">
-                                </div>
-                                <span class="error-msg-span" id="err_passport_place_of_issue" style="color: #ef4444; font-size: 0.8rem; display: none; margin-top: 0.25rem; font-weight: 500;"></span>
-                            </div>
-                        </div>
-                        <div class="form-grid-2" style="margin-top: 1rem;">
-                            <div class="form-group-col">
-                                <label>Issue Date <span style="color:red;">*</span></label>
-                                <div class="input-with-icon">
-                                    <i class="fa-solid fa-calendar-days"></i>
-                                    <input type="date" id="passport_issue_date" name="passport_details[issue_date]" required value="<?= htmlspecialchars($profile_details['passport_details']['issue_date'] ?? '') ?>">
-                                </div>
-                                <span class="error-msg-span" id="err_passport_issue_date" style="color: #ef4444; font-size: 0.8rem; display: none; margin-top: 0.25rem; font-weight: 500;"></span>
-                            </div>
-                            <div class="form-group-col">
-                                <label>Expiry Date <span style="color:red;">*</span></label>
-                                <div class="input-with-icon">
-                                    <i class="fa-solid fa-calendar-xmark"></i>
-                                    <input type="date" id="passport_expiry_date" name="passport_details[expiry_date]" required value="<?= htmlspecialchars($profile_details['passport_details']['expiry_date'] ?? '') ?>">
-                                </div>
-                                <span class="error-msg-span" id="err_passport_expiry_date" style="color: #ef4444; font-size: 0.8rem; display: none; margin-top: 0.25rem; font-weight: 500;"></span>
-                            </div>
-                        </div>
-                        <div style="display: flex; justify-content: flex-end; margin-top: 2rem; gap: 1rem;">
-                            <button type="button" class="btn-secondary" onclick="switchProfileTab('minority')" style="padding: 0.75rem 2rem;">Back</button>
-                            <button type="button" id="btn_save_passport" class="btn-login" style="width: auto; padding: 0.75rem 2rem; font-size: 0.95rem; margin-top: 0; background: var(--primary-color);">
-                                <i class="fa-solid fa-floppy-disk" style="margin-right: 6px;"></i>Save Details
-                            </button>
-                            <button type="button" class="btn-login" onclick="switchProfileTab('exams')" style="width: auto; padding: 0.75rem 2rem; font-size: 0.95rem; margin-top: 0; background: #10b981; border-color: #10b981;">
-                                Next Tab <i class="fa-solid fa-arrow-right" style="margin-left: 6px;"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- 7. EXAMINATION DETAILS -->
-                    <div class="profile-details-section" id="profile-details-sec-exams" style="display: none;">
-                        <h4 style="margin: 0 0 1rem 0; color: #4f46e5; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; font-size: 1.1rem; font-weight: 700;">SSC (10th) Records</h4>
-                        <div class="form-grid-3">
-                            <div class="form-group-col">
-                                <label>Board/University Name</label>
-                                <input type="text" name="exam_details[ssc_board]" value="<?= htmlspecialchars($profile_details['exam_details']['ssc_board'] ?? '') ?>">
-                            </div>
-                            <div class="form-group-col">
-                                <label>Passing Year</label>
-                                <input type="number" name="exam_details[ssc_year]" value="<?= htmlspecialchars($profile_details['exam_details']['ssc_year'] ?? '') ?>">
-                            </div>
-                            <div class="form-group-col">
-                                <label>Percentage / CGPA Obtained</label>
-                                <input type="text" name="exam_details[ssc_marks]" value="<?= htmlspecialchars($profile_details['exam_details']['ssc_marks'] ?? '') ?>">
-                            </div>
-                        </div>
-
-                        <h4 style="margin: 2rem 0 1rem 0; color: #4f46e5; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; font-size: 1.1rem; font-weight: 700;">HSC / Diploma (12th) Records</h4>
-                        <div class="form-grid-3">
-                            <div class="form-group-col">
-                                <label>Board/University Name</label>
-                                <input type="text" name="exam_details[hsc_board]" value="<?= htmlspecialchars($profile_details['exam_details']['hsc_board'] ?? '') ?>">
-                            </div>
-                            <div class="form-group-col">
-                                <label>Passing Year</label>
-                                <input type="number" name="exam_details[hsc_year]" value="<?= htmlspecialchars($profile_details['exam_details']['hsc_year'] ?? '') ?>">
-                            </div>
-                            <div class="form-group-col">
-                                <label>Percentage / CGPA Obtained</label>
-                                <input type="text" name="exam_details[hsc_marks]" value="<?= htmlspecialchars($profile_details['exam_details']['hsc_marks'] ?? '') ?>">
-                            </div>
-                        </div>
-
-                        <h4 style="margin: 2rem 0 1rem 0; color: #4f46e5; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; font-size: 1.1rem; font-weight: 700;">Other Graduation / Last Examination</h4>
-                        <div class="form-grid-2">
-                            <div class="form-group-col">
-                                <label>Examination Name</label>
-                                <input type="text" name="exam_details[last_exam_name]" value="<?= htmlspecialchars($profile_details['exam_details']['last_exam_name'] ?? '') ?>">
-                            </div>
-                            <div class="form-group-col">
-                                <label>Percentage / CGPA Obtained</label>
-                                <input type="text" name="exam_details[last_exam_marks]" value="<?= htmlspecialchars($profile_details['exam_details']['last_exam_marks'] ?? '') ?>">
-                            </div>
-                        </div>
-
-                        <div style="display: flex; justify-content: flex-end; margin-top: 2rem; gap: 1rem;">
-                            <button type="button" class="btn-secondary" onclick="switchProfileTab('passport')" style="padding: 0.75rem 2rem;">Back</button>
-                            <button type="submit" class="btn-login" style="width: auto; padding: 0.75rem 2.5rem; font-size: 0.95rem; margin-top: 0; background: #4f46e5; border-color: #4f46e5;">
-                                <i class="fa-solid fa-floppy-disk" style="margin-right: 6px;"></i>Save All Profile Details
-                            </button>
                         </div>
                     </div>
                 </form>
@@ -3259,6 +3002,22 @@ foreach ($db['leaves'] ?? [] as $leave) {
             }
         }
 
+        function validateOfficialEmail() {
+            const email = document.getElementById('official_email');
+            if (!email) return;
+            let val = email.value.trim();
+            if (val !== '' && !val.includes('@')) {
+                val = val + '@gmail.com';
+                email.value = val;
+            }
+            if (val !== '' && !val.endsWith('@gmail.com')) {
+                email.setCustomValidity('Only @gmail.com addresses are allowed.');
+                email.reportValidity();
+            } else {
+                email.setCustomValidity('');
+            }
+        }
+
         function validateAadhaarField(el) {
             const errSpan = document.getElementById('err_identity_aadhaar');
             if (el.value.length > 0 && el.value.length !== 12) {
@@ -3270,6 +3029,34 @@ foreach ($db['leaves'] ?? [] as $leave) {
                 el.setCustomValidity('');
                 errSpan.style.display = 'none';
                 return true;
+            }
+        }
+
+        function validatePercentage(el) {
+            if(el.value !== "") {
+                let val = parseFloat(el.value);
+                if(isNaN(val) || val < 0 || val > 100) {
+                    el.setCustomValidity("Percentage must be between 0 and 100");
+                    el.reportValidity();
+                } else {
+                    el.setCustomValidity("");
+                }
+            } else {
+                el.setCustomValidity("");
+            }
+        }
+
+        function validateCGPA(el) {
+            if(el.value !== "") {
+                let val = parseFloat(el.value);
+                if(isNaN(val) || val < 0 || val > 10) {
+                    el.setCustomValidity("CGPA must be between 0 and 10");
+                    el.reportValidity();
+                } else {
+                    el.setCustomValidity("");
+                }
+            } else {
+                el.setCustomValidity("");
             }
         }
 

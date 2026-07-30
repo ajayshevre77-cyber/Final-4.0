@@ -248,7 +248,7 @@ function get_db() {
         while ($row = $stmt->fetch()) {
             $db['students'][] = [
                 'id' => $row['zprn'],
-                'prn' => 'IT' . sprintf('%04d', $row['id']),
+                'prn' => $row['zprn'],
                 'username' => $row['zprn'],
                 'name' => $row['student_name'],
                 'email' => $row['email'] ?? '',
@@ -269,6 +269,7 @@ function get_db() {
         while ($row = $stmt->fetch()) {
             $db['faculty'][] = [
                 'id' => $row['username'],
+                'prn' => $row['username'],
                 'username' => $row['username'],
                 'name' => $row['name'],
                 'email' => $row['email'] ?? '',
@@ -285,6 +286,7 @@ function get_db() {
         while ($row = $stmt->fetch()) {
             $db['faculty'][] = [
                 'id' => $row['username'],
+                'prn' => $row['username'],
                 'username' => $row['username'],
                 'name' => $row['name'],
                 'email' => $row['email'] ?? '',
@@ -601,7 +603,7 @@ function save_db($data) {
 }
 
 function generate_next_prn(&$db, $department) {
-    // Left for compatibility, return string format
-    return 'IT' . sprintf('%04d', count($db['students']) + 1);
+    // Return empty or null as auto PRN is removed
+    return null;
 }
 ?>
