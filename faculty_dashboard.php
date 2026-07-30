@@ -44,6 +44,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     exit;
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_profile') {
+    header('Content-Type: application/json');
+    $name = trim($_POST['name'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $phone = trim($_POST['phone'] ?? '');
+    $subjects = trim($_POST['subjects'] ?? '');
+    
+    // Server-side validations
+    if (!preg_match('/^[a-zA-Z\s]+$/', $name)) {
+        echo json_encode(['success' => false, 'message' => 'Name must contain only letters.']);
+        exit;
+    }
+    if (!preg_match('/^\d+$/', $phone)) {
+        echo json_encode(['success' => false, 'message' => 'Phone must contain only numbers.']);
+        exit;
+    }
+    if (!str_ends_with($email, '@gmail.com')) {
+        echo json_encode(['success' => false, 'message' => 'Email must end with @gmail.com.']);
+        exit;
+    }
+    
+    // Update faculty record
+    $updated = false;
+    foreach ($db['faculty'] as &$f) {
+        if ($f['username'] === $user['username']) {
+            $f['name'] = $name;
+            $f['email'] = $email;
+            $f['phone'] = $phone;
+            $f['subjects'] = $subjects;
+            $updated = true;
+            break;
+        }
+    }
+    
+    // Update $_SESSION['user']['name'] so the UI reflects the change immediately
+    $_SESSION['user']['name'] = $name;
+    
+    if ($updated) {
+        save_db($db);
+        echo json_encode(['success' => true, 'message' => 'Profile updated successfully!']);
+    } else {
+        echo json_encode(['success' => false, 'message' => 'Profile record not found.']);
+    }
+    exit;
+}
+
 $success_message = '';
 $error_message = '';
 if (isset($_SESSION['success_message'])) {
@@ -281,8 +327,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && in_array
                 // Sync status and response to main grievances table as well
                 if (isset($db['grievances'])) {
                     foreach ($db['grievances'] as &$mg) {
-                        if ((isset($mg['assignment_grievance_id']) && $mg['assignment_grievance_id'] === $g_id) || 
-                            (isset($mg['subject_assignment_id']) && $mg['subject_assignment_id'] == $g['subject_assignment_id'] && $mg['student_id'] === $g['student_id'])) {
+                        // Since MySQL sync drops assignment_grievance_id, match by student_id, description, and category
+                        if ($mg['student_id'] == $g['student_id'] && trim($mg['desc']) == trim($g['description']) && trim($mg['category']) == trim($g['issue_type'])) {
                             $mg['status'] = $status;
                             if (!empty($reply)) {
                                 $mg['replies'][] = [
@@ -684,44 +730,53 @@ $db = get_db();
                     <div style="display: flex; gap: 2rem; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 2rem; margin-bottom: 2rem;">
                         <?= get_initials_avatar($user['name'], 120, 48, 4) ?>
                         <div>
-                            <h2 style="font-size: 1.75rem; font-weight: 800; color: var(--text-primary); margin: 0 0 0.5rem 0;"><?= htmlspecialchars($user['name']) ?></h2>
+                            <h2 style="font-size: 1.75rem; font-weight: 800; color: var(--text-primary); margin: 0 0 0.5rem 0;" id="profile-display-name"><?= htmlspecialchars($user['name']) ?></h2>
                             <span class="status-pill graded" style="font-size: 0.85rem; padding: 0.25rem 0.75rem; background: #dcfce7; color: #15803d;">Active Faculty</span>
                             <p style="margin: 0.5rem 0 0 0; color: var(--text-muted); font-size: 0.95rem;">ID: <?= htmlspecialchars($user['username']) ?> | <?= htmlspecialchars($user['dept']) ?></p>
                         </div>
                     </div>
                     
-                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
-                        <div class="form-group-col">
-                            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem;">Full Name</label>
-                            <input type="text" readonly value="<?= htmlspecialchars($user['name']) ?>" style="width: 100%; background: var(--bg-alt); cursor: not-allowed; border: 1px solid var(--border-color); padding: 0.75rem 1rem; border-radius: var(--border-radius-sm);">
+                    <form id="facultyProfileForm">
+                        <input type="hidden" name="action" value="update_profile">
+                        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                            <div class="form-group-col">
+                                <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem;">Full Name</label>
+                                <input type="text" name="name" id="profile_name" required pattern="[A-Za-z\s]+" title="Only letters are allowed" oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '')" value="<?= htmlspecialchars($current_faculty['name'] ?? $user['name']) ?>" style="width: 100%; border: 1px solid var(--border-color); padding: 0.75rem 1rem; border-radius: var(--border-radius-sm); outline: none;">
+                            </div>
+                            <div class="form-group-col">
+                                <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem;">Employee ID</label>
+                                <input type="text" readonly value="<?= htmlspecialchars($user['username']) ?>" style="width: 100%; background: var(--bg-alt); cursor: not-allowed; border: 1px solid var(--border-color); padding: 0.75rem 1rem; border-radius: var(--border-radius-sm); outline: none;">
+                            </div>
                         </div>
-                        <div class="form-group-col">
-                            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem;">Employee ID</label>
-                            <input type="text" readonly value="<?= htmlspecialchars($user['username']) ?>" style="width: 100%; background: var(--bg-alt); cursor: not-allowed; border: 1px solid var(--border-color); padding: 0.75rem 1rem; border-radius: var(--border-radius-sm);">
+                        
+                        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+                            <div class="form-group-col">
+                                <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem;">Email Address</label>
+                                <input type="email" name="email" id="profile_email" required pattern=".*@gmail\.com$" title="Email must end with @gmail.com" value="<?= htmlspecialchars($current_faculty['email'] ?? '') ?>" placeholder="example@gmail.com" style="width: 100%; border: 1px solid var(--border-color); padding: 0.75rem 1rem; border-radius: var(--border-radius-sm); outline: none;">
+                            </div>
+                            <div class="form-group-col">
+                                <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem;">Phone Number</label>
+                                <input type="text" name="phone" id="profile_phone" required pattern="\d+" title="Only numbers are allowed" oninput="this.value = this.value.replace(/[^\d]/g, '')" value="<?= htmlspecialchars($current_faculty['phone'] ?? '') ?>" style="width: 100%; border: 1px solid var(--border-color); padding: 0.75rem 1rem; border-radius: var(--border-radius-sm); outline: none;">
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
-                        <div class="form-group-col">
-                            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem;">Email Address</label>
-                            <input type="text" readonly value="<?= htmlspecialchars($current_faculty['email'] ?? '') ?>" style="width: 100%; background: var(--bg-alt); cursor: not-allowed; border: 1px solid var(--border-color); padding: 0.75rem 1rem; border-radius: var(--border-radius-sm);">
-                        </div>
-                        <div class="form-group-col">
-                            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem;">Phone Number</label>
-                            <input type="text" readonly value="<?= htmlspecialchars($current_faculty['phone'] ?? '') ?>" style="width: 100%; background: var(--bg-alt); cursor: not-allowed; border: 1px solid var(--border-color); padding: 0.75rem 1rem; border-radius: var(--border-radius-sm);">
-                        </div>
-                    </div>
 
-                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
-                        <div class="form-group-col">
-                            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem;">Department</label>
-                            <input type="text" readonly value="<?= htmlspecialchars($user['dept']) ?>" style="width: 100%; background: var(--bg-alt); cursor: not-allowed; border: 1px solid var(--border-color); padding: 0.75rem 1rem; border-radius: var(--border-radius-sm);">
+                        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1.5rem;">
+                            <div class="form-group-col">
+                                <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem;">Department</label>
+                                <input type="text" readonly value="<?= htmlspecialchars($user['dept']) ?>" style="width: 100%; background: var(--bg-alt); cursor: not-allowed; border: 1px solid var(--border-color); padding: 0.75rem 1rem; border-radius: var(--border-radius-sm); outline: none;">
+                            </div>
+                            <div class="form-group-col">
+                                <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem;">Subjects (Comma separated)</label>
+                                <input type="text" name="subjects" id="profile_subjects" value="<?= htmlspecialchars($current_faculty['subjects'] ?? '') ?>" placeholder="e.g. Data Structures, Algorithms" style="width: 100%; border: 1px solid var(--border-color); padding: 0.75rem 1rem; border-radius: var(--border-radius-sm); outline: none;">
+                            </div>
                         </div>
-                        <div class="form-group-col">
-                            <label style="display: block; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.5rem;">Designation</label>
-                            <input type="text" readonly value="Associate Professor" style="width: 100%; background: var(--bg-alt); cursor: not-allowed; border: 1px solid var(--border-color); padding: 0.75rem 1rem; border-radius: var(--border-radius-sm);">
+                        
+                        <div style="margin-top: 2rem; text-align: right;">
+                            <button type="submit" id="profileSubmitBtn" class="btn-login" style="width: auto; padding: 0.75rem 2rem; font-size: 0.95rem; display: inline-flex; align-items: center; gap: 8px;">
+                                <i class="fa-solid fa-save"></i> Save Profile
+                            </button>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
 
@@ -1945,6 +2000,50 @@ $db = get_db();
                     pane.innerHTML = `<div style="text-align:center; font-size:0.75rem; color: var(--text-secondary); padding:1rem;"><i class="fa-solid fa-file-word" style="font-size:2rem; color:#2b579a; display:block; margin-bottom:0.25rem;"></i> Preview unavailable for ${ext.toUpperCase()}</div>`;
                 }
             }
+        }
+        
+        // Handle Faculty Profile Submit
+        const profileForm = document.getElementById('facultyProfileForm');
+        if (profileForm) {
+            profileForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const btn = document.getElementById('profileSubmitBtn');
+                if (btn) {
+                    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+                    btn.disabled = true;
+                    btn.style.opacity = '0.7';
+                }
+                
+                const formData = new FormData(this);
+                
+                fetch(window.location.href, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        showToastNotification(data.message, 'success');
+                        const displayName = document.getElementById('profile-display-name');
+                        if (displayName) {
+                            displayName.innerText = document.getElementById('profile_name').value;
+                        }
+                    } else {
+                        showToastNotification(data.message, 'error');
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    showToastNotification('An error occurred. Please try again.', 'error');
+                })
+                .finally(() => {
+                    if (btn) {
+                        btn.innerHTML = '<i class="fa-solid fa-save"></i> Save Profile';
+                        btn.disabled = false;
+                        btn.style.opacity = '1';
+                    }
+                });
+            });
         }
     </script>
 </body>

@@ -325,10 +325,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         // Log grievance action
+        $ag_title_disp = $sa_subject_name ? $sa_subject_name : 'an assignment';
+        if ($sa_assignment_title) $ag_title_disp .= ' (' . $sa_assignment_title . ')';
+        
         $db['recent_activity'] = array_merge([
             [
                 'title' => 'Grievance Raised',
-                'desc' => $user['name'] . ' raised Issue: ' . $issue_type,
+                'desc' => $user['name'] . ' raised issue on ' . $ag_title_disp . ': ' . $issue_type,
                 'time' => 'Just now',
                 'target_subject_id' => $target_sub_id
             ]
@@ -1207,12 +1210,11 @@ foreach ($db['leaves'] ?? [] as $leave) {
                                                 $submitted_at = $my_sub ? ($my_sub['submitted_at'] ?? '') : '';
                                                 
                                                 $due_passed = time() > strtotime($sa_item['due'] ?? $sa_item['due_date'] ?? '');
-                                                $my_sa_grievance = null;
+                                                $my_sa_grievances = [];
                                                 if (isset($db['assignment_grievances'])) {
                                                     foreach ($db['assignment_grievances'] as $gr) {
                                                         if ($gr['subject_assignment_id'] == $sa_item['id'] && $gr['student_id'] === $student_id) {
-                                                            $my_sa_grievance = $gr;
-                                                            break;
+                                                            $my_sa_grievances[] = $gr;
                                                         }
                                                     }
                                                 }
@@ -1246,22 +1248,33 @@ foreach ($db['leaves'] ?? [] as $leave) {
                                                                     </button>
                                                                 </div>
                                                                 
-                                                                <?php if ($my_sa_grievance): ?>
-                                                                    <div style="margin-top: 0.75rem; background: var(--bg-card);7ed; border: 1px solid #ffedd5; border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem;">
-                                                                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
-                                                                            <strong style="color: #c2410c;"><i class="fa-solid fa-triangle-exclamation"></i> Grievance Status:</strong>
-                                                                            <?php if ($my_sa_grievance['status'] === 'Resolved'): ?>
-                                                                                <span style="background: #dcfce7; color: #15803d; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 700;">Resolved</span>
-                                                                            <?php else: ?>
-                                                                                <span style="background: #fef3c7; color: #b45309; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 700;">Pending</span>
-                                                                            <?php endif; ?>
-                                                                        </div>
-                                                                        <div style="color: var(--text-secondary);"><strong>Issue:</strong> <?= htmlspecialchars($my_sa_grievance['issue_type']) ?></div>
-                                                                        <?php if (!empty($my_sa_grievance['reply'])): ?>
-                                                                            <div style="margin-top: 0.35rem; color: #15803d; background: var(--bg-card); padding: 0.4rem; border-radius: 4px; border: 1px solid var(--border-color);">
-                                                                                <strong>Faculty Reply:</strong> <?= htmlspecialchars($my_sa_grievance['reply']) ?>
+                                                                <?php if (!empty($my_sa_grievances)): ?>
+                                                                    <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.75rem;">
+                                                                        <?php foreach ($my_sa_grievances as $grievance): ?>
+                                                                            <div style="background: var(--bg-card); border: 1px solid #ffedd5; border-radius: 6px; padding: 0.65rem 0.85rem; font-size: 0.8rem;">
+                                                                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                                                                                    <strong style="color: #c2410c;"><i class="fa-solid fa-triangle-exclamation"></i> Grievance Status:</strong>
+                                                                                    <?php 
+                                                                                        $g_status = $grievance['status'] ?? 'Pending';
+                                                                                        if ($g_status === 'Resolved'): 
+                                                                                    ?>
+                                                                                        <span style="background: #dcfce7; color: #15803d; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 700;">Resolved</span>
+                                                                                    <?php elseif ($g_status === 'In Review'): ?>
+                                                                                        <span style="background: #dbeafe; color: #1d4ed8; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 700;">In Review</span>
+                                                                                    <?php elseif ($g_status === 'Rejected'): ?>
+                                                                                        <span style="background: #fee2e2; color: #991b1b; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 700;">Rejected</span>
+                                                                                    <?php else: ?>
+                                                                                        <span style="background: #fef3c7; color: #b45309; padding: 0.15rem 0.5rem; border-radius: 4px; font-weight: 700;">Pending</span>
+                                                                                    <?php endif; ?>
+                                                                                </div>
+                                                                                <div style="color: var(--text-secondary);"><strong>Issue:</strong> <?= htmlspecialchars($grievance['issue_type'] ?? '') ?></div>
+                                                                                <?php if (!empty($grievance['reply'])): ?>
+                                                                                    <div style="margin-top: 0.35rem; color: #15803d; background: var(--bg-card); padding: 0.4rem; border-radius: 4px; border: 1px solid var(--border-color);">
+                                                                                        <strong>Faculty Reply:</strong> <?= htmlspecialchars($grievance['reply']) ?>
+                                                                                    </div>
+                                                                                <?php endif; ?>
                                                                             </div>
-                                                                        <?php endif; ?>
+                                                                        <?php endforeach; ?>
                                                                     </div>
                                                                 <?php endif; ?>
                                                             </div>
@@ -2782,11 +2795,12 @@ foreach ($db['leaves'] ?? [] as $leave) {
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            showToastNotification('Grievance raised successfully.', 'success');
+                            showToastNotification('submitted', 'success');
                             closeGrievanceModal();
-                            setTimeout(() => {
-                                window.location.reload();
-                            }, 1000);
+                            if (submitBtn) {
+                                submitBtn.disabled = false;
+                                submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Grievance';
+                            }
                         } else {
                             if (submitBtn) {
                                 submitBtn.disabled = false;
@@ -2896,6 +2910,15 @@ foreach ($db['leaves'] ?? [] as $leave) {
         function closeGrievanceModal() {
             const modal = document.getElementById('assignmentGrievanceModal');
             if (modal) modal.style.display = 'none';
+        }
+        
+        const grievanceModalEl = document.getElementById('assignmentGrievanceModal');
+        if (grievanceModalEl) {
+            grievanceModalEl.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeGrievanceModal();
+                }
+            });
         }
 
         // Filtering logic for notices

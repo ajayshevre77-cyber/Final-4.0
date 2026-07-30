@@ -40,25 +40,29 @@ if ($action === 'get_dashboard_summary') {
             $sDiv = strtoupper($m[1]);
         }
 
-        if ($search !== '') {
-            $q = $search;
-            $prn = strtolower($s['prn'] ?? '');
-            $id = strtolower($s['id'] ?? '');
-            $name = strtolower($s['name'] ?? '');
-            $email = strtolower($s['email'] ?? '');
-            if (strpos($prn, $q) !== false || strpos($id, $q) !== false || strpos($name, $q) !== false || strpos($email, $q) !== false) {
-                $filteredStudents[] = $s;
-                $studentIds[] = $s['id'] ?? $s['username'] ?? $s['prn'];
+        $sSemVal = getAbsoluteSem($s['semester'] ?? '');
+        $matchSem = ($sSemVal === $absoluteSem);
+        $matchDiv = ($sDiv === $reqDiv);
+        $matchDept = true;
+        
+        if ($reqDept !== 'all') {
+            $matchDept = ($sDept === $reqDept || strpos($sDept, $reqDept) !== false);
+        }
+        
+        if ($matchSem && $matchDiv && $matchDept) {
+            $matchSearch = true;
+            if ($search !== '') {
+                $q = $search;
+                $prn = strtolower($s['prn'] ?? '');
+                $id = strtolower($s['id'] ?? '');
+                $name = strtolower($s['name'] ?? '');
+                $email = strtolower($s['email'] ?? '');
+                if (strpos($prn, $q) === false && strpos($id, $q) === false && strpos($name, $q) === false && strpos($email, $q) === false) {
+                    $matchSearch = false;
+                }
             }
-        } else {
-            $sSemVal = getAbsoluteSem($s['semester'] ?? '');
-            $matchSem = ($sSemVal === $absoluteSem);
-            $matchDiv = ($sDiv === $reqDiv);
-            $matchDept = true;
-            if ($reqDept !== 'all') {
-                $matchDept = ($sDept === $reqDept || strpos($sDept, $reqDept) !== false);
-            }
-            if ($matchSem && $matchDiv && $matchDept) {
+            
+            if ($matchSearch) {
                 $filteredStudents[] = $s;
                 $studentIds[] = $s['id'] ?? $s['username'] ?? $s['prn'];
             }

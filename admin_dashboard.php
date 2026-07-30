@@ -49,7 +49,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     } elseif ($_POST['action'] === 'update_setting') {
         $key = $_POST['setting_key'] ?? '';
         $val = $_POST['setting_value'] ?? '';
-        if ($key && isset($db['settings'][$key])) {
+        if ($key) {
+            if (!isset($db['settings'])) $db['settings'] = [];
             $db['settings'][$key] = $val;
             save_db($db);
             $_SESSION['success_message'] = "Setting updated successfully!";
@@ -2730,7 +2731,6 @@ if (isset($db['departments'])) {
                         'address' => 'Address',
                         'email_from' => 'Email',
                         'phone' => 'Phone',
-                        'website' => 'Website',
                         'established_year' => 'Established Year'
                     ]
                 ],
@@ -2742,76 +2742,8 @@ if (isset($db['departments'])) {
                         'academic_year' => 'Academic Year',
                         'current_semester' => 'Current Semester',
                         'total_departments' => 'Departments',
-                        'total_courses' => 'Courses',
                         'sections_divisions' => 'Sections / Divisions',
                         'grading_system' => 'Grading System'
-                    ]
-                ],
-                'User & Role Management' => [
-                    'icon' => '<i class="fa-solid fa-user-group"></i>',
-                    'color' => '#3b82f6', 'bg' => '#dbeafe',
-                    'desc' => 'Manage users, roles and their access to the system.',
-                    'settings' => [
-                        'total_users' => 'Total Users',
-                        'admin_users' => 'Admin Users',
-                        'faculty_users' => 'Faculty Users',
-                        'student_users' => 'Student Users',
-                        'roles_defined' => 'Roles'
-                    ]
-                ],
-                'System Maintenance' => [
-                    'icon' => '<i class="fa-solid fa-wrench"></i>',
-                    'color' => '#8b5cf6', 'bg' => '#f3e8ff',
-                    'desc' => 'System health, cache and logs management.',
-                    'settings' => [
-                        'system_status' => 'System Status',
-                        'cache' => 'Cache',
-                        'database_size' => 'Database Size',
-                        'system_logs' => 'System Logs'
-                    ]
-                ],
-                'Notification Settings' => [
-                    'icon' => '<i class="fa-regular fa-bell"></i>',
-                    'color' => '#6366f1', 'bg' => '#e0e7ff',
-                    'desc' => 'Configure email, SMS and in-app notifications.',
-                    'settings' => [
-                        'email_notifications' => 'Email Notifications',
-                        'sms_notifications' => 'SMS Notifications',
-                        'in_app_notifications' => 'In-App Notifications',
-                        'notice_duration' => 'Notice Display Duration'
-                    ]
-                ],
-                'Security Settings' => [
-                    'icon' => '<i class="fa-solid fa-shield"></i>',
-                    'color' => '#8b5cf6', 'bg' => '#f3e8ff',
-                    'desc' => 'Manage security preferences and login settings.',
-                    'settings' => [
-                        'password_policy' => 'Password Policy',
-                        'two_factor_auth' => 'Two-Factor Authentication',
-                        'session_timeout' => 'Session Timeout',
-                        'login_history' => 'Login History'
-                    ]
-                ],
-                'Backup & Restore' => [
-                    'icon' => '<i class="fa-solid fa-cloud-arrow-up"></i>',
-                    'color' => '#3b82f6', 'bg' => '#dbeafe',
-                    'desc' => 'Backup and restore system data and settings.',
-                    'settings' => [
-                        'last_backup' => 'Last Backup',
-                        'backup_frequency' => 'Backup Frequency',
-                        'auto_backup' => 'Auto Backup',
-                        'restore_points' => 'Restore Points'
-                    ]
-                ],
-                'System Preferences' => [
-                    'icon' => '<i class="fa-solid fa-sliders"></i>',
-                    'color' => '#8b5cf6', 'bg' => '#f3e8ff',
-                    'desc' => 'Set system preferences and default options.',
-                    'settings' => [
-                        'language' => 'Language',
-                        'date_format' => 'Date Format',
-                        'default_timezone' => 'Time Zone',
-                        'theme' => 'Theme'
                     ]
                 ]
             ];
@@ -2861,13 +2793,11 @@ if (isset($db['departments'])) {
                                     $val = $db['settings'][$key] ?? '';
                                 ?>
                                 <tr style="border-bottom: 1px dashed #f1f5f9;">
-                                    <td style="padding: 0.75rem 0; font-size: 0.85rem; font-weight: 600; color: var(--text-primary); width: 45%;"><?= htmlspecialchars($label) ?></td>
-                                    <td style="padding: 0.75rem 0; font-size: 0.85rem; color: var(--text-secondary);" id="val-<?= $key ?>">
-                                        <?php if ($key === 'system_status'): ?>
-                                            <span style="background: #dcfce7; color: #16a34a; padding: 0.15rem 0.6rem; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">Healthy</span>
-                                        <?php else: ?>
-                                            <?= htmlspecialchars($val) ?>
-                                        <?php endif; ?>
+                                    <td style="padding: 0.75rem 0; font-size: 0.85rem; font-weight: 600; color: var(--text-primary);">
+                                        <?= htmlspecialchars($label) ?>: 
+                                        <span id="val-<?= $key ?>" style="color: var(--text-secondary); font-weight: normal; margin-left: 0.25rem;">
+                                            <?= htmlspecialchars($val) ?: 'Not set' ?>
+                                        </span>
                                     </td>
                                     <td style="padding: 0.75rem 0; text-align: right; width: 60px;">
                                         <a href="#" onclick="openSettingModal('<?= $key ?>', '<?= addslashes(htmlspecialchars($label)) ?>', '<?= addslashes(htmlspecialchars($val)) ?>'); return false;" style="color: #4f46e5; font-size: 0.8rem; text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem; transition: color 0.2s;" onmouseover="this.style.color='#3730a3'" onmouseout="this.style.color='#4f46e5'">
@@ -2906,7 +2836,7 @@ if (isset($db['departments'])) {
 
                 <div class="form-group">
                     <label>Full Name</label>
-                    <input type="text" name="name" required placeholder="Enter full name">
+                    <input type="text" name="name" required placeholder="Enter full name" oninput="this.value = this.value.replace(/[^A-Za-z\s]/g, '')" pattern="[A-Za-z\s]+" title="Only letters and spaces are allowed">
                 </div>
 
                 <div class="form-group">
@@ -3031,7 +2961,7 @@ if (isset($db['departments'])) {
                 
                 <div class="form-group">
                     <label id="editSettingNameLabel">Setting Name</label>
-                    <input type="text" name="setting_value" id="editSettingValue" required placeholder="Enter new value">
+                    <div id="editSettingInputContainer"></div>
                 </div>
 
                 <button type="submit" class="submit-btn">Save Setting</button>
@@ -3287,7 +3217,40 @@ if (isset($db['departments'])) {
         function openSettingModal(key, name, value) {
             document.getElementById('editSettingKey').value = key;
             document.getElementById('editSettingNameLabel').innerText = name;
-            document.getElementById('editSettingValue').value = value;
+            
+            let container = document.getElementById('editSettingInputContainer');
+            let html = '';
+            
+            let safeValue = value ? value.replace(/"/g, '&quot;') : '';
+            
+            if (key === 'current_semester') {
+                html = `<select name="setting_value" style="width:100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 8px;" required>
+                            <option value="First" ${value === 'First' ? 'selected' : ''}>First</option>
+                            <option value="Second" ${value === 'Second' ? 'selected' : ''}>Second</option>
+                        </select>`;
+            } else if (key === 'grading_system') {
+                html = `<select name="setting_value" style="width:100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 8px;" required>
+                            <option value="GPA" ${value === 'GPA' ? 'selected' : ''}>GPA</option>
+                            <option value="Percentile" ${value === 'Percentile' ? 'selected' : ''}>Percentile</option>
+                            <option value="Percentage" ${value === 'Percentage' ? 'selected' : ''}>Percentage</option>
+                        </select>`;
+            } else {
+                let attrs = 'type="text" required placeholder="Enter new value" style="width:100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 8px;"';
+                if (key === 'site_name') {
+                    attrs += ` pattern="[A-Za-z\\s]+" oninput="this.value=this.value.replace(/[^A-Za-z\\s]/g,'')" title="Only letters are allowed"`;
+                } else if (key === 'email_from') {
+                    attrs = `type="email" required placeholder="Enter new value" style="width:100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 8px;" pattern=".*@gmail\\.com$" title="Must be a @gmail.com address"`;
+                } else if (key === 'phone') {
+                    attrs += ` pattern="[0-9]+" oninput="this.value=this.value.replace(/[^0-9]/g,'')" title="Only digits are allowed"`;
+                } else if (key === 'established_year') {
+                    attrs += ` pattern="[0-9]+" oninput="this.value=this.value.replace(/[^0-9]/g,'')" title="Only digits are allowed" maxlength="4"`;
+                } else if (key === 'academic_year') {
+                    attrs += ` pattern="[0-9\\-]+" oninput="this.value=this.value.replace(/[^0-9\\-]/g,'')" title="Only digits and hyphens are allowed"`;
+                }
+                html = `<input name="setting_value" id="editSettingValue" value="${safeValue}" ${attrs}>`;
+            }
+            container.innerHTML = html;
+            
             document.getElementById('editSettingModal').classList.add('active');
         }
 
