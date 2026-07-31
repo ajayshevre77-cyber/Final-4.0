@@ -11,6 +11,13 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'hod') {
 $user = $_SESSION['user'];
 $db = get_db();
 
+$display_activity = [];
+foreach ($db['recent_activity'] ?? [] as $act) {
+    if (stripos($act['title'] ?? '', 'assignment') === false) {
+        $display_activity[] = $act;
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'clear_notifications') {
     $db['recent_activity'] = [];
     save_db($db);
@@ -271,20 +278,20 @@ foreach ($db['grievances'] as $g) {
         $unresolved_grievances++;
     }
 }
-if (isset($db['assignment_grievances'])) {
-    foreach ($db['assignment_grievances'] as $g) {
-        if ($g['status'] !== 'Resolved' && $g['status'] !== 'Rejected') {
-            $unresolved_grievances++;
-        }
-    }
-}
+
 $pending_leaves = 0;
 foreach ($db['leaves'] as $l) {
     if ($l['status'] === 'Pending') {
         $pending_leaves++;
     }
 }
-$pending_approvals = $pending_leaves + $unresolved_grievances;
+$pending_grievances = 0;
+foreach ($db['grievances'] as $g) {
+    if ($g['status'] === 'Pending') {
+        $pending_grievances++;
+    }
+}
+$pending_approvals = $pending_leaves + $pending_grievances;
 
 ?>
 <!DOCTYPE html>
@@ -317,9 +324,7 @@ $pending_approvals = $pending_leaves + $unresolved_grievances;
                     <li><a class="sidebar-nav-item" data-tab="leaves" onclick="switchTab('leaves')"><i class="fa-solid fa-calendar-minus"></i><span>Leaves</span></a></li>
                     <li><a class="sidebar-nav-item" data-tab="grievances" onclick="switchTab('grievances')"><i class="fa-solid fa-circle-exclamation"></i><span>Grievances</span></a></li>
                     <li><a class="sidebar-nav-item" data-tab="notices" onclick="switchTab('notices')"><i class="fa-solid fa-bullhorn"></i><span>Notices</span></a></li>
-                    <li><a class="sidebar-nav-item" data-tab="students" onclick="switchTab('students')"><i class="fa-solid fa-user-graduate"></i><span>Students</span></a></li>
                     <li><a class="sidebar-nav-item" data-tab="approvals" onclick="switchTab('approvals')"><i class="fa-solid fa-check-double"></i><span>Approvals</span> <span class="notification-badge" style="background: var(--primary-color); color: white; padding: 2px 6px; border-radius: 12px; font-size: 0.75rem; margin-left: auto;"><?= $pending_approvals ?></span></a></li>
-                    <li><a class="sidebar-nav-item" data-tab="notifications" onclick="switchTab('notifications')"><i class="fa-solid fa-bell"></i><span>Notifications</span></a></li>
                 </ul>
             </div>
             <div class="sidebar-footer">
@@ -342,8 +347,8 @@ $pending_approvals = $pending_leaves + $unresolved_grievances;
                     <div class="notification-wrapper" style="position: relative;">
                         <div class="notification-bell" id="notificationToggle" style="cursor:pointer;">
                             <i class="fa-regular fa-bell"></i>
-                            <?php if (!empty($db['recent_activity'])): ?>
-                            <span class="badge" style="position: absolute; top: -2px; right: -2px; background: #ef4444; color: white; border-radius: 50%; width: 16px; height: 16px; font-size: 0.6rem; display: flex; align-items: center; justify-content: center; font-weight: bold;"><?php echo min(count($db['recent_activity']), 9); ?></span>
+                            <?php if (!empty($display_activity)): ?>
+                            <span class="badge" style="position: absolute; top: -2px; right: -2px; background: #ef4444; color: white; border-radius: 50%; width: 16px; height: 16px; font-size: 0.6rem; display: flex; align-items: center; justify-content: center; font-weight: bold;"><?php echo min(count($display_activity), 9); ?></span>
                             <?php endif; ?>
                         </div>
                         
@@ -353,13 +358,13 @@ $pending_approvals = $pending_leaves + $unresolved_grievances;
                                 <span style="font-size: 0.75rem; color: var(--primary-color); cursor: pointer; font-weight: 600;" onclick="fetch(window.location.href, {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: 'action=clear_notifications'}).then(() => { this.parentElement.nextElementSibling.innerHTML='<div style=\'padding: 2rem 1rem; text-align: center; color: var(--text-secondary); font-size: 0.9rem;\'><i class=\'fa-regular fa-bell-slash\' style=\'font-size: 1.5rem; margin-bottom: 0.5rem; color: #cbd5e1;\'></i><br>No new notifications</div>'; let b = document.querySelector('#notificationToggle .badge'); if(b) b.style.display='none'; });">Mark all as read</span>
                             </div>
                             <div style="max-height: 350px; overflow-y: auto; text-align: left;">
-                                <?php if (empty($db['recent_activity'])): ?>
+                                <?php if (empty($display_activity)): ?>
                                     <div style="padding: 2rem 1rem; text-align: center; color: var(--text-secondary); font-size: 0.9rem;">
                                         <i class="fa-regular fa-bell-slash" style="font-size: 1.5rem; margin-bottom: 0.5rem; color: #cbd5e1;"></i><br>
                                         No new notifications
                                     </div>
                                 <?php else: ?>
-                                    <?php foreach(array_slice($db['recent_activity'], 0, 5) as $idx => $activity): ?>
+                                    <?php foreach(array_slice($display_activity, 0, 5) as $idx => $activity): ?>
                                     <?php
                                     $targetTab = 'dashboard';
                                     $t = strtolower($activity['title'] ?? '');
@@ -527,14 +532,14 @@ $pending_approvals = $pending_leaves + $unresolved_grievances;
             <div id="view-notifications" class="app-view">
                 <div class="card" style="padding: 1.5rem; max-width: 800px; margin: 0 auto;">
                     <h3 style="margin-top:0; margin-bottom:1.5rem; display:flex; align-items:center; gap:0.5rem;"><i class="fa-solid fa-bell" style="color:var(--primary-color);"></i> All Notifications</h3>
-                    <?php if (empty($db['recent_activity'])): ?>
+                    <?php if (empty($display_activity)): ?>
                         <div style="padding: 3rem 1rem; text-align: center; color: var(--text-secondary); background: var(--bg-alt); border-radius: 12px; border: 1px dashed var(--border-color);">
                             <i class="fa-regular fa-bell-slash" style="font-size: 2.5rem; margin-bottom: 1rem; color: #cbd5e1;"></i><br>
                             <span style="font-size: 1.1rem; font-weight: 500;">No notifications available</span>
                         </div>
                     <?php else: ?>
                         <div style="display:flex; flex-direction:column; gap:1rem;">
-                            <?php foreach($db['recent_activity'] as $activity): ?>
+                            <?php foreach($display_activity as $activity): ?>
                             <div style="padding: 1.25rem; border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-alt); display: flex; gap: 1rem; align-items: flex-start; transition: transform 0.2s; cursor: default;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
                                 <div style="width: 42px; height: 42px; border-radius: 50%; background: rgba(37, 99, 235, 0.1); color: #3b82f6; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.1rem;">
                                     <i class="fa-solid fa-bell"></i>
@@ -638,7 +643,7 @@ $pending_approvals = $pending_leaves + $unresolved_grievances;
                     </div>
                     <table class="data-table">
                         <tbody>
-                            <?php foreach ($db['recent_activity'] as $activity): ?>
+                            <?php foreach ($display_activity as $activity): ?>
                             <tr>
                                 <td>
                                     <div style="font-weight:600;"><?= htmlspecialchars($activity['title']) ?></div>
@@ -762,76 +767,7 @@ $pending_approvals = $pending_leaves + $unresolved_grievances;
                     </table>
                 </div>
 
-                <!-- Assignment Grievances Section for HOD -->
-                <div class="data-table-container" style="margin-top: 2rem;">
-                    <div class="table-header-filters">
-                        <h4 style="margin-right:auto;font-weight:700;">Assignment Grievances</h4>
-                    </div>
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Student</th>
-                                <th>Assignment / Subject</th>
-                                <th>Issue Type</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php 
-                            $all_assign_grievances = array_reverse($db['assignment_grievances'] ?? []);
-                            if (empty($all_assign_grievances)): ?>
-                                <tr>
-                                    <td colspan="5" style="text-align:center; color:var(--text-muted); padding:2rem;">No assignment grievances submitted yet.</td>
-                                </tr>
-                            <?php else: foreach ($all_assign_grievances as $g): 
-                                $sa_item = null;
-                                foreach ($db['subject_assignments'] as $sa) {
-                                    if ($sa['id'] == $g['subject_assignment_id']) {
-                                        $sa_item = $sa;
-                                        break;
-                                    }
-                                }
-                                $subject_name = $sa_item ? $sa_item['subject_name'] : 'Unknown Subject';
-                                $assign_title = $sa_item ? $sa_item['assignment_title'] : 'Unknown Assignment';
-                            ?>
-                            <tr>
-                                <td>
-                                    <div class="notice-title"><?= htmlspecialchars($g['student_name']) ?></div>
-                                    <div class="notice-desc"><?= htmlspecialchars($g['student_id']) ?></div>
-                                </td>
-                                <td>
-                                    <div style="font-weight:500;"><?= htmlspecialchars($subject_name) ?></div>
-                                    <div class="notice-desc"><?= htmlspecialchars($assign_title) ?></div>
-                                </td>
-                                <td>
-                                    <div style="font-weight:600; color:#b91c1c; font-size: 0.85rem;"><?= htmlspecialchars($g['issue_type']) ?></div>
-                                    <div style="font-size:0.8rem; color: var(--text-secondary); margin-top:4px; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="<?= htmlspecialchars($g['description']) ?>">
-                                        <?= htmlspecialchars($g['description']) ?>
-                                    </div>
-                                </td>
-                                <td>
-                                    <?php 
-                                    $st = strtolower($g['status'] ?? 'pending');
-                                    $p_bg = '#fee2e2'; $p_col = '#b91c1c';
-                                    if ($st === 'resolved') { $p_bg = '#dcfce7'; $p_col = '#15803d'; }
-                                    elseif ($st === 'in review') { $p_bg = '#dbeafe'; $p_col = '#1d4ed8'; }
-                                    elseif ($st === 'rejected') { $p_bg = '#f3f4f6'; $p_col = '#4b5563'; }
-                                    ?>
-                                    <span style="background: <?= $p_bg ?>; color: <?= $p_col ?>; padding: 0.3rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;">
-                                        <?= htmlspecialchars($g['status'] ?? 'Pending') ?>
-                                    </span>
-                                </td>
-                                <td style="display:flex; gap:0.5rem; align-items:center;">
-                                    <?php if (!empty($g['screenshot'])): ?>
-                                        <a href="uploads/<?= htmlspecialchars($g['screenshot']) ?>" target="_blank" class="btn-secondary" style="padding: 0.4rem 0.6rem; border-radius:4px; height: 32px; display: flex; align-items: center; text-decoration: none;">View File</a>
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-                            <?php endforeach; endif; ?>
-                        </tbody>
-                    </table>
-                </div>
+
             </div>
 
             <!-- Notices View -->
@@ -966,10 +902,7 @@ $pending_approvals = $pending_leaves + $unresolved_grievances;
                                     <span style="overflow: hidden; text-overflow: ellipsis;"><?= htmlspecialchars($f['subjects'] ?? '') ?></span>
                                 </div>
                             </div>
-                            <div style="text-align: right; padding-right: 1rem;">
-                                <div style="font-size: 1.1rem; font-weight: 700; color: #8b5cf6;"><?= $portion ?>%</div>
-                                <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Portion</div>
-                            </div>
+
                             <i class="fa-solid fa-chevron-right" style="color: #cbd5e1; font-size: 1.2rem;"></i>
                         </div>
                         <?php endforeach; ?>
@@ -986,26 +919,7 @@ $pending_approvals = $pending_leaves + $unresolved_grievances;
                                 <button onclick="closeFacultyModal()" style="background: transparent; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; padding: 0.25rem; line-height: 1;"><i class="fa-solid fa-xmark"></i></button>
                             </div>
                             <div style="padding: 2.5rem; display: flex; flex-direction: column; gap: 2rem;">
-                                <!-- Stats Grid -->
-                                <div style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
-                                    <div style="background: var(--bg-page); padding: 1rem; border-radius: 8px;">
-                                        <div style="font-size: 0.75rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; margin-bottom: 0.25rem;">Workload</div>
-                                        <div id="modalFacWorkload" style="font-size: 1.1rem; font-weight: 700; color: var(--text-secondary);">16 Hours/Wk</div>
-                                    </div>
-                                </div>
 
-                                <!-- Progress Bars -->
-                                <div style="display: flex; flex-direction: column; gap: 2rem;">
-                                    <div>
-                                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.5rem; font-weight: 600;">
-                                            <span style="color: var(--text-secondary);">Portion Completed</span>
-                                            <span id="modalFacPortion" style="color: #8b5cf6;">68%</span>
-                                        </div>
-                                        <div style="width: 100%; height: 8px; background: #f3e8ff; border-radius: 4px; overflow: hidden;">
-                                            <div id="modalFacPortionBar" style="height: 100%; width: 68%; background: #8b5cf6; border-radius: 4px; transition: width 0.5s ease-out;"></div>
-                                        </div>
-                                    </div>
-                                </div>
 
                                 <!-- Additional Info -->
                                 <div style="border-top: 1px solid #f1f5f9; padding-top: 1.25rem; display: flex; flex-direction: column; gap: 0.75rem;">
@@ -1018,29 +932,55 @@ $pending_approvals = $pending_leaves + $unresolved_grievances;
                                         <div style="font-size: 0.85rem; color: var(--text-secondary);" id="modalFacEmail">Email</div>
                                     </div>
                                 </div>
+                                
+                                <!-- Assignments Uploaded -->
+                                <div style="border-top: 1px solid #f1f5f9; padding-top: 1.25rem;">
+                                    <div style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; margin-bottom: 1rem;">Assignments Uploaded</div>
+                                    <div id="modalFacAssignments" style="display: flex; flex-direction: column; gap: 0.75rem; max-height: 200px; overflow-y: auto; padding-right: 0.5rem;">
+                                        <!-- Dynamically loaded assignments -->
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <script>
+                    const allAssignmentsData = <?= json_encode($db['subject_assignments'] ?? []) ?>;
+                    
                     function openFacultyModal(name, desig, att, workload, portion, studentAtt, subjects, email) {
                         document.getElementById('modalFacName').innerText = name;
                         document.getElementById('modalFacDesig').innerText = desig;
                         
-                        const attEl = document.getElementById('modalFacAtt');
-                        attEl.innerText = att + '%';
-                        attEl.style.color = parseInt(att) >= 90 ? '#10b981' : '#f59e0b';
 
-                        document.getElementById('modalFacWorkload').innerText = workload;
-                        
-                        document.getElementById('modalFacPortion').innerText = portion + '%';
-                        document.getElementById('modalFacPortionBar').style.width = portion + '%';
-                        
-                        document.getElementById('modalFacStudentAtt').innerText = studentAtt + '%';
-                        document.getElementById('modalFacStudentAttBar').style.width = studentAtt + '%';
                         
                         document.getElementById('modalFacSubjects').innerText = subjects;
                         document.getElementById('modalFacEmail').innerText = email;
+
+                        // Load assignments
+                        const facAssignments = allAssignmentsData.filter(a => a.created_by === name);
+                        const assignmentsContainer = document.getElementById('modalFacAssignments');
+                        assignmentsContainer.innerHTML = '';
+                        
+                        if (facAssignments.length === 0) {
+                            assignmentsContainer.innerHTML = '<div style="color: var(--text-muted); font-size: 0.85rem;">No assignments uploaded yet.</div>';
+                        } else {
+                            facAssignments.forEach(a => {
+                                const div = document.createElement('div');
+                                div.style.cssText = 'background: #f8fafc; border: 1px solid var(--border-color); padding: 0.75rem; border-radius: 8px; font-size: 0.85rem;';
+                                
+                                // Ensure escapeHtml is available or just inject text carefully
+                                // The escapeHtml is at the bottom of the page, so it should be accessible
+                                const due = a.due || a.due_date || 'N/A';
+                                div.innerHTML = `
+                                    <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 0.25rem;">${typeof escapeHtml === 'function' ? escapeHtml(a.assignment_title) : a.assignment_title}</div>
+                                    <div style="color: var(--text-secondary); display: flex; justify-content: space-between;">
+                                        <span>${typeof escapeHtml === 'function' ? escapeHtml(a.subject_name) : a.subject_name}</span>
+                                        <span style="color: #ea580c; font-weight: 500;">Due: ${typeof escapeHtml === 'function' ? escapeHtml(due) : due}</span>
+                                    </div>
+                                `;
+                                assignmentsContainer.appendChild(div);
+                            });
+                        }
 
                         const modal = document.getElementById('facultyModal');
                         const content = document.getElementById('facultyModalContent');

@@ -11,10 +11,48 @@ if (!isset($_SESSION['user']) || $_SESSION['role'] !== 'admin') {
 $user = $_SESSION['user'];
 $db = get_db();
 
+$display_activity = [];
+foreach ($db['recent_activity'] ?? [] as $act) {
+    if (stripos($act['title'] ?? '', 'assignment') === false) {
+        $display_activity[] = $act;
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'clear_notifications') {
     $db['recent_activity'] = [];
     save_db($db);
     echo json_encode(['success' => true]);
+    exit;
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'reply_grievance') {
+    $grievance_id = intval($_POST['grievance_id']);
+    $reply_msg = trim($_POST['reply_msg']);
+    $new_status = trim($_POST['status']);
+    
+    if (!empty($reply_msg)) {
+        $updated = false;
+        foreach ($db['grievances'] as &$g) {
+            if ($g['id'] === $grievance_id) {
+                $g['status'] = $new_status;
+                $g['replies'][] = [
+                    'author' => $user['name'],
+                    'role' => 'System Administrator',
+                    'date' => date('d M Y h:i A'),
+                    'message' => $reply_msg
+                ];
+                $updated = true;
+                break;
+            }
+        }
+        if ($updated) {
+            save_db($db);
+            $_SESSION['success_message'] = "Reply sent and status updated.";
+        } else {
+            $_SESSION['error_message'] = "Grievance not found.";
+        }
+    } else {
+        $_SESSION['error_message'] = "Reply message is required.";
+    }
+    header("Location: admin_dashboard.php");
     exit;
 }
 
@@ -1066,11 +1104,12 @@ if (isset($db['departments'])) {
                 <button class="theme-toggle-btn" title="Toggle Dark/Light Theme" onclick="toggleDarkMode()">
                     <i class="fa-solid fa-moon"></i>
                 </button>
+                <?php $display_activity = array_filter($db['recent_activity'] ?? [], function($a) { return strpos(strtolower($a['title'] ?? ''), 'assignment') === false; }); ?>
                 <div class="notification-wrapper" style="position: relative;">
                     <div class="notification-icon" id="notificationToggle" style="cursor:pointer;">
                         <i class="fa-regular fa-bell"></i>
-                        <?php if (!empty($db['recent_activity'])): ?>
-                        <span class="badge" style="position: absolute; top: -2px; right: -2px; background: #ef4444; color: white; border-radius: 50%; width: 16px; height: 16px; font-size: 0.6rem; display: flex; align-items: center; justify-content: center; font-weight: bold;"><?php echo min(count($db['recent_activity']), 9); ?></span>
+                        <?php if (!empty($display_activity)): ?>
+                        <span class="badge" style="position: absolute; top: -2px; right: -2px; background: #ef4444; color: white; border-radius: 50%; width: 16px; height: 16px; font-size: 0.6rem; display: flex; align-items: center; justify-content: center; font-weight: bold;"><?php echo min(count($display_activity), 9); ?></span>
                         <?php endif; ?>
                     </div>
                     
@@ -1080,19 +1119,18 @@ if (isset($db['departments'])) {
                             <span style="font-size: 0.75rem; color: var(--primary-color); cursor: pointer; font-weight: 600;" onclick="fetch(window.location.href, {method: 'POST', headers: {'Content-Type': 'application/x-www-form-urlencoded'}, body: 'action=clear_notifications'}).then(() => { this.parentElement.nextElementSibling.innerHTML='<div style=\'padding: 2rem 1rem; text-align: center; color: var(--text-secondary); font-size: 0.9rem;\'><i class=\'fa-regular fa-bell-slash\' style=\'font-size: 1.5rem; margin-bottom: 0.5rem; color: #cbd5e1;\'></i><br>No new notifications</div>'; let b = document.querySelector('#notificationToggle .badge'); if(b) b.style.display='none'; });">Mark all as read</span>
                         </div>
                         <div style="max-height: 350px; overflow-y: auto; text-align: left;">
-                            <?php if (empty($db['recent_activity'])): ?>
+                            <?php if (empty($display_activity)): ?>
                                 <div style="padding: 2rem 1rem; text-align: center; color: var(--text-secondary); font-size: 0.9rem;">
                                     <i class="fa-regular fa-bell-slash" style="font-size: 1.5rem; margin-bottom: 0.5rem; color: #cbd5e1;"></i><br>
                                     No new notifications
                                 </div>
                             <?php else: ?>
-                                <?php foreach(array_slice($db['recent_activity'], 0, 5) as $idx => $activity): ?>
+                                <?php foreach(array_slice($display_activity, 0, 5) as $idx => $activity): ?>
                                 <?php
                                 $targetTab = 'dashboard';
                                 $t = strtolower($activity['title'] ?? '');
                                 if (strpos($t, 'leave') !== false) $targetTab = 'leaves';
                                 elseif (strpos($t, 'grievance') !== false) $targetTab = 'grievance';
-                                elseif (strpos($t, 'assignment') !== false) $targetTab = 'assignments';
                                 elseif (strpos($t, 'notice') !== false) $targetTab = 'notices';
                                 ?>
                                 <div onclick="triggerTab('<?php echo $targetTab; ?>')" style="padding: 1rem; border-bottom: 1px solid var(--border-color); cursor: pointer; transition: background 0.2s; <?php echo $idx === 0 ? 'background: #f0f9ff;' : ''; ?>" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='<?php echo $idx === 0 ? '#f0f9ff' : 'transparent'; ?>'">
@@ -1196,14 +1234,14 @@ if (isset($db['departments'])) {
         <div id="view-notifications" class="app-view">
             <div class="card" style="padding: 1.5rem; max-width: 800px; margin: 0 auto;">
                 <h3 style="margin-top:0; margin-bottom:1.5rem; display:flex; align-items:center; gap:0.5rem;"><i class="fa-solid fa-bell" style="color:var(--primary-color);"></i> All Notifications</h3>
-                <?php if (empty($db['recent_activity'])): ?>
+                <?php if (empty($display_activity)): ?>
                     <div style="padding: 3rem 1rem; text-align: center; color: var(--text-secondary); background: var(--bg-alt); border-radius: 12px; border: 1px dashed var(--border-color);">
                         <i class="fa-regular fa-bell-slash" style="font-size: 2.5rem; margin-bottom: 1rem; color: #cbd5e1;"></i><br>
                         <span style="font-size: 1.1rem; font-weight: 500;">No notifications available</span>
                     </div>
                 <?php else: ?>
                     <div style="display:flex; flex-direction:column; gap:1rem;">
-                        <?php foreach($db['recent_activity'] as $activity): ?>
+                        <?php foreach($display_activity as $activity): ?>
                         <div style="padding: 1.25rem; border: 1px solid var(--border-color); border-radius: 10px; background: var(--bg-alt); display: flex; gap: 1rem; align-items: flex-start; transition: transform 0.2s; cursor: default;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
                             <div style="width: 42px; height: 42px; border-radius: 50%; background: rgba(37, 99, 235, 0.1); color: #3b82f6; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.1rem;">
                                 <i class="fa-solid fa-bell"></i>
@@ -1818,6 +1856,7 @@ if (isset($db['departments'])) {
                                 <th style="padding: 1rem; font-weight: 600; color: var(--text-primary); font-size: 0.85rem;">Title & Issue</th>
                                 <th style="padding: 1rem; font-weight: 600; color: var(--text-primary); font-size: 0.85rem;">Date</th>
                                 <th style="padding: 1rem; font-weight: 600; color: var(--text-primary); font-size: 0.85rem;">Status</th>
+                                <th style="padding: 1rem; font-weight: 600; color: var(--text-primary); font-size: 0.85rem;">Action</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1825,7 +1864,7 @@ if (isset($db['departments'])) {
                             $all_grievances = array_reverse($db['grievances'] ?? []);
                             if (empty($all_grievances)): ?>
                                 <tr>
-                                    <td colspan="5" style="text-align:center; color:var(--text-muted); padding:2rem;">No general grievances submitted yet.</td>
+                                    <td colspan="6" style="text-align:center; color:var(--text-muted); padding:2rem;">No general grievances submitted yet.</td>
                                 </tr>
                             <?php else: foreach ($all_grievances as $g): ?>
                             <tr style="border-bottom: 1px solid #f8fafc;">
@@ -1848,6 +1887,9 @@ if (isset($db['departments'])) {
                                     elseif ($st === 'rejected') { $p_bg = '#f3f4f6'; $p_col = '#4b5563'; }
                                     ?>
                                     <span style="background: <?= $p_bg ?>; color: <?= $p_col ?>; padding: 0.25rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase;"><?= htmlspecialchars($g['status'] ?? 'Pending') ?></span>
+                                </td>
+                                <td style="padding: 1rem;">
+                                    <button class="btn-secondary" onclick="openGrievanceModal(<?= $g['id'] ?>)" style="padding: 0.4rem 0.6rem; border-radius:4px; font-size:0.8rem; font-weight:600; background: var(--bg-card); border: 1px solid var(--border-color); cursor:pointer;">Solve</button>
                                 </td>
                             </tr>
                             <?php endforeach; endif; ?>
@@ -3019,8 +3061,95 @@ if (isset($db['departments'])) {
             </div>
         </div>
     </div>
+        </div>
+    </div>
+    
+    <!-- Grievance Chat Modal -->
+    <div class="modal-overlay" id="modal-grievance">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Grievance Details</h3>
+                <button class="btn-close-modal" onclick="document.getElementById('modal-grievance').classList.remove('active');"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body" style="max-height:60vh;overflow-y:auto;">
+                <div style="margin-bottom:1.5rem;">
+                    <h4 id="modalGrievanceTitle" style="font-size:1.1rem;font-weight:700;margin-bottom:0.25rem;">Grievance Title</h4>
+                    <div id="modalGrievanceAuthorDate" style="font-size:0.85rem;color:var(--text-muted);">Reported by Student on Date</div>
+                </div>
+                
+                <div class="grievance-chat" id="modalChatContainer">
+                    <!-- Dynamically loaded -->
+                </div>
+                
+                <div class="chat-reply-box">
+                    <label style="font-size:0.9rem;font-weight:600;">Add Reply / Change Status</label>
+                    <form method="POST">
+                        <input type="hidden" name="action" value="reply_grievance">
+                        <input type="hidden" id="modal_grievance_id" name="grievance_id" value="">
+                        <textarea name="reply_msg" rows="3" style="width:100%;padding:0.75rem;border:1px solid var(--border-color);border-radius:var(--border-radius-sm);font-family:var(--font-primary);" placeholder="Type your resolution..." required></textarea>
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.5rem;">
+                            <select name="status" id="modalGrievanceStatusSelect" style="padding:0.5rem;border:1px solid var(--border-color);border-radius:var(--border-radius-sm);">
+                                <option value="Pending">Mark as Pending</option>
+                                <option value="In Progress">Mark as In Progress</option>
+                                <option value="Resolved">Mark as Resolved</option>
+                            </select>
+                            <button type="submit" class="btn-primary" style="padding:0.5rem 1rem;border:none;border-radius:var(--border-radius-sm);cursor:pointer;font-weight:600;">Send Reply</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
+        const grievancesData = <?= json_encode($db['grievances'] ?? []) ?>;
+        
+        function openGrievanceModal(id) {
+            const g = grievancesData.find(item => item.id === id);
+            if (!g) return;
+
+            document.getElementById('modal_grievance_id').value = id;
+            document.getElementById('modalGrievanceTitle').textContent = g.title;
+            document.getElementById('modalGrievanceAuthorDate').textContent = 'Reported by ' + g.student_name + ' (' + g.student_id + ') on ' + g.date;
+            document.getElementById('modalGrievanceStatusSelect').value = g.status;
+
+            const chatContainer = document.getElementById('modalChatContainer');
+            chatContainer.innerHTML = '';
+
+            const studentBubble = document.createElement('div');
+            studentBubble.className = 'chat-bubble student-msg';
+            studentBubble.innerHTML = `
+                <div class="chat-header">
+                    <span class="chat-author">${g.student_name}</span>
+                </div>
+                <div class="chat-message">${escapeHtml(g.desc)}</div>
+            `;
+            chatContainer.appendChild(studentBubble);
+
+            if (g.replies && g.replies.length > 0) {
+                g.replies.forEach(reply => {
+                    const replyBubble = document.createElement('div');
+                    replyBubble.className = 'chat-bubble admin-reply';
+                    replyBubble.innerHTML = `
+                        <div class="chat-header">
+                            <span class="chat-author">${reply.author} (${reply.role})</span>
+                            <span class="chat-time" style="font-size:0.75rem;margin-left:0.5rem;color:var(--text-muted);">${reply.date}</span>
+                        </div>
+                        <div class="chat-message">${escapeHtml(reply.message)}</div>
+                    `;
+                    chatContainer.appendChild(replyBubble);
+                });
+            }
+
+            document.getElementById('modal-grievance').classList.add('active');
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         function switchTab(tabId) {
             // Hide all views
             document.querySelectorAll('.app-view').forEach(view => {

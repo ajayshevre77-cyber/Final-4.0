@@ -637,23 +637,8 @@ $db = get_db();
                     }
                 }
                 
-                // Grievances: filter by division (general) or subject (assignment)
+                // Grievances: filter by subject (assignment)
                 $active_grievances = 0;
-                foreach ($db['grievances'] ?? [] as $g) {
-                    $is_ours = false;
-                    foreach ($db['students'] as $stu) {
-                        if ($stu['id'] === $g['student_id']) {
-                            $student_div = $stu['division'] ?? '';
-                            if (in_array($student_div, $faculty_divisions)) {
-                                $is_ours = true;
-                            }
-                            break;
-                        }
-                    }
-                    if ($is_ours && ($g['status'] ?? '') !== 'Resolved') {
-                        $active_grievances++;
-                    }
-                }
                 foreach ($db['assignment_grievances'] ?? [] as $ag) {
                     $sa_item = null;
                     foreach ($db['subject_assignments'] as $sa) {
@@ -663,7 +648,7 @@ $db = get_db();
                         }
                     }
                     if ($sa_item && in_array($sa_item['subject_name'], $faculty_subjects)) {
-                        if (($ag['status'] ?? '') !== 'Resolved') {
+                        if (($ag['status'] ?? '') !== 'Resolved' && ($ag['status'] ?? '') !== 'Rejected') {
                             $active_grievances++;
                         }
                     }
